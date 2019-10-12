@@ -1,5 +1,6 @@
 <template>
-  <v-container>
+  <v-container fluid>
+     <v-row>
     <v-row>
       <v-col cols="4">
     
@@ -27,7 +28,7 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row align="stretch">
       <v-col>
         <v-tabs height="35">
           <v-tab>Positions</v-tab>
@@ -35,7 +36,7 @@
           <v-tab>Trades</v-tab>
           
           <v-tab-item transition="none" reverse-transition="none">
-            Positions
+            <v-data-table dense :headers="position_headers" :items="positions" item-key="ticker"  fixed-header disable-pagination hide-default-footer></v-data-table>
           </v-tab-item>
 
           <v-tab-item transition="none" reverse-transition="none">
@@ -43,7 +44,7 @@
           </v-tab-item>
 
           <v-tab-item transition="none"  reverse-transition="none">
-            <v-data-table dense :headers="headers" :items="symbols" item-key="ticker" class="elevation-1"></v-data-table>
+            <v-data-table dense :headers="position_headers" :items="positions" item-key="ticker" class="elevation-1"></v-data-table>
           </v-tab-item>
 
 
@@ -51,6 +52,7 @@
         </v-tabs>      
       </v-col>
     </v-row>
+     </v-row>
   </v-container>
 </template>
 
@@ -59,12 +61,255 @@
 export default {
   data() {
     return {
-      headers: [
+      position_headers: [
         {text: 'Ticker', value: 'ticker'},
-        {text: 'Ticker'},
-        {text: 'Ticker'},
-        {text: 'Ticker'},
+        {text: 'Position', value: 'position'},
+        {text: 'Avg.Price', value: 'avgprice'},
+        {text: 'Price', value: 'price'},
+        {text: 'P&L', value: 'pnl'},
       ],
+
+      positions: [
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+        {
+          ticker: 'AAPL.NASDAQ',
+          position: 50,
+          avgprice: 210,
+          price: 233,
+          pnl: 100,
+        },
+      ],
+
       symbols: [
         {
           ticker: 'EUR/USD.E.FX',
