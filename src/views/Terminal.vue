@@ -115,7 +115,10 @@
 
 
 <script lang="ts">
-export default {
+import axios from 'axios';
+import Vue from 'vue';
+
+export default Vue.extend({
   data() {
     // Generate positions
     const ipos = [];
@@ -133,6 +136,8 @@ export default {
     }
 
     return {
+      user_symbols: null,
+
       order_headers: [
         {text: 'State', value: 'state'},
         {text: 'Ticker', value: 'ticker'},
@@ -241,5 +246,26 @@ export default {
 
     };
   },
-};
+
+  methods: {
+    deleteItem(item: any) {
+      const index = this.symbols.indexOf(item);
+      this.symbols.splice(index, 1);
+      /*this.todos.push({
+        id: this.nextTodoId++,
+        title: this.newTodoText
+      })
+      this.newTodoText = ''*/
+    },
+  },
+
+  mounted() {
+    /*
+    axios.get('http://localhost:8090/symbols')
+     .then((response) => {
+        this.user_symbols = response.data;
+        this.symbols = response.data;
+      });*/
+  },
+});
 </script>
