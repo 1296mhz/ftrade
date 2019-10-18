@@ -77,7 +77,10 @@
     </v-col>
 
     <v-col cols="2">
-    <v-navigation-drawer>
+    <v-navigation-drawer
+       absolute
+      permanent
+      right>
           <v-form ref="form" lazy-validation>
             <v-container>
               <v-row dense>
