@@ -1,6 +1,14 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawerLeft" app>
+    <v-navigation-drawer 
+    v-model="drawer" 
+    app 
+    mini-variant
+    permanent 
+    disable-resize-watcher
+    disable-route-watcher
+    position: fixed
+>
       <v-list dense>
         <v-list-item to="/dashboard">
           <v-list-item-action>
@@ -22,11 +30,10 @@
     </v-navigation-drawer>
 
     <v-app-bar app color="indigo" dark>
-      <v-app-bar-nav-icon @click.stop="drawerLeft = !drawerLeft"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn icon >
+      <v-btn icon>
         <v-icon>mdi-heart</v-icon>
       </v-btn>
     </v-app-bar>
@@ -37,7 +44,6 @@
     <!-- <v-footer color="indigo" app>
       <span class="white--text">&copy; 2019</span>
     </v-footer>-->
- 
   </v-app>
 </template>
 
@@ -51,7 +57,8 @@ export default {
   },
   data() {
     return {
-      drawerLeft: null,
+      drawer: true,
+      mini: true,
     };
   },
   watch: {

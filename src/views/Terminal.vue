@@ -1,9 +1,9 @@
 <template>
   <v-container fluid>
     <v-row>
-
-      <v-col cols="10" md="12" xs="12" sm="12" lg="12" xl="12">
-        <v-row >
+      <v-col cols="10" md="10" xs="10" sm="10" lg="10" xl="10">
+        <v-row>
+          <!-- ticker table -->
           <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
             <v-card height="100%">
               <v-simple-table dense>
@@ -34,6 +34,7 @@
             </v-card>
           </v-col>
 
+          <!-- chart -->
           <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
             <v-card height="100%">
               <highcharts class="stock" :constructor-type="'stockChart'" :options="stockOptions"></highcharts>
@@ -41,9 +42,10 @@
           </v-col>
         </v-row>
 
+        <!-- positions, ordersm trades -->
         <v-row>
           <v-col cols="12" md="12" xs="12" sm="12" lg="12" xl="12">
-            <v-card>
+            <v-card height="100%">
               <v-tabs height="45">
                 <v-tab>Positions</v-tab>
                 <v-tab>Orders</v-tab>
@@ -77,8 +79,50 @@
         </v-row>
       </v-col>
 
-     
-      <!-- root row closed-->
+      <v-col class="pt-6" md="12" xs="12" sm="12" lg="2" xl="2" >
+        <v-card height="100%">
+          <v-form ref="form" lazy-validation>
+            <v-container>
+              <v-row dense>
+                <v-col>
+                  <v-text-field dense disabled label="Bid" outline />
+                </v-col>
+                <v-col>
+                  <v-text-field dense disabled label="Ask" outline />
+                </v-col>
+              </v-row>
+
+              <v-row dense>
+                <v-col>
+                  <v-select dense :items="['Limit','Market']" value="Limit"></v-select>
+                </v-col>
+                <v-col>
+                  <v-select dense :items="['Day','GTC']" value="Day"></v-select>
+                </v-col>
+              </v-row>
+
+              <v-row dense>
+                <v-col>
+                  <v-text-field dense v-model="amount" label="Amount" required></v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field dense v-model="price" label="Price" required></v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row no-gutters>
+                <v-col>
+                  <v-btn small @click="genSeries" block color="success">Buy</v-btn>
+                </v-col>
+                <v-col>
+                  <v-btn small @click="handlerSell" block color="error">Sell</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-form>
+        </v-card>
+      </v-col>
+
     </v-row>
   </v-container>
 </template>
