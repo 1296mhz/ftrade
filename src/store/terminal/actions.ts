@@ -106,10 +106,15 @@ export const actions: ActionTree<TerminalState, RootState> = {
     commit(SET_ORDERS, orders);
   },
   async series({ commit, state }) {
+    let dataOhlc: number[] = [];
+    for(let i = 0; i < 50; i++) {
+      dataOhlc[i] = Math.floor(Math.random() * 100) + 1;
+    }
+    console.log(dataOhlc)
     const series = [
       {
         name: "AAPL",
-        data: [10, 20, 10, 23, 65, 121, 44, 66, 98, 30, 32, 56, 25, 12, 53],
+        data: dataOhlc,
         pointStart: Date.UTC(2018, 1, 1),
         pointInterval: 1000 * 3600 * 24,
         tooltip: {
