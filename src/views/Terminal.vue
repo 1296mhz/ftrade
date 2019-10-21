@@ -1,11 +1,12 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols="12" md="12" xs="12" sm="12" lg="12" xl="12">
-        <v-row>
+
+      <v-col cols="10" md="12" xs="12" sm="12" lg="12" xl="12">
+        <v-row >
           <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
             <v-card height="100%">
-              <v-simple-table dense >
+              <v-simple-table dense>
                 <template v-slot:default>
                   <thead>
                     <tr>
@@ -42,8 +43,8 @@
 
         <v-row>
           <v-col cols="12" md="12" xs="12" sm="12" lg="12" xl="12">
-            <v-card height="100%">
-              <v-tabs height="35">
+            <v-card>
+              <v-tabs height="45">
                 <v-tab>Positions</v-tab>
                 <v-tab>Orders</v-tab>
                 <v-tab>Trades</v-tab>
@@ -60,19 +61,13 @@
                     hide-default-footer
                   ></v-data-table>
                 </v-tab-item>
-
                 <v-tab-item transition="none" reverse-transition="none">
                   <v-data-table dense :headers="order_headers" :items="orders" item-key="id">
                     <template v-slot:item.state="{ item }">
                       <v-chip color="green" dark label x-small>{{ item.state }}</v-chip>
-                      <!--                 <div class="green text-center">
-                  <span class="white--text">{{ item.state }}</span>
-                </div>
-                      -->
                     </template>
                   </v-data-table>
                 </v-tab-item>
-
                 <v-tab-item transition="none" reverse-transition="none">
                   <v-data-table dense :headers="position_headers" :items="positions" item-key="id"></v-data-table>
                 </v-tab-item>
@@ -81,6 +76,9 @@
           </v-col>
         </v-row>
       </v-col>
+
+     
+      <!-- root row closed-->
     </v-row>
   </v-container>
 </template>
@@ -152,13 +150,4 @@ export default {
 </script>
 
 <style scoped lang="css">
-.terminal-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: "dashboard-drawer";
-  background-color: white;
-  padding: 0px;
-  margin: 0px;
-}
 </style>

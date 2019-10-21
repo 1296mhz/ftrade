@@ -3,10 +3,10 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import Terminal from './views/Terminal.vue';
 import Dashboard from './views/Dashboard.vue';
+import store from './store';
 
 Vue.use(Router);
-
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/dashboard',
@@ -27,4 +27,15 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
   ],
+  mode: 'history',
 });
+
+router.beforeEach((to, from, next) => {
+  // console.log(to.params.id);
+  console.log(to.name);
+  //store.commit(`app/viewComponent`, to.name);
+  store.dispatch('app/currentView', to.name );
+  next();
+});
+
+export default router;
