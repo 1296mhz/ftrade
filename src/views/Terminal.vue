@@ -1,10 +1,10 @@
 <template>
   <v-container fluid>
-    <v-row>
+    <v-row >
       <v-col xs="12" sm="12" md="8" lg="10" xl="10">
         <v-row>
           <v-col xs="12" sm="12" md="12" lg="6" xl="6">
-            <v-card height="100%">
+            <v-card >
               <v-container fluid>
               <v-row align="center" justify="start">
                 <v-card-actions>
@@ -93,10 +93,10 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col xs="12" sm="12" md="4" lg="2" xl="2">
-        <v-row xs="12" sm="12" md="4" lg="2" xl="2">
+      <v-col height="100%" xs="12" sm="12" md="4" lg="2" xl="2">
+        <v-row height="100%" xs="12" sm="12" md="4" lg="2" xl="2">
           <v-col>
-            <v-card height="100vh">
+            <v-card height="86vh">
               <v-form ref="form" lazy-validation>
                 <v-container>
                   <v-row dense>
@@ -211,4 +211,5 @@ export default {
 </script>
 
 <style scoped lang="css">
+
 </style>
