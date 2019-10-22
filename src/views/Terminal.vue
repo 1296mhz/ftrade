@@ -4,13 +4,13 @@
       <v-col xs="12" sm="12" md="8" lg="10" xl="10">
         <v-row>
           <v-col xs="12" sm="12" md="12" lg="6" xl="6">
-            <v-card >
+            <v-card height="100%">
               <v-container fluid>
               <v-row align="center" justify="start">
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn icon>
-                    <v-icon>mdi-heart</v-icon>
+                    <v-icon>mdi-plus</v-icon>
                   </v-btn>
                   <v-btn icon>
                     <v-icon>mdi-bookmark</v-icon>
