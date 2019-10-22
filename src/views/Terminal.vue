@@ -1,11 +1,25 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols="10" md="10" xs="10" sm="10" lg="10" xl="10">
+      <v-col xs="12" sm="12" md="8" lg="10" xl="10">
         <v-row>
-          <!-- ticker table -->
-          <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
+          <v-col xs="12" sm="12" md="12" lg="6" xl="6">
             <v-card height="100%">
+              <v-container fluid>
+              <v-row align="center" justify="start">
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn icon>
+                    <v-icon>mdi-heart</v-icon>
+                  </v-btn>
+                  <v-btn icon>
+                    <v-icon>mdi-bookmark</v-icon>
+                  </v-btn>
+                  <v-btn icon>
+                    <v-icon>mdi-share-variant</v-icon>
+                  </v-btn>
+                </v-card-actions>
+              </v-row>
               <v-simple-table dense>
                 <template v-slot:default>
                   <thead>
@@ -31,21 +45,21 @@
                   </tbody>
                 </template>
               </v-simple-table>
+              </v-container>
             </v-card>
           </v-col>
-
-          <!-- chart -->
-          <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
+          <v-col xs="12" sm="12" md="12" lg="6" xl="6">
             <v-card height="100%">
+              <v-container fluid>
               <highcharts class="stock" :constructor-type="'stockChart'" :options="stockOptions"></highcharts>
+              </v-container>
             </v-card>
           </v-col>
         </v-row>
-
-        <!-- positions, ordersm trades -->
         <v-row>
-          <v-col cols="12" md="12" xs="12" sm="12" lg="12" xl="12">
+          <v-col>
             <v-card height="100%">
+               <v-container fluid>
               <v-tabs height="45">
                 <v-tab>Positions</v-tab>
                 <v-tab>Orders</v-tab>
@@ -74,55 +88,58 @@
                   <v-data-table dense :headers="position_headers" :items="positions" item-key="id"></v-data-table>
                 </v-tab-item>
               </v-tabs>
+               </v-container>
             </v-card>
           </v-col>
         </v-row>
       </v-col>
+      <v-col xs="12" sm="12" md="4" lg="2" xl="2">
+        <v-row xs="12" sm="12" md="4" lg="2" xl="2">
+          <v-col>
+            <v-card height="100vh">
+              <v-form ref="form" lazy-validation>
+                <v-container>
+                  <v-row dense>
+                    <v-col>
+                      <v-text-field dense disabled label="Bid" outline />
+                    </v-col>
+                    <v-col>
+                      <v-text-field dense disabled label="Ask" outline />
+                    </v-col>
+                  </v-row>
 
-      <v-col class="pt-6" md="12" xs="12" sm="12" lg="2" xl="2" >
-        <v-card height="100%">
-          <v-form ref="form" lazy-validation>
-            <v-container>
-              <v-row dense>
-                <v-col>
-                  <v-text-field dense disabled label="Bid" outline />
-                </v-col>
-                <v-col>
-                  <v-text-field dense disabled label="Ask" outline />
-                </v-col>
-              </v-row>
+                  <v-row dense>
+                    <v-col>
+                      <v-select dense :items="['Limit','Market']" value="Limit"></v-select>
+                    </v-col>
+                    <v-col>
+                      <v-select dense :items="['Day','GTC']" value="Day"></v-select>
+                    </v-col>
+                  </v-row>
 
-              <v-row dense>
-                <v-col>
-                  <v-select dense :items="['Limit','Market']" value="Limit"></v-select>
-                </v-col>
-                <v-col>
-                  <v-select dense :items="['Day','GTC']" value="Day"></v-select>
-                </v-col>
-              </v-row>
+                  <v-row dense>
+                    <v-col>
+                      <v-text-field dense v-model="amount" label="Amount" required></v-text-field>
+                    </v-col>
+                    <v-col>
+                      <v-text-field dense v-model="price" label="Price" required></v-text-field>
+                    </v-col>
+                  </v-row>
 
-              <v-row dense>
-                <v-col>
-                  <v-text-field dense v-model="amount" label="Amount" required></v-text-field>
-                </v-col>
-                <v-col>
-                  <v-text-field dense v-model="price" label="Price" required></v-text-field>
-                </v-col>
-              </v-row>
-
-              <v-row no-gutters>
-                <v-col>
-                  <v-btn small @click="genSeries" block color="success">Buy</v-btn>
-                </v-col>
-                <v-col>
-                  <v-btn small @click="handlerSell" block color="error">Sell</v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-card>
+                  <v-row no-gutters>
+                    <v-col>
+                      <v-btn small @click="genSeries" block color="success">Buy</v-btn>
+                    </v-col>
+                    <v-col>
+                      <v-btn small @click="handlerSell" block color="error">Sell</v-btn>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-form>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
-
     </v-row>
   </v-container>
 </template>
