@@ -127,10 +127,10 @@
                   </v-row>
 
                   <v-row no-gutters>
-                    <v-col>
-                      <v-btn small @click="genSeries" block color="success">Buy</v-btn>
+                    <v-col class="ma-1">
+                      <v-btn  small @click="genSeries" block color="success">Buy</v-btn>
                     </v-col>
-                    <v-col>
+                    <v-col class="ma-1">
                       <v-btn small @click="handlerSell" block color="error">Sell</v-btn>
                     </v-col>
                   </v-row>
