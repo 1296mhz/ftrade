@@ -29,14 +29,6 @@ const router = new Router({
           name: 'terminal',
           component: Terminal,
         },
-        {
-          path: '/about',
-          name: 'about',
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
-        },
       ],
     },
 
@@ -47,7 +39,6 @@ const router = new Router({
 // check auth
 router.beforeEach((to, from, next) => {
   const loggedIn = store.state.auth.token;
-  console.log("Token: ", loggedIn)
   if (!loggedIn && to.path !== '/login') {
     return next('/login');
   }
