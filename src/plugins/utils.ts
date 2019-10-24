@@ -30,7 +30,7 @@ const utils = {
   },
   parseJwt: (token: string) => {
     return jwt_decode(token);
-  }
+  },
 };
 
 const utilsPlugin = {
