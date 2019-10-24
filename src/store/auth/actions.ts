@@ -16,7 +16,6 @@ export const actions: ActionTree<AuthState, RootState> = {
     try {
       const response: any = await Vue.$http.get(`/auth?user=${data.username}&pass=${data.password}`);
       const unpakedToken: any = Vue.$utils.parseJwt(response.data);
-
       const userAccount = {
         token: response.data,
         id: unpakedToken.id,
@@ -36,18 +35,5 @@ export const actions: ActionTree<AuthState, RootState> = {
   exit({ commit }) {
     commit(EXIT);
     router.push('login');
-  },
-
-  async getUserList({ commit, dispatch }): Promise<any> {
-    try {
-      const response: any = await Vue.$http.get('/auth/users');
-      return response.data;
-    } catch (e) {
-      return [];
-    }
-  },
-
-  async register({ commit, dispatch }, payload: any): Promise<any> {
-    const response: any = await Vue.$http.post('/auth/register', JSON.stringify(payload));
   },
 };

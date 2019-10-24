@@ -4,6 +4,6 @@ import { TerminalState } from './terminal/types';
 
 export interface RootState {
   app: AppState;
-  auth: AuthState,
+  auth: AuthState;
   terminal: TerminalState;
 }

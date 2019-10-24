@@ -157,55 +157,54 @@ export default {
       handlerSell: () => {},
       series: [],
       order_headers: [
-        { text: "State", value: "state" },
-        { text: "Ticker", value: "ticker" },
-        { text: "Type", value: "type" },
-        { text: "Side", value: "side" },
-        { text: "Quantity", value: "quantity" },
-        { text: "Time", value: "time" }
+        { text: 'State', value: 'state' },
+        { text: 'Ticker', value: 'ticker' },
+        { text: 'Type', value: 'type' },
+        { text: 'Side', value: 'side' },
+        { text: 'Quantity', value: 'quantity' },
+        { text: 'Time', value: 'time' }
       ],
       position_headers: [
-        { text: "Ticker", value: "ticker" },
-        { text: "Position", value: "position" },
-        { text: "Avg.Price", value: "avgprice" },
-        { text: "Price", value: "price" },
-        { text: "P&L", value: "pnl" }
+        { text: 'Ticker', value: 'ticker' },
+        { text: 'Position', value: 'position' },
+        { text: 'Avg.Price', value: 'avgprice' },
+        { text: 'Price', value: 'price' },
+        { text: 'P&L', value: 'pnl' }
       ],
 
-      stockOptions: {
+      stockOptions: <any> {
         rangeSelector: {
           selected: 1
         },
         title: {
-          text: "AAPL Stock Price"
+          text: 'AAPL Stock Price'
         },
-        series: this.series
-      }
+        series: [],
+      },
     };
   },
   watch: {
-    seriesOhlc: function(newVal) {
+    seriesOhlc: function(newVal: any) {
       this.stockOptions.series = newVal;
-    }
+    },
   },
   computed: {
     ...mapGetters({
-      symbols: "terminal/SYMBOLS",
-      tickers: "terminal/TICKERS",
-      positions: "terminal/POSITIONS",
-      orders: "terminal/ORDERS",
-      seriesOhlc: "terminal/SERIES"
-    })
+      symbols: 'terminal/SYMBOLS',
+      tickers: 'terminal/TICKERS',
+      positions: 'terminal/POSITIONS',
+      orders: 'terminal/ORDERS',
+      seriesOhlc: 'terminal/SERIES',
+    }),
   },
   methods: {
     ...mapActions({
-      genSeries: "terminal/series"
-    })
+      genSeries: 'terminal/series',
+    }),
   },
-  created() {},
   mounted() {
-    this.stockOptions.series = this.seriesOhlc;
-  }
+    this.stockOptions.series = this.seriesOhlc ;
+  },
 };
 </script>
 

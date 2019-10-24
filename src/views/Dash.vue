@@ -49,7 +49,7 @@ import { mapActions, mapGetters } from "vuex";
 export default {
   name: 'App',
   props: {
-    source: String
+    source: String,
   },
   data() {
     return {
@@ -71,11 +71,11 @@ export default {
     }),
     currentViewText: function() {
       return this.currentView[0].toUpperCase() + this.currentView.slice(1);
-    }
+    },
   },
   methods: {
     ...mapActions({
-      logout: 'auth/exit'
+      logout: 'auth/exit',
     }),
   },
 };

@@ -105,12 +105,11 @@ export const actions: ActionTree<TerminalState, RootState> = {
     ]
     commit(SET_ORDERS, orders);
   },
-  async series({ commit, state }) {
+  async series({ commit, state }): Promise<any> {
     let dataOhlc: number[] = [];
     for(let i = 0; i < 50; i++) {
       dataOhlc[i] = Math.floor(Math.random() * 100) + 1;
     }
-    console.log(dataOhlc)
     const series = [
       {
         name: "AAPL",

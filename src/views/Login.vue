@@ -53,12 +53,12 @@ export default {
   data: () => ({
     username: null,
     password: null,
-    drawer: null
+    drawer: null,
   }),
   watch: {
     username: function() {
-      console.log("Fire");
-    }
+      console.log("Fire username");
+    },
   },
   methods: {
     ...mapActions({
@@ -67,7 +67,7 @@ export default {
     async submit() {
       let payload = {
         password: this.password,
-        username: this.username
+        username: this.username,
       };
       try {
         const response = await this.login(payload);
@@ -75,7 +75,7 @@ export default {
       } catch (err) {
         console.log("Error", err);
       }
-    }
+    },
   },
   computed: {
     ...mapGetters({
@@ -84,12 +84,12 @@ export default {
     loading: {
       get: function() {
         return this.status === AuthStatus.Success;
-      }
+      },
     },
     error: {
       get: function() {
         return this.status === AuthStatus.Failed ? 'Incorrect login or password' : false;
-      }
+      },
     },
   }
 };
