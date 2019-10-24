@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import App from './App.vue';
+import '@/plugins';
 import router from './router';
 import vuetify from './plugins/vuetify';
-
+// import axios from './plugins/axios';
 import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
