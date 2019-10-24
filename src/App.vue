@@ -11,7 +11,7 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: 'App',
   props: {
-    source: String
+    source: String,
   },
   data() {
     return {

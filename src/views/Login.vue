@@ -91,6 +91,6 @@ export default {
         return this.status === AuthStatus.Failed ? 'Incorrect login or password' : false;
       },
     },
-  }
+  },
 };
 </script>

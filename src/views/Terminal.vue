@@ -162,14 +162,14 @@ export default {
         { text: 'Type', value: 'type' },
         { text: 'Side', value: 'side' },
         { text: 'Quantity', value: 'quantity' },
-        { text: 'Time', value: 'time' }
+        { text: 'Time', value: 'time' },
       ],
       position_headers: [
         { text: 'Ticker', value: 'ticker' },
         { text: 'Position', value: 'position' },
         { text: 'Avg.Price', value: 'avgprice' },
         { text: 'Price', value: 'price' },
-        { text: 'P&L', value: 'pnl' }
+        { text: 'P&L', value: 'pnl' },
       ],
 
       stockOptions: <any> {
