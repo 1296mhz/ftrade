@@ -11,12 +11,12 @@ class CentrifugeManager {
     this.instance.on('connect', async (ctx) => {
       this.connectFlag = true;
       this.instance.subscribe(`symbols#${this.id}`, (message) => {
-        switch(message.data.Command){
+        switch (message.data.Command) {
           case 'delete':
             store.dispatch('terminal/deleteSymbolInStorage', message.data);
             break;
         }
-       
+
       });
     });
     this.instance.on('disconnect', (ctx) => {
@@ -48,8 +48,10 @@ class CentrifugeManager {
   }
 
   async deleteSymbol(ticker: string) {
-    const response = await this.instance.rpc({ method: 'DeleteSymbol', params: ticker });
-    return response
+    if (this.connectFlag) {
+      const response = await this.instance.rpc({ method: 'DeleteSymbol', params: ticker });
+      return response
+    }
   }
 }
 
