@@ -23,6 +23,8 @@ export const actions: ActionTree<AuthState, RootState> = {
       }
       commit(SET_STATUS, AuthStatus.Success);
       commit(SET_AUTH, userAccount);
+      Vue.$centrifuge.setToken(response.data);
+      Vue.$centrifuge.connect();
     } catch {
       commit(SET_STATUS, AuthStatus.Failed);
     }
@@ -34,6 +36,7 @@ export const actions: ActionTree<AuthState, RootState> = {
    */
   exit({ commit }) {
     commit(EXIT);
+    Vue.$centrifuge.disconnect();
     router.push('login');
   },
 };
