@@ -1,16 +1,23 @@
 import Vue from 'vue';
 import centrifuge from 'centrifuge';
-
-
-
+import store from '../store';
 class CentrifugeManager {
   instance: any;
   methods: any = {};
+  id: string = '';
   connectFlag: boolean = false;
   constructor(url) {
     this.instance = new centrifuge(url);
     this.instance.on('connect', async (ctx) => {
-      this.connectFlag = true;    
+      this.connectFlag = true;
+      this.instance.subscribe(`symbols#${this.id}`, (message) => {
+        switch(message.data.Command){
+          case 'delete':
+            store.dispatch('terminal/deleteSymbolInStorage', message.data);
+            break;
+        }
+       
+      });
     });
     this.instance.on('disconnect', (ctx) => {
       this.connectFlag = false;
@@ -22,6 +29,9 @@ class CentrifugeManager {
     this.instance.setToken(token)
   }
 
+  setId(id) {
+    this.id = id;
+  }
   connect() {
     this.instance.connect();
   }
@@ -31,10 +41,15 @@ class CentrifugeManager {
   }
 
   async getSymbols() {
-    if(this.connectFlag) {
+    if (this.connectFlag) {
       const response = await this.instance.rpc({ "method": "GetSymbols" });
       return response.data
     }
+  }
+
+  async deleteSymbol(ticker: string) {
+    const response = await this.instance.rpc({ method: 'DeleteSymbol', params: ticker });
+    return response
   }
 }
 

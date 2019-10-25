@@ -45,13 +45,6 @@ router.beforeEach((to, from, next) => {
   if (loggedIn && to.path === '/login') {
     return next('/');
   }
-  
-  next();
-});
-
-router.beforeEach((to, from, next) => {
-  console.log("This route", to.name);
- 
   store.dispatch('app/currentView', to.name);
   next();
 });

@@ -16,13 +16,15 @@ export const actions: ActionTree<AuthState, RootState> = {
     try {
       const response: any = await Vue.$http.get(`/auth?user=${data.username}&pass=${data.password}`);
       const unpakedToken: any = Vue.$utils.parseJwt(response.data);
+
       const userAccount = {
         token: response.data,
-        id: unpakedToken.id,
+        id: unpakedToken.sub,
         username: data.username,
       }
       commit(SET_STATUS, AuthStatus.Success);
       commit(SET_AUTH, userAccount);
+      Vue.$centrifuge.setId(userAccount.id);
       Vue.$centrifuge.setToken(response.data);
       Vue.$centrifuge.connect();
     } catch {

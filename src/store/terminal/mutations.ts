@@ -8,6 +8,7 @@ import {
   SET_POSITIONS,
   SET_ORDERS,
   SET_SERIES,
+  DELETE_SYMBOL,
 } from './mutation-types';
 
 export const mutations: MutationTree<TerminalState> = {
@@ -25,5 +26,11 @@ export const mutations: MutationTree<TerminalState> = {
   },
   [SET_SERIES](state: TerminalState, data: any) {
     Vue.set(state.stockOptions, 'series', data);
+  },
+  [DELETE_SYMBOL](state: TerminalState, data: any) {
+    const newState = [...state.symbols];
+    Vue.set(state, 'symbols', Vue.$_.filter(newState, function(symbol) {
+      return symbol.ticker !== data.Params;
+    }));
   },
 };

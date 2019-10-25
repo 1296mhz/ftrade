@@ -39,7 +39,7 @@
                       <td>{{ symbol.bid }}</td>
                       <td>{{ symbol.ask }}</td>
                       <td>
-                        <v-icon small @click="deleteItem(symbol)">mdi-close-box-outline</v-icon>
+                        <v-icon small @click="deleteSymbol(symbol.ticker)">mdi-close-box-outline</v-icon>
                       </td>
                     </tr>
                   </tbody>
@@ -96,7 +96,7 @@
       <v-col height="100%" xs="12" sm="12" md="4" lg="2" xl="2">
         <v-row height="100%" xs="12" sm="12" md="4" lg="2" xl="2">
           <v-col>
-            <v-card height="86vh">
+            <v-card height="84vh">
               <v-form ref="form" lazy-validation>
                 <v-container>
                   <v-row dense>
@@ -200,6 +200,7 @@ export default Vue.extend({
     ...mapActions({
       genSeries: 'terminal/series',
       getSymbols: 'terminal/symbols',
+      deleteSymbol: 'terminal/deleteSymbol',
     }),
   },
   mounted() {

@@ -8,15 +8,15 @@ import {
   SET_POSITIONS,
   SET_ORDERS,
   SET_SERIES,
+  DELETE_SYMBOL,
 } from './mutation-types';
-import { seriesType } from 'highcharts';
-/*
-An asynchronous operation is performed here, the result of its execution is committed to a mutation.  
-For the test, here we have fake data transferred to the mutation
-*/
+
 export const actions: ActionTree<TerminalState, RootState> = {
   async tickers({ commit, state }) {
     commit(SET_TICKERS, ['AAPL.NASDAQ', 'AMZN.NASDAQ', 'GOOG.NASDAQ', 'EUR/USD.E.FX', 'USD/JPY.E.FX', 'GBP/USD.E.FX']);
+  },
+  async deleteSymbolInStorage({ commit, state }, params) {
+    commit(DELETE_SYMBOL, params)
   },
   async symbols({ commit, state }) {
     const s = await Vue.$centrifuge.getSymbols();
@@ -109,9 +109,8 @@ export const actions: ActionTree<TerminalState, RootState> = {
     ]
     commit(SET_ORDERS, orders);
   },
-  async pullSymbols({ commit, state}) {
-    const s = await Vue.$centrifuge.methods.getSymbols();
-    console.log("Symbols: ", s)
+  async deleteSymbol({ commit, state }, ticker) {
+    const s = await Vue.$centrifuge.deleteSymbol(ticker);
   },
   async series({ commit, state }): Promise<any> {
     let dataOhlc: number[] = [];
