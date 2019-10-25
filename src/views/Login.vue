@@ -43,7 +43,7 @@
 
 <script>
 /* eslint-disable */
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from 'vuex';
 import { AuthStatus } from '../store/auth/types';
 
 export default {
@@ -56,13 +56,10 @@ export default {
     drawer: null,
   }),
   watch: {
-    username: function() {
-      console.log("Fire username");
-    },
   },
   methods: {
     ...mapActions({
-      login: "auth/login"
+      login: 'auth/login'
     }),
     async submit() {
       let payload = {
@@ -71,23 +68,23 @@ export default {
       };
       try {
         const response = await this.login(payload);
-        this.$router.push("/");
+        this.$router.push('/dashboard');
       } catch (err) {
-        console.log("Error", err);
+        console.error(err);
       }
     },
   },
   computed: {
     ...mapGetters({
-      status: "auth/status",
+      status: 'auth/status',
     }),
     loading: {
-      get: function() {
+      get() {
         return this.status === AuthStatus.Success;
       },
     },
     error: {
-      get: function() {
+      get() {
         return this.status === AuthStatus.Failed ? 'Incorrect login or password' : false;
       },
     },

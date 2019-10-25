@@ -34,7 +34,7 @@
       <v-spacer></v-spacer>
 
       <v-btn icon @click="logout()">
-        <v-icon>mdi-heart</v-icon>
+        <v-icon>exit_to_app</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -59,7 +59,6 @@ export default {
   },
   watch: {
     drawer: function(newVal) {
-      console.log(">>> ", this.drawer);
     },
     current: function(newVal) {
       console.log(newVal);
@@ -67,7 +66,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      currentView: "app/CURRENT_VIEW"
+      currentView: 'app/CURRENT_VIEW'
     }),
     currentViewText: function() {
       return this.currentView[0].toUpperCase() + this.currentView.slice(1);

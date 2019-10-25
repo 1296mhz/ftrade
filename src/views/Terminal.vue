@@ -146,15 +146,14 @@
 
 
 <script lang="ts">
-import { mapGetters, mapActions } from "vuex";
+import Vue from 'vue';
+import { mapGetters, mapActions } from 'vuex';
 
-export default {
+export default Vue.extend({
   data() {
     return {
-      amount: "",
-      price: "",
-      handlerBuy: () => {},
-      handlerSell: () => {},
+      amount: '',
+      price: '',
       series: [],
       order_headers: [
         { text: 'State', value: 'state' },
@@ -172,7 +171,7 @@ export default {
         { text: 'P&L', value: 'pnl' },
       ],
 
-      stockOptions: <any> {
+      stockOptions: {
         rangeSelector: {
           selected: 1,
         },
@@ -184,7 +183,7 @@ export default {
     };
   },
   watch: {
-    seriesOhlc: function(newVal: any) {
+    seriesOhlc(newVal: any) {
       this.stockOptions.series = newVal;
     },
   },
@@ -205,7 +204,7 @@ export default {
   mounted() {
     this.stockOptions.series = this.seriesOhlc ;
   },
-};
+});
 </script>
 
 <style scoped lang="css">
