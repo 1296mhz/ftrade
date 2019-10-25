@@ -39,7 +39,9 @@
     </v-app-bar>
 
     <v-content>
+      <div height="80vh">
       <router-view></router-view>
+      </div>
     </v-content>
 
   </v-app>

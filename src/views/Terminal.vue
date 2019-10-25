@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row >
+    <v-row  height="100vh">
       <v-col xs="12" sm="12" md="8" lg="10" xl="10">
         <v-row>
           <v-col xs="12" sm="12" md="12" lg="6" xl="6">
@@ -93,9 +93,10 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col height="100%" xs="12" sm="12" md="4" lg="2" xl="2">
-        <v-row height="100%" xs="12" sm="12" md="4" lg="2" xl="2">
+      <v-col height="100vh" xs="12" sm="12" md="4" lg="2" xl="2">
+        <v-row height="100vh" xs="12" sm="12" md="4" lg="2" xl="2">
           <v-col>
+            <div>
             <v-card height="84vh">
               <v-form ref="form" lazy-validation>
                 <v-container>
@@ -137,6 +138,7 @@
                 </v-container>
               </v-form>
             </v-card>
+            </div>
           </v-col>
         </v-row>
       </v-col>
