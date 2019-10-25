@@ -19,6 +19,9 @@ export const actions: ActionTree<TerminalState, RootState> = {
     commit(SET_TICKERS, ['AAPL.NASDAQ', 'AMZN.NASDAQ', 'GOOG.NASDAQ', 'EUR/USD.E.FX', 'USD/JPY.E.FX', 'GBP/USD.E.FX']);
   },
   async symbols({ commit, state }) {
+    const s = await Vue.$centrifuge.getSymbols();
+    commit(SET_SYMBOLS, s);
+/*
     commit(SET_SYMBOLS, [
       {
         ticker: "EUR/USD.E.FX",
@@ -75,6 +78,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
         ask: 184.5,
       }
     ]);
+    */
   },
   async positions({ commit, state }) {
     const positions = [];
@@ -104,6 +108,10 @@ export const actions: ActionTree<TerminalState, RootState> = {
       }
     ]
     commit(SET_ORDERS, orders);
+  },
+  async pullSymbols({ commit, state}) {
+    const s = await Vue.$centrifuge.methods.getSymbols();
+    console.log("Symbols: ", s)
   },
   async series({ commit, state }): Promise<any> {
     let dataOhlc: number[] = [];

@@ -15,7 +15,7 @@
                   <v-btn icon>
                     <v-icon>mdi-bookmark</v-icon>
                   </v-btn>
-                  <v-btn icon>
+                  <v-btn icon @click="getSymbols">
                     <v-icon>mdi-share-variant</v-icon>
                   </v-btn>
                 </v-card-actions>
@@ -199,10 +199,12 @@ export default Vue.extend({
   methods: {
     ...mapActions({
       genSeries: 'terminal/series',
+      getSymbols: 'terminal/symbols',
     }),
   },
   mounted() {
-    this.stockOptions.series = this.seriesOhlc ;
+    this.stockOptions.series = this.seriesOhlc;
+    this.getSymbols();
   },
 });
 </script>
