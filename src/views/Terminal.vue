@@ -9,15 +9,15 @@
               <v-row align="center" justify="start">
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn icon>
+                  <v-btn icon @click="createSymbol(ticker)">
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
-                  <v-btn icon>
-                    <v-icon>mdi-bookmark</v-icon>
-                  </v-btn>
-                  <v-btn icon @click="getSymbols">
-                    <v-icon>mdi-share-variant</v-icon>
-                  </v-btn>
+                  <v-text-field
+                    v-model="ticker"
+                    label="Ticker"
+                    name="ticker"
+                    type="text"
+                  ></v-text-field>
                 </v-card-actions>
               </v-row>
               <v-simple-table dense>
@@ -154,6 +154,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default Vue.extend({
   data() {
     return {
+      ticker: '',
       amount: '',
       price: '',
       series: [],
@@ -202,6 +203,7 @@ export default Vue.extend({
     ...mapActions({
       genSeries: 'terminal/series',
       getSymbols: 'terminal/symbols',
+      createSymbol: 'terminal/createSymbol',
       deleteSymbol: 'terminal/deleteSymbol',
     }),
   },

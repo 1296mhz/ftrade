@@ -21,7 +21,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async symbols({ commit, state }) {
     const s = await Vue.$centrifuge.getSymbols();
     commit(SET_SYMBOLS, s);
-/*
+/* тестовые данные коммитем в мутацию
     commit(SET_SYMBOLS, [
       {
         ticker: "EUR/USD.E.FX",
@@ -29,54 +29,6 @@ export const actions: ActionTree<TerminalState, RootState> = {
         bid: 1.104,
         ask: 1.105,
       },
-      {
-        ticker: "USD/JPY.E.FX",
-        color: "orange darken-1",
-        bid: 108.34,
-        ask: 108.36,
-      },
-      {
-        ticker: "GBP/USD.E.FX",
-        color: "orange darken-1",
-        bid: 1.266,
-        ask: 1.268,
-      },
-      {
-        ticker: "AAPL.NASDAQ",
-        color: "blue darken-1",
-        bid: 233.12,
-        ask: 233.15,
-      },
-      {
-        ticker: "AMZN.NASDAQ",
-        color: "blue darken-1",
-        bid: 1742.5,
-        ask: 1747.15,
-      },
-      {
-        ticker: "GOOG.NASDAQ",
-        color: "blue darken-1",
-        bid: 1222.5,
-        ask: 1225.0,
-      },
-      {
-        ticker: "BTC.EXANTE",
-        color: "purple  darken-1",
-        bid: 8338,
-        ask: 8400,
-      },
-      {
-        ticker: "LTC.EXANTE",
-        color: "purple  darken-1",
-        bid: 56.5,
-        ask: 57.5,
-      },
-      {
-        ticker: "ETH.EXANTE",
-        color: "purple  darken-1",
-        bid: 183.3,
-        ask: 184.5,
-      }
     ]);
     */
   },
@@ -109,8 +61,11 @@ export const actions: ActionTree<TerminalState, RootState> = {
     ]
     commit(SET_ORDERS, orders);
   },
+  async createSymbol({ commit, state }, ticker) {
+    const s = await Vue.$centrifuge.createSymbol(ticker);
+  },
   async deleteSymbol({ commit, state }, ticker) {
-    const s = await Vue.$centrifuge.deleteSymbol(ticker);
+    await Vue.$centrifuge.deleteSymbol(ticker);
   },
   async series({ commit, state }): Promise<any> {
     let dataOhlc: number[] = [];
