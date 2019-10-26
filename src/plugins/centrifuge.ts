@@ -16,6 +16,9 @@ class CentrifugeManager {
           case 'delete':
             store.dispatch('terminal/deleteSymbolInStorage', message.data);
             break;
+          case 'create':
+            store.dispatch('terminal/createSymbolInStorage', message.data);
+            break;
         }
 
       });

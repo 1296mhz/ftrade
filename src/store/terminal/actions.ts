@@ -9,6 +9,7 @@ import {
   SET_ORDERS,
   SET_SERIES,
   DELETE_SYMBOL,
+  CREATE_SYMBOL,
 } from './mutation-types';
 
 export const actions: ActionTree<TerminalState, RootState> = {
@@ -17,6 +18,9 @@ export const actions: ActionTree<TerminalState, RootState> = {
   },
   async deleteSymbolInStorage({ commit, state }, params) {
     commit(DELETE_SYMBOL, params)
+  },
+  async createSymbolInStorage({ commit, state }, params) {
+    commit(CREATE_SYMBOL, params)
   },
   async symbols({ commit, state }) {
     const s = await Vue.$centrifuge.getSymbols();
