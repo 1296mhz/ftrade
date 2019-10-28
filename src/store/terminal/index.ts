@@ -12,6 +12,12 @@ export const state: TerminalState = {
   positions: [],
   symbols: [],
   orders: [],
+  currentOhlc: {
+    ticker: '',
+    min: 0,
+    max: 0,
+    type: 'day',
+  },
   stockOptions: {
     rangeSelector: {
       selected: 1,

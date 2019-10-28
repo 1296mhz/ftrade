@@ -3,6 +3,12 @@ export type TerminalState = {
   positions: Position[],
   symbols: Symbol[],
   orders: Order[],
+  currentOhlc: {
+    ticker: String,
+    min: number,
+    max: number,
+    type: string,
+  },
   stockOptions: {
     rangeSelector: {
       selected: number,

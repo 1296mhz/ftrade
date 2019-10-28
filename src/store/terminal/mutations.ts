@@ -26,7 +26,8 @@ export const mutations: MutationTree<TerminalState> = {
     Vue.set(state, "orders", data);
   },
   [SET_SERIES](state: TerminalState, data: any) {
-    Vue.set(state.stockOptions, "series", data);
+    const ohlc = [...state.stockOptions.series, { ...state.stockOptions.series[0], data: data}]
+    Vue.set(state.stockOptions, 'series', ohlc);
   },
   [DELETE_SYMBOL](state: TerminalState, data: any) {
     const newState = [...state.symbols];

@@ -17,6 +17,6 @@ export const getters: GetterTree<TerminalState, RootState> = {
     return state.orders;
   },
   SERIES(state: TerminalState, getters: any): any {
-    return state.stockOptions.series;
+    return state.stockOptions.series[0].data;
   },
 };
