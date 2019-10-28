@@ -39,7 +39,6 @@ export const mutations: MutationTree<TerminalState> = {
     );
   },
   [CREATE_SYMBOL](state: TerminalState, data: any) {
-    console.log("CREATE SYMBOL ", data)
     const newState = [...state.symbols, data.Params];
     Vue.set(
       state,
