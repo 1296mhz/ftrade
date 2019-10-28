@@ -1,211 +1,229 @@
 <template>
+
   <v-container fluid>
-    <v-row  height="100vh">
-      <v-col xs="12" sm="12" md="8" lg="10" xl="10">
-        <v-row>
-          <v-col xs="12" sm="12" md="12" lg="6" xl="6">
-            <v-card height="100%">
-              <v-container fluid>
-              <v-row align="center" justify="start">
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn icon @click="createSymbol(ticker)">
-                    <v-icon>mdi-plus</v-icon>
-                  </v-btn>
-                  <v-text-field
-                    v-model="ticker"
-                    label="Ticker"
-                    name="ticker"
-                    type="text"
-                  ></v-text-field>
-                </v-card-actions>
-              </v-row>
-              <v-simple-table dense>
-                <template v-slot:default>
-                  <thead>
-                    <tr>
-                      <th>Ticker</th>
-                      <th>Bid</th>
-                      <th>Ask</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="symbol in symbols" :key="symbol.ticker">
-                      <td>
-                        <v-icon small :color="symbol.color">mdi-circle</v-icon>
-                        {{ symbol.ticker }}
-                      </td>
-                      <td>{{ symbol.bid }}</td>
-                      <td>{{ symbol.ask }}</td>
-                      <td>
-                        <v-icon small @click="deleteSymbol(symbol.ticker)">mdi-close-box-outline</v-icon>
-                      </td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-              </v-container>
-            </v-card>
-          </v-col>
-          <v-col xs="12" sm="12" md="12" lg="6" xl="6">
-            <v-card height="100%">
-              <v-container fluid>
-              <highcharts class="stock" :constructor-type="'stockChart'" :options="stockOptions"></highcharts>
-              </v-container>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-card height="100%">
-               <v-container fluid>
-              <v-tabs height="45">
-                <v-tab>Positions</v-tab>
-                <v-tab>Orders</v-tab>
-                <v-tab>Trades</v-tab>
-
-                <v-tab-item transition="none" reverse-transition="none">
-                  <v-data-table
-                    dense
-                    height="300"
-                    :headers="position_headers"
-                    :items="positions"
-                    item-key="id"
-                    fixed-header
-                    disable-pagination
-                    hide-default-footer
-                  ></v-data-table>
-                </v-tab-item>
-                <v-tab-item transition="none" reverse-transition="none">
-                  <v-data-table dense :headers="order_headers" :items="orders" item-key="id">
-                    <template v-slot:item.state="{ item }">
-                      <v-chip color="green" dark label x-small>{{ item.state }}</v-chip>
+      <v-row >
+        <v-col xs="12" sm="12" md="8" lg="10" xl="10">
+          <v-row>
+            <v-col xs="12" sm="12" md="12" lg="6" xl="6">
+              <v-card height="100%">
+                <v-container fluid>
+                  <v-row align="center" justify="start">
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn icon @click="CreateSymbol(ticker)">
+                        <v-icon>mdi-plus</v-icon>
+                      </v-btn>
+                      <v-text-field v-model="ticker" label="Ticker" name="ticker" type="text"></v-text-field>
+                    </v-card-actions>
+                  </v-row>
+                  <v-simple-table dense>
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th>Ticker</th>
+                          <th>Bid</th>
+                          <th>Ask</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="symbol in symbols" :key="symbol.ticker">
+                          <td>
+                            <v-icon small :color="symbol.color">mdi-circle</v-icon>
+                            {{ symbol.ticker }}
+                          </td>
+                          <td>{{ symbol.bid }}</td>
+                          <td>{{ symbol.ask }}</td>
+                          <td>
+                            <v-icon small @click="deleteSymbol(symbol.ticker)">mdi-close-box-outline</v-icon>
+                          </td>
+                        </tr>
+                      </tbody>
                     </template>
-                  </v-data-table>
-                </v-tab-item>
-                <v-tab-item transition="none" reverse-transition="none">
-                  <v-data-table dense :headers="position_headers" :items="positions" item-key="id"></v-data-table>
-                </v-tab-item>
-              </v-tabs>
-               </v-container>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col height="100vh" xs="12" sm="12" md="4" lg="2" xl="2">
-        <v-row height="100vh" xs="12" sm="12" md="4" lg="2" xl="2">
-          <v-col>
-            <div>
-            <v-card height="84vh">
-              <v-form ref="form" lazy-validation>
-                <v-container>
-                  <v-row dense>
-                    <v-col>
-                      <v-text-field dense disabled label="Bid" outline />
-                    </v-col>
-                    <v-col>
-                      <v-text-field dense disabled label="Ask" outline />
-                    </v-col>
-                  </v-row>
-
-                  <v-row dense>
-                    <v-col>
-                      <v-select dense :items="['Limit','Market']" value="Limit"></v-select>
-                    </v-col>
-                    <v-col>
-                      <v-select dense :items="['Day','GTC']" value="Day"></v-select>
-                    </v-col>
-                  </v-row>
-
-                  <v-row dense>
-                    <v-col>
-                      <v-text-field dense v-model="amount" label="Amount" required></v-text-field>
-                    </v-col>
-                    <v-col>
-                      <v-text-field dense v-model="price" label="Price" required></v-text-field>
-                    </v-col>
-                  </v-row>
-
-                  <v-row no-gutters>
-                    <v-col class="ma-1">
-                      <v-btn  small @click="genSeries" block color="success">Buy</v-btn>
-                    </v-col>
-                    <v-col class="ma-1">
-                      <v-btn small @click="handlerSell" block color="error">Sell</v-btn>
-                    </v-col>
-                  </v-row>
+                  </v-simple-table>
                 </v-container>
-              </v-form>
-            </v-card>
-            </div>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
+              </v-card>
+            </v-col>
+            <v-col xs="12" sm="12" md="12" lg="6" xl="6">
+              <v-card height="100%">
+                <v-container fluid>
+                  <highcharts
+                    class="stock"
+                    :constructor-type="'stockChart'"
+                    :options="stockOptions"
+                  ></highcharts>
+                </v-container>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-card height="100%">
+                <v-container fluid>
+                  <v-tabs height="45">
+                    <v-tab>Positions</v-tab>
+                    <v-tab>Orders</v-tab>
+                    <v-tab>Trades</v-tab>
+
+                    <v-tab-item transition="none" reverse-transition="none">
+                      <v-data-table
+                        dense
+                        height="300"
+                        :headers="position_headers"
+                        :items="positions"
+                        item-key="id"
+                        fixed-header
+                        disable-pagination
+                        hide-default-footer
+                      ></v-data-table>
+                    </v-tab-item>
+                    <v-tab-item transition="none" reverse-transition="none">
+                      <v-data-table dense :headers="order_headers" :items="orders" item-key="id">
+                        <template v-slot:item.state="{ item }">
+                          <v-chip color="green" dark label x-small>{{ item.state }}</v-chip>
+                        </template>
+                      </v-data-table>
+                    </v-tab-item>
+                    <v-tab-item transition="none" reverse-transition="none">
+                      <v-data-table
+                        dense
+                        :headers="position_headers"
+                        :items="positions"
+                        item-key="id"
+                      ></v-data-table>
+                    </v-tab-item>
+                  </v-tabs>
+                </v-container>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-col>
+
+        <v-col xs="12" sm="12" md="4" lg="2" xl="2" >
+          <v-row xs="12" sm="12" md="4" lg="2" xl="2">
+            <v-col>
+              <v-card>
+                <v-form ref="form" lazy-validation>
+                  <v-container fluid height="100vh">
+                    <v-row dense>
+                      <v-col>
+                        <v-text-field dense disabled label="Bid" outline />
+                      </v-col>
+                      <v-col>
+                        <v-text-field dense disabled label="Ask" outline />
+                      </v-col>
+                    </v-row>
+
+                    <v-row dense>
+                      <v-col>
+                        <v-select dense :items="['Limit','Market']" value="Limit"></v-select>
+                      </v-col>
+                      <v-col>
+                        <v-select dense :items="['Day','GTC']" value="Day"></v-select>
+                      </v-col>
+                    </v-row>
+
+                    <v-row dense>
+                      <v-col>
+                        <v-text-field dense v-model="amount" label="Amount" required></v-text-field>
+                      </v-col>
+                      <v-col>
+                        <v-text-field dense v-model="price" label="Price" required></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row no-gutters>
+                      <v-col class="ma-1">
+                        <v-btn small @click="genSeries" block color="success">Buy</v-btn>
+                      </v-col>
+                      <v-col class="ma-1">
+                        <v-btn small @click="handlerSell" block color="error">Sell</v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-form>
+              </v-card>
+            </v-col>
+          </v-row>
+            <v-row xs="12" sm="12" md="4" lg="2" xl="2">
+            <v-col>
+              <v-card>
+                  <v-container fluid>
+                     <v-card-title>Prices</v-card-title>
+                     <v-card-text>I'm card text</v-card-text>
+                  </v-container>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
   </v-container>
 </template>
 
 
 <script lang="ts">
-import Vue from 'vue';
-import { mapGetters, mapActions } from 'vuex';
+import Vue from "vue";
+import { mapGetters, mapActions } from "vuex";
 
 export default Vue.extend({
   data() {
     return {
-      ticker: '',
-      amount: '',
-      price: '',
+      ticker: "",
+      amount: "",
+      price: "",
       series: [],
       order_headers: [
-        { text: 'State', value: 'state' },
-        { text: 'Ticker', value: 'ticker' },
-        { text: 'Type', value: 'type' },
-        { text: 'Side', value: 'side' },
-        { text: 'Quantity', value: 'quantity' },
-        { text: 'Time', value: 'time' },
+        { text: "State", value: "state" },
+        { text: "Ticker", value: "ticker" },
+        { text: "Type", value: "type" },
+        { text: "Side", value: "side" },
+        { text: "Quantity", value: "quantity" },
+        { text: "Time", value: "time" }
       ],
       position_headers: [
-        { text: 'Ticker', value: 'ticker' },
-        { text: 'Position', value: 'position' },
-        { text: 'Avg.Price', value: 'avgprice' },
-        { text: 'Price', value: 'price' },
-        { text: 'P&L', value: 'pnl' },
+        { text: "Ticker", value: "ticker" },
+        { text: "Position", value: "position" },
+        { text: "Avg.Price", value: "avgprice" },
+        { text: "Price", value: "price" },
+        { text: "P&L", value: "pnl" }
       ],
 
       stockOptions: {
         rangeSelector: {
-          selected: 1,
+          selected: 1
         },
         title: {
-          text: 'AAPL Stock Price',
+          text: "AAPL Stock Price"
         },
-        series: [],
-      },
+        series: []
+      }
     };
   },
   watch: {
     seriesOhlc(newVal: any) {
       this.stockOptions.series = newVal;
-    },
+    }
   },
   computed: {
     ...mapGetters({
-      symbols: 'terminal/SYMBOLS',
-      tickers: 'terminal/TICKERS',
-      positions: 'terminal/POSITIONS',
-      orders: 'terminal/ORDERS',
-      seriesOhlc: 'terminal/SERIES',
+      symbols: "terminal/SYMBOLS",
+      tickers: "terminal/TICKERS",
+      positions: "terminal/POSITIONS",
+      orders: "terminal/ORDERS",
+      seriesOhlc: "terminal/SERIES"
     }),
   },
   methods: {
     ...mapActions({
-      genSeries: 'terminal/series',
-      getSymbols: 'terminal/symbols',
-      createSymbol: 'terminal/createSymbol',
-      deleteSymbol: 'terminal/deleteSymbol',
+      genSeries: "terminal/series",
+      getSymbols: "terminal/symbols",
+      createSymbol: "terminal/createSymbol",
+      deleteSymbol: "terminal/deleteSymbol"
     }),
+    CreateSymbol(ticker) {
+      this.createSymbol(ticker);
+      this.ticker = '';
+    },
   },
   mounted() {
     this.stockOptions.series = this.seriesOhlc;
@@ -215,5 +233,11 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="css">
+  .back {
+    background-color: white;
+    display: inline-block;
+    position: relative;
+   height: 100%;
 
+  }
 </style>

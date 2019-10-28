@@ -25,6 +25,7 @@ class CentrifugeManager {
     });
     this.instance.on('disconnect', (ctx) => {
       this.connectFlag = false;
+      this.instance.removeAllListeners();
     });
     return this;
   }
@@ -41,6 +42,8 @@ class CentrifugeManager {
   }
 
   disconnect() {
+    this.instance.unsubscribe();
+    this.instance.removeAllListeners();
     this.instance.disconnect();
   }
 
