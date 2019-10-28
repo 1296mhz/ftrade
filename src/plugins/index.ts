@@ -1,5 +1,6 @@
 import './vuetify';
 import './axios';
+import './axiosChart';
 import './validators';
 import './utils';
 import './centrifuge';
