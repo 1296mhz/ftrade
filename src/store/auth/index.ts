@@ -12,7 +12,10 @@ const namespaced: boolean = true;
 
 export const state: AuthState = {
   token: '',
-  status: AuthStatus.Unknown,
+  status: {
+    state: false,
+    message: '',
+  },
   username: '',
   id: '',
 };

@@ -197,7 +197,7 @@ export default Vue.extend({
         },
         xAxis: {
           events: {
-            afterSetExtremes: this.afterSetExtremes
+            afterSetExtremes: this.afterSetExtremes,
           },
           minRange: 3600 * 1000 // one hour
         },

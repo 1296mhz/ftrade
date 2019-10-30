@@ -10,7 +10,10 @@ export const mutations: MutationTree<AuthState> = {
    */
   [SET_AUTH](state, data: SuccessAuthData) {
     state.token = data.token;
-    state.status = AuthStatus.Success;
+    state.status = {
+      state: true,
+      message: '',
+    };
     state.username = data.username;
     state.id = data.id;
   },
@@ -30,6 +33,9 @@ export const mutations: MutationTree<AuthState> = {
    */
   [EXIT](state) {
     state.token = state.username = state.id = '';
-    state.status = AuthStatus.Unknown;
+    state.status = {
+      state: false,
+      message: 'Unknown',
+    };
   },
 };

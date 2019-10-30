@@ -12,23 +12,39 @@ export const actions: ActionTree<AuthState, RootState> = {
    * @param data { username: string, password: string }
    */
   async login({ commit, dispatch }, data: AuthData) {
-    commit(SET_STATUS, AuthStatus.Loading);
+    const loading = {
+      state: true,
+      message: 'Loading'
+    }
+    commit(SET_STATUS, loading);
     try {
       const response: any = await Vue.$http.get(`/auth?user=${data.username}&pass=${data.password}`);
+      console.log("try", response)
       const unpakedToken: any = Vue.$utils.parseJwt(response.data);
-
       const userAccount = {
         token: response.data,
         id: unpakedToken.sub,
         username: data.username,
       }
-      commit(SET_STATUS, AuthStatus.Success);
+      const completed = {
+        state: false,
+        message: 'Completed'
+      }
+      commit(SET_STATUS, completed);
       commit(SET_AUTH, userAccount);
       Vue.$centrifuge.setId(userAccount.id);
       Vue.$centrifuge.setToken(response.data);
       Vue.$centrifuge.connect();
-    } catch {
-      commit(SET_STATUS, AuthStatus.Failed);
+    } catch(err) {
+      let message = err;
+      if(err.response) {
+        message = err.response.data;
+      }
+      const error = {
+        state: true,
+        message: message,
+      }
+      commit(SET_STATUS, error);
     }
   },
 

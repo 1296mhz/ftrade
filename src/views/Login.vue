@@ -30,7 +30,7 @@
                     <v-spacer></v-spacer>
                     <v-btn color="primary" :loading="loading" :disabled="loading" type="submit">Login</v-btn>
                   </v-card-actions>
-                  <v-alert :value="error" type="error" transition="scale-transition">{{error}}</v-alert>
+                  <v-alert :value="status.state" type="error" transition="scale-transition">{{status.message}}</v-alert>
                 </v-form>
               </v-card-text>
             </v-card>
@@ -70,7 +70,7 @@ export default {
         const response = await this.login(payload);
         this.$router.push('/dashboard');
       } catch (err) {
-        console.error(err);
+        console.log("login error: ", err)
       }
     },
   },
@@ -80,12 +80,16 @@ export default {
     }),
     loading: {
       get() {
-        return this.status === AuthStatus.Success;
+        let status = false;
+        if(this.status.message === 'Loading') {
+          status = true;
+        }
+        return status;
       },
     },
     error: {
       get() {
-        return this.status === AuthStatus.Failed ? 'Incorrect login or password' : false;
+        return this.status.state;
       },
     },
   },

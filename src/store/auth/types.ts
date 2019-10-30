@@ -28,11 +28,9 @@ export type SuccessAuthData = {
 /**
  * Auth statuses
  */
-export enum AuthStatus {
-  Unknown,
-  Failed,
-  Loading,
-  Success,
+export type AuthStatus = {
+  state: boolean,
+  message: string,
 }
 
 

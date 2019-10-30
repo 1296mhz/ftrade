@@ -42,7 +42,6 @@ class CentrifugeManager {
   }
 
   disconnect() {
-    this.instance.unsubscribe();
     this.instance.removeAllListeners();
     this.instance.disconnect();
   }
