@@ -25,16 +25,16 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async symbols({ commit, state }) {
     const s = await Vue.$centrifuge.getSymbols();
     commit(SET_SYMBOLS, s);
-/* тестовые данные коммитем в мутацию
-    commit(SET_SYMBOLS, [
-      {
-        ticker: "EUR/USD.E.FX",
-        color: "orange darken-1",
-        bid: 1.104,
-        ask: 1.105,
-      },
-    ]);
-    */
+    /* тестовые данные коммитем в мутацию
+        commit(SET_SYMBOLS, [
+          {
+            ticker: "EUR/USD.E.FX",
+            color: "orange darken-1",
+            bid: 1.104,
+            ask: 1.105,
+          },
+        ]);
+        */
   },
   async positions({ commit, state }) {
     const positions = [];

@@ -28,9 +28,18 @@
                   ></v-text-field>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" :loading="loading" :disabled="loading" type="submit">Login</v-btn>
+                    <v-btn
+                      color="primary"
+                      :loading="loading"
+                      :disabled="loading"
+                      type="submit"
+                    >Login</v-btn>
                   </v-card-actions>
-                  <v-alert :value="status.state" type="error" transition="scale-transition">{{status.message}}</v-alert>
+                  <v-alert
+                    :value="status.state"
+                    type="error"
+                    transition="scale-transition"
+                  >{{status.message}}</v-alert>
                 </v-form>
               </v-card-text>
             </v-card>
@@ -48,30 +57,25 @@ import { AuthStatus } from '../store/auth/types';
 
 export default {
   props: {
-    source: String
+    source: String,
   },
   data: () => ({
     username: null,
     password: null,
     drawer: null,
   }),
-  watch: {
-  },
+  watch: {},
   methods: {
     ...mapActions({
-      login: 'auth/login'
+      login: 'auth/login',
     }),
     async submit() {
-      let payload = {
+      const payload = {
         password: this.password,
         username: this.username,
       };
-      try {
-        const response = await this.login(payload);
-        this.$router.push('/dashboard');
-      } catch (err) {
-        console.log("login error: ", err)
-      }
+      const response = await this.login(payload);
+      this.$router.push('/dashboard');
     },
   },
   computed: {
@@ -81,7 +85,7 @@ export default {
     loading: {
       get() {
         let status = false;
-        if(this.status.message === 'Loading') {
+        if (this.status.message === 'Loading') {
           status = true;
         }
         return status;

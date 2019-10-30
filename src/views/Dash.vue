@@ -59,16 +59,9 @@ export default {
       mini: true,
     };
   },
-  watch: {
-    drawer: function(newVal) {
-    },
-    current: function(newVal) {
-      console.log(newVal);
-    }
-  },
   computed: {
     ...mapGetters({
-      currentView: 'app/CURRENT_VIEW'
+      currentView: 'app/CURRENT_VIEW',
     }),
     currentViewText: function() {
       return this.currentView[0].toUpperCase() + this.currentView.slice(1);

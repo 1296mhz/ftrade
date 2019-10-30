@@ -48,13 +48,12 @@ class CentrifugeManager {
 
   async getSymbols() {
     if (this.connectFlag) {
-      const response = await this.instance.rpc({ method: "GetSymbols" });
+      const response = await this.instance.rpc({ method: 'GetSymbols' });
       return response.data
     }
   }
 
   async createSymbol(ticker: string) {
-    console.log("Create", ticker)
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'CreateSymbol', params: { ticker: ticker } });
       return response

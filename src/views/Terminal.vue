@@ -157,102 +157,102 @@
 
 
 <script lang="ts">
-import Vue from "vue";
-import { mapGetters, mapActions } from "vuex";
+import Vue from 'vue';
+import { mapGetters, mapActions } from 'vuex';
 export default Vue.extend({
   data() {
     return {
-      ticker: "",
-      amount: "",
-      price: "",
+      ticker: '',
+      amount: '',
+      price: '',
       series: [],
       order_headers: [
-        { text: "State", value: "state" },
-        { text: "Ticker", value: "ticker" },
-        { text: "Type", value: "type" },
-        { text: "Side", value: "side" },
-        { text: "Quantity", value: "quantity" },
-        { text: "Time", value: "time" }
+        { text: 'State', value: 'state' },
+        { text: 'Ticker', value: 'ticker' },
+        { text: 'Type', value: 'type' },
+        { text: 'Side', value: 'side' },
+        { text: 'Quantity', value: 'quantity' },
+        { text: 'Time', value: 'time' },
       ],
       position_headers: [
-        { text: "Ticker", value: "ticker" },
-        { text: "Position", value: "position" },
-        { text: "Avg.Price", value: "avgprice" },
-        { text: "Price", value: "price" },
-        { text: "P&L", value: "pnl" }
+        { text: 'Ticker', value: 'ticker' },
+        { text: 'Position', value: 'position' },
+        { text: 'Avg.Price', value: 'avgprice' },
+        { text: 'Price', value: 'price' },
+        { text: 'P&L', value: 'pnl' },
       ],
       stockOptions: {
         rangeSelector: {
           enabled: false,
           selected: 1,
           buttonTheme: {
-            visibility: "hidden"
+            visibility: 'hidden',
           },
           labelStyle: {
-            visibility: "hidden"
-          }
+            visibility: 'hidden',
+          },
         },
         title: {
-          text: "AAPL Stock Price"
+          text: 'AAPL Stock Price',
         },
         xAxis: {
           events: {
             afterSetExtremes: this.afterSetExtremes,
           },
-          minRange: 3600 * 1000 // one hour
+          minRange: 3600 * 1000, // one hour
         },
         series: [
           {
-            type: "candlestick",
-            name: "AAPL Stock Price",
+            type: 'candlestick',
+            name: 'AAPL Stock Price',
             data: [],
             dataGrouping: {
               units: [
                 [
-                  "week", // unit name
-                  [1] // allowed multiples
+                  'week', // unit name
+                  [1], // allowed multiples
                 ],
-                ["month", [1, 2, 3, 4, 6]]
-              ]
-            }
-          }
-        ]
-      }
+                ['month', [1, 2, 3, 4, 6]],
+              ],
+            },
+          },
+        ],
+      },
     };
   },
   watch: {
     seriesOhlc(newVal: any) {
       this.stockOptions.series = newVal;
-    }
+    },
   },
   computed: {
     ...mapGetters({
-      symbols: "terminal/SYMBOLS",
-      tickers: "terminal/TICKERS",
-      positions: "terminal/POSITIONS",
-      orders: "terminal/ORDERS",
-      seriesOhlc: "terminal/SERIES"
-    })
+      symbols: 'terminal/SYMBOLS',
+      tickers: 'terminal/TICKERS',
+      positions: 'terminal/POSITIONS',
+      orders: 'terminal/ORDERS',
+      seriesOhlc: 'terminal/SERIES',
+    }),
   },
   methods: {
     ...mapActions({
-      genSeries: "terminal/series",
-      getSymbols: "terminal/symbols",
-      createSymbol: "terminal/createSymbol",
-      deleteSymbol: "terminal/deleteSymbol"
+      genSeries: 'terminal/series',
+      getSymbols: 'terminal/symbols',
+      createSymbol: 'terminal/createSymbol',
+      deleteSymbol: 'terminal/deleteSymbol',
     }),
     CreateSymbol(ticker) {
       this.createSymbol(ticker);
-      this.ticker = "";
+      this.ticker = '';
     },
     afterSetExtremes(e) {
-      console.log(e);
-    }
+      // Range ohlc callback
+    },
   },
   mounted() {
     this.stockOptions.series[0].data = this.seriesOhlc;
     this.getSymbols();
-  }
+  },
 });
 </script>
 
