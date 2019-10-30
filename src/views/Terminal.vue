@@ -116,7 +116,10 @@
 
 <script lang="ts">
 import axios from 'axios';
+import centrifuge from 'centrifuge';
 import Vue from 'vue';
+
+let cf: centrifuge;
 
 export default Vue.extend({
   data() {
@@ -136,6 +139,7 @@ export default Vue.extend({
     }
 
     return {
+      amount: 'asd',
       user_symbols: null,
 
       order_headers: [
@@ -250,7 +254,10 @@ export default Vue.extend({
   methods: {
     deleteItem(item: any) {
       const index = this.symbols.indexOf(item);
-      this.symbols.splice(index, 1);
+
+      cf.rpc({method: 'DeleteSymbol', params: this.symbols[index].ticker});
+
+      //this.symbols.splice(index, 1);
       /*this.todos.push({
         id: this.nextTodoId++,
         title: this.newTodoText
@@ -260,12 +267,34 @@ export default Vue.extend({
   },
 
   mounted() {
-    /*
-    axios.get('http://localhost:8090/symbols')
-     .then((response) => {
-        this.user_symbols = response.data;
-        this.symbols = response.data;
-      });*/
+    console.log('mounted');
+
+    cf = new centrifuge('ws://localhost:8090/connection/websocket');
+
+    axios.get('http://localhost:8090/auth?user=user&pass=pass')
+      .then((response) => {
+        cf.setToken(response.data);
+
+        cf.on('connect', (ctx) => {
+            // drawText('Connected over ' + ctx.transport);
+
+            cf.rpc({method: 'GetSymbols'})
+            .then((res) => {
+              this.symbols = res.data;
+            }, (err) => {
+              console.log('rpc error', err);
+            });
+
+        });
+        cf.on('disconnect', (ctx) => {
+            // drawText('Disconnected: ' + ctx.reason);
+        });
+        const sub = cf.subscribe('symbols#id', (message) => {
+            // drawText(JSON.stringify(message));
+            console.log('symbols ', message);
+        });
+        cf.connect();
+      });
   },
 });
 </script>
