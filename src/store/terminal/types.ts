@@ -3,27 +3,19 @@ export interface TerminalState {
   positions: IPosition[];
   symbols: ISymbol[];
   orders: IOrder[];
-  ohlc: [],
+  ohlc: [][];
+  symbolSelected: string;
+  loadingText: string;
+  errorText: string;
+  loadingSymbols: boolean;
+  errorSymbols: boolean;
+  loadingOhlc: boolean;
+  errorOhlc: boolean;
   currentOhlc: {
     ticker: string;
     min: number;
     max: number;
     type: string;
-  };
-  stockOptions?: {
-    rangeSelector: {
-      selected: number;
-    };
-    title: {
-      text: string;
-    };
-    series: ISeries[];
-  };
-  xAxis?: {
-    events?: {
-      afterSetExtremes?: any;
-    };
-    minRange?: number;
   };
 }
 

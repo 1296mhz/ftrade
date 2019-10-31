@@ -15,35 +15,27 @@
                     <v-text-field v-model="ticker" label="Ticker" name="ticker" type="text"></v-text-field>
                   </v-card-actions>
                 </v-row>
-                <v-simple-table dense>
-                  <template v-slot:default>
-                    <thead>
-                      <tr>
-                        <th>Ticker</th>
-                        <th>Bid</th>
-                        <th>Ask</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="symbol in symbols"
-                        :key="symbol.ticker"
-                        @click="GetOhlc(symbol.ticker)"
-                      >
-                        <td>
-                          <v-icon small :color="symbol.color">mdi-circle</v-icon>
-                          {{ symbol.ticker }}
-                        </td>
-                        <td>{{ symbol.bid }}</td>
-                        <td>{{ symbol.ask }}</td>
-                        <td>
-                          <v-icon small @click="deleteSymbol(symbol.ticker)">mdi-close-box-outline</v-icon>
-                        </td>
-                      </tr>
-                    </tbody>
+                <v-data-table
+                  v-model="symbolSelected"
+                  :headers="symbol_headers"
+                  :items="symbols"
+                  :items-per-page="5"
+                  class="elevation-0"
+                  item-key="ticker"
+                  height="300"
+                  fixed-header
+                  disable-pagination
+                  hide-default-footer
+                  dense
+                  :loading="loadingSymbols"
+                  loading-text="Loading... Please wait"
+                  single-select
+                  show-select
+                >
+                  <template v-slot:item.actions="{ item }">
+                    <v-icon small @click="deleteSymbol(item.ticker)">delete</v-icon>
                   </template>
-                </v-simple-table>
+                </v-data-table>
               </v-container>
             </v-card>
           </v-col>
@@ -133,7 +125,7 @@
 
                   <v-row no-gutters>
                     <v-col class="ma-1">
-                      <v-btn small @click="genSeries" block color="success">Buy</v-btn>
+                      <v-btn small block color="success">Buy</v-btn>
                     </v-col>
                     <v-col class="ma-1">
                       <v-btn small block color="error">Sell</v-btn>
@@ -170,6 +162,33 @@ export default Vue.extend({
       amount: '',
       price: '',
       series: [],
+      symbolSelected: [],
+      symbol_headers: [
+        {
+          text: 'Ticker',
+          align: 'left',
+          sortable: false,
+          value: 'ticker',
+        },
+        {
+          text: 'Bid',
+          align: 'left',
+          sortable: false,
+          value: 'bid',
+        },
+        {
+          text: 'Ask',
+          align: 'left',
+          sortable: false,
+          value: 'ask',
+        },
+        {
+          text: 'Actions',
+          align: 'left',
+          sortable: false,
+          value: 'actions',
+        },
+      ],
       order_headers: [
         { text: 'State', value: 'state' },
         { text: 'Ticker', value: 'ticker' },
@@ -210,24 +229,33 @@ export default Vue.extend({
             type: 'candlestick',
             name: 'AAPL Stock Price',
             data: [],
-            dataGrouping: {
-              units: [
-                [
-                  'week', // unit name
-                  [1], // allowed multiples
-                ],
-                ['month', [1, 2, 3, 4, 6]],
-              ],
-            },
           },
         ],
       },
     };
   },
   watch: {
-    seriesOhlc(newVal: any) {
+    '$route': {
+      handler: function() {
+        this.getSymbols();
+      },
+       immediate: true
+    },
+    loadingSymbols(newVal: boolean) {
+      if (!newVal) {
+        console.log(newVal, ' ', "Загружено")
+        console.log(this.symbols)
+        this.symbolSelected = [];
+        this.symbolSelected.push(this.symbols[0]);
+      }
+    },
+    symbols(newVal: any) {},
+    ohlc(newVal: any) {
       this.stockOptions.series = newVal;
     },
+    symbolSelected(newWal: any) {
+      console.log("symbolSelected ", this.symbolSelected)
+    }
   },
   computed: {
     ...mapGetters({
@@ -235,28 +263,29 @@ export default Vue.extend({
       tickers: 'terminal/TICKERS',
       positions: 'terminal/POSITIONS',
       orders: 'terminal/ORDERS',
-      seriesOhlc: 'terminal/SERIES',
+      ohlc: 'terminal/OHLC',
+      symbolSelectedState: 'terminal/SYMBOL_SELECTED',
+      loadingSymbols: 'terminal/LOADING_SYMBOLS',
+      errorSymbols: 'terminal/ERROR_SYMBOLS',
+      loadingText: 'terminal/LOADING_TEXT',
     }),
+
+
   },
   methods: {
     ...mapActions({
-      genSeries: 'terminal/series',
       getSymbols: 'terminal/symbols',
       createSymbol: 'terminal/createSymbol',
       deleteSymbol: 'terminal/deleteSymbol',
       afterSetExtremes: 'terminal/afterSetExtremes',
       getOhlc: 'terminal/getOhlc',
+      setSymbolSelectedState: 'terminal/setSymbolSelected',
     }),
     CreateSymbol(ticker) {
       this.createSymbol(ticker);
       this.ticker = '';
     },
-    GetOhlc(ticker) {
-      Vue.$toast.open({
-        message: 'message string',
-        type: 'error',
-        // all other options
-      });
+    async GetOhlc(ticker) {
       const d = new Date();
       const ohlcParams = {
         ticker: ticker,
@@ -265,13 +294,13 @@ export default Vue.extend({
         end: d.getTime(),
       };
       this.getOhlc(ohlcParams);
-      Vue.$log.debug(
-        `interval: ${ohlcParams.interval}, begin: ${ohlcParams.begin}, end: ${ohlcParams.end} ticker: ${ticker}`
-      );
+      Vue.$log.debug(`interval: ${ohlcParams.interval}, begin: ${ohlcParams.begin}, end: ${ohlcParams.end} ticker: ${ticker}`);
     },
   },
   mounted() {
     this.stockOptions.series[0].data = this.seriesOhlc;
+  },
+  created() {
     this.getSymbols();
   },
 });

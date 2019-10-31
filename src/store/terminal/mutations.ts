@@ -7,14 +7,19 @@ import {
   SET_SYMBOLS,
   SET_POSITIONS,
   SET_ORDERS,
-  SET_SERIES,
   DELETE_SYMBOL,
   CREATE_SYMBOL,
+  SET_OHLC,
+  SET_LOADING_SYMBOLS,
+  SET_SYMBOL_SELECTED,
 } from './mutation-types';
 
 export const mutations: MutationTree<TerminalState> = {
   [SET_TICKERS](state: TerminalState, data: any) {
     Vue.set(state, 'tickers', data);
+  },
+  [SET_OHLC](state: TerminalState, data: any) {
+    Vue.set(state, 'ohlc', data);
   },
   [SET_SYMBOLS](state: TerminalState, data: any) {
     Vue.set(state, 'symbols', data);
@@ -24,10 +29,6 @@ export const mutations: MutationTree<TerminalState> = {
   },
   [SET_ORDERS](state: TerminalState, data: any) {
     Vue.set(state, 'orders', data);
-  },
-  [SET_SERIES](state: TerminalState, data: any) {
-    const ohlc = [...state.stockOptions.series, { ...state.stockOptions.series[0], data: data}];
-    Vue.set(state.stockOptions, 'series', ohlc);
   },
   [DELETE_SYMBOL](state: TerminalState, data: any) {
     const newState = [...state.symbols];
@@ -45,6 +46,20 @@ export const mutations: MutationTree<TerminalState> = {
       state,
       'symbols',
       newState,
+    );
+  },
+  [SET_LOADING_SYMBOLS](state: TerminalState, data: any) {
+    Vue.set(
+      state,
+      'loadingSymbols',
+      data,
+    );
+  },
+  [SET_SYMBOL_SELECTED](state: TerminalState, data: any) {
+    Vue.set(
+      state,
+      'symbolSelected',
+      data,
     );
   },
 };

@@ -23,10 +23,9 @@ new Vue({
   vuetify,
   created() {
     this.$store.dispatch('terminal/tickers');
-    this.$store.dispatch('terminal/symbols');
+    // this.$store.dispatch('terminal/symbols');
     this.$store.dispatch('terminal/positions');
     this.$store.dispatch('terminal/orders');
-    this.$store.dispatch('terminal/series');
   },
   render: (h) => h(App),
 }).$mount('#app');

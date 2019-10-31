@@ -3,13 +3,6 @@ import centrifuge from 'centrifuge';
 import store from '../store';
 import { IOhlcParams } from '../store/terminal/types';
 
-function conditionConnectWrap(flag, callback) {
-    if (flag) {
-      const response = callback;
-      return response;
-    }
-}
-
 class CentrifugeManager {
   public instance: any;
   private id: string = '';
@@ -18,7 +11,8 @@ class CentrifugeManager {
     this.instance = new centrifuge(url);
     this.instance.on('connect', async (ctx) => {
       this.connectFlag = true;
-      this.instance.subscribe(`symbols#${this.id}`, (message) => {
+
+      let SymbolsSub = this.instance.subscribe(`symbols#${this.id}`, (message) => {
         switch (message.data.Command) {
           case 'delete':
             store.dispatch('terminal/deleteSymbolInStorage', message.data);
@@ -27,9 +21,23 @@ class CentrifugeManager {
             store.dispatch('terminal/createSymbolInStorage', message.data);
             break;
         }
-
+      }).on(`message`, (data) => {
+        console.log(`Error: ${data}`)
+      }).on(`error`, (data) => {
+        console.log(`Error: ${data}`)
+      }).on(`leave`, (data) => {
+        console.log(`Error: ${data}`)
       });
+
+
     });
+
+
+
+    this.instance.on('error', (ctx) => {
+        console.log("Ctx ", ctx)
+    });
+
     this.instance.on('disconnect', (ctx) => {
       this.connectFlag = false;
       this.instance.removeAllListeners();

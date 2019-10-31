@@ -13,20 +13,18 @@ export const state: TerminalState = {
   symbols: [],
   orders: [],
   ohlc: [],
+  symbolSelected: '',
+  loadingText: 'Loading',
+  errorText: "Error loading",
+  loadingSymbols: false,
+  errorSymbols: false,
+  loadingOhlc: false,
+  errorOhlc: false,
   currentOhlc: {
     ticker: '',
     min: 0,
     max: 0,
-    type: 'day',
-  },
-  stockOptions: {
-    rangeSelector: {
-      selected: 1,
-    },
-    title: {
-      text: '',
-    },
-    series: [],
+    type: 'd',
   },
 };
 

@@ -2,10 +2,20 @@ import Vue from 'vue';
 import { TerminalState } from './types';
 import { RootState } from '@/store/types';
 import { GetterTree } from 'vuex';
+import { state } from '../app';
 
 export const getters: GetterTree<TerminalState, RootState> = {
+  LOADING_TEXT(state: TerminalState): any {
+    return state.loadingText;
+  },
+  ERRROR_TEXT(state: TerminalState): any {
+    return state.errorText;
+  },
   TICKERS(state: TerminalState): any {
     return state.tickers;
+  },
+  OHLC(state: TerminalState): any {
+    return state.ohlc;
   },
   SYMBOLS(state: TerminalState): any {
     return state.symbols;
@@ -16,7 +26,19 @@ export const getters: GetterTree<TerminalState, RootState> = {
   ORDERS(state: TerminalState): any {
     return state.orders;
   },
-  SERIES(state: TerminalState): any {
-    return state.stockOptions.series[0].data;
+  LOADING_SYMBOLS(state: TerminalState): any {
+    return state.loadingSymbols;
   },
+  ERROR_SYMBOLS(state: TerminalState): any {
+    return state.errorSymbols;
+  },
+  LOADING_OHLC(state: TerminalState): any {
+    return state.loadingOhlc;
+  },
+  ERROR_OHLC(state: TerminalState): any {
+    return state.errorOhlc;
+  },
+  SYMBOL_SELECTED(state: TerminalState): any {
+    return state.symbolSelected;
+  }
 };
