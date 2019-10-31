@@ -252,6 +252,7 @@ export default Vue.extend({
       this.ticker = '';
     },
     GetOhlc(ticker) {
+      Vue.$toast.open('You did it!');
       const d = new Date();
       const ohlcParams = {
         ticker: ticker,
