@@ -1,8 +1,8 @@
 import { GetterTree } from 'vuex';
-import { AuthState } from './types';
+import { IAuthState } from './types';
 import { RootState } from '@/store/types';
 
-export const getters: GetterTree<AuthState, RootState> = {
+export const getters: GetterTree<IAuthState, RootState> = {
   /**
    * Get auth status
    */

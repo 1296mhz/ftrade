@@ -1,17 +1,24 @@
 import Vue from 'vue';
 import centrifuge from 'centrifuge';
 import store from '../store';
+import { IOhlcParams } from '../store/terminal/types';
+
+function conditionConnectWrap(flag, callback) {
+    if (flag) {
+      const response = callback;
+      return response;
+    }
+}
+
 class CentrifugeManager {
-  instance: any;
-  methods: any = {};
-  id: string = '';
-  connectFlag: boolean = false;
+  public instance: any;
+  private id: string = '';
+  private connectFlag: boolean = false;
   constructor(url) {
     this.instance = new centrifuge(url);
     this.instance.on('connect', async (ctx) => {
       this.connectFlag = true;
       this.instance.subscribe(`symbols#${this.id}`, (message) => {
-        console.log("Mesaage symbols: ", message)
         switch (message.data.Command) {
           case 'delete':
             store.dispatch('terminal/deleteSymbolInStorage', message.data);
@@ -30,40 +37,48 @@ class CentrifugeManager {
     return this;
   }
 
-  setToken(token) {
-    this.instance.setToken(token)
+  public setToken(token) {
+    this.instance.setToken(token);
   }
 
-  setId(id) {
+  public setId(id) {
     this.id = id;
   }
-  connect() {
+  public connect() {
     this.instance.connect();
   }
 
-  disconnect() {
+  public disconnect() {
     this.instance.removeAllListeners();
     this.instance.disconnect();
   }
 
-  async getSymbols() {
+  public async getSymbols() {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'GetSymbols' });
-      return response.data
+      return response.data;
     }
+
   }
 
-  async createSymbol(ticker: string) {
+  public async createSymbol(ticker: string) {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'CreateSymbol', params: { ticker: ticker } });
-      return response
+      return response;
     }
   }
 
-  async deleteSymbol(ticker: string) {
+  public async deleteSymbol(ticker: string) {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'DeleteSymbol', params: ticker });
-      return response
+      return response;
+    }
+  }
+
+  public async getOhlc(params: IOhlcParams) {
+    if (this.connectFlag) {
+      const response = await this.instance.rpc({ method: 'GetOhlc', params: params });
+      return response;
     }
   }
 }

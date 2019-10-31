@@ -8,7 +8,7 @@ import {
 } from './mutation-types';
 
 /*
-An asynchronous operation is performed here, the result of its execution is committed to a mutation.  
+An asynchronous operation is performed here, the result of its execution is committed to a mutation.
 For the test, here we have fake data transferred to the mutation
 */
 export const actions: ActionTree<AppState, RootState> = {

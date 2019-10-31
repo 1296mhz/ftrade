@@ -15,4 +15,5 @@ declare module 'vue/types/vue' {
   export interface Vue {
     $_: typeof _;
   }
-};
+}
+

@@ -26,7 +26,11 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="symbol in symbols" :key="symbol.ticker">
+                      <tr
+                        v-for="symbol in symbols"
+                        :key="symbol.ticker"
+                        @click="GetOhlc(symbol.ticker)"
+                      >
                         <td>
                           <v-icon small :color="symbol.color">mdi-circle</v-icon>
                           {{ symbol.ticker }}
@@ -240,13 +244,23 @@ export default Vue.extend({
       getSymbols: 'terminal/symbols',
       createSymbol: 'terminal/createSymbol',
       deleteSymbol: 'terminal/deleteSymbol',
+      afterSetExtremes: 'terminal/afterSetExtremes',
+      getOhlc: 'terminal/getOhlc',
     }),
     CreateSymbol(ticker) {
       this.createSymbol(ticker);
       this.ticker = '';
     },
-    afterSetExtremes(e) {
-      // Range ohlc callback
+    GetOhlc(ticker) {
+      const d = new Date();
+      const n = d.getTime();
+      Vue.$log.debug(`interval: d, begin: 0, end: ${n} ticker: ${ticker}`);
+      this.getOhlc({
+        ticker: ticker,
+        interval: 'd',
+        begin: 1,
+        end: n,
+      });
     },
   },
   mounted() {

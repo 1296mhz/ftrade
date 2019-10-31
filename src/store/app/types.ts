@@ -1,4 +1,5 @@
-export type AppState = {
-  drawer: any,
-  currentView: string,
-};
+export interface AppState {
+  drawer: any;
+  currentView: string;
+}
+

@@ -12,6 +12,7 @@ export const state: TerminalState = {
   positions: [],
   symbols: [],
   orders: [],
+  ohlc: [],
   currentOhlc: {
     ticker: '',
     min: 0,
@@ -26,7 +27,7 @@ export const state: TerminalState = {
       text: '',
     },
     series: [],
-  }
+  },
 };
 
 const terminalModule: Module<TerminalState, RootState> = {

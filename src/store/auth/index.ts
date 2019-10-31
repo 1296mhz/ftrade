@@ -1,6 +1,5 @@
 import {
-  AuthState,
-  AuthStatus,
+  IAuthState,
 } from './types';
 import { actions } from './actions';
 import { getters } from './getters';
@@ -10,7 +9,7 @@ import { RootState } from '@/store/types';
 
 const namespaced: boolean = true;
 
-export const state: AuthState = {
+export const state: IAuthState = {
   token: '',
   status: {
     state: false,
@@ -20,7 +19,7 @@ export const state: AuthState = {
   id: '',
 };
 
-const authModule: Module<AuthState, RootState> = {
+const authModule: Module<IAuthState, RootState> = {
   namespaced,
   state,
   actions,

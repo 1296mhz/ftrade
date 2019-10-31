@@ -1,36 +1,34 @@
 /**
  * Module state
  */
-export type AuthState = {
+export interface IAuthState {
   token: string;
-  status: AuthStatus;
+  status: IAuthStatus;
   username: string;
   id: string;
-};
+}
 
 /**
  * User data
  */
-export type AuthData = {
+export interface IAuthData {
   username: string;
   password: string;
-};
+}
 
 /**
  * Success server response
  */
-export type SuccessAuthData = {
+export interface ISuccessAuthData {
   username: string;
   token: string;
   id: string;
-};
+}
 
 /**
  * Auth statuses
  */
-export type AuthStatus = {
-  state: boolean,
-  message: string,
+export interface IAuthStatus {
+  state: boolean;
+  message: string;
 }
-
-

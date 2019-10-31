@@ -1,14 +1,14 @@
 import { MutationTree } from 'vuex';
-import { AuthState, SuccessAuthData, AuthStatus } from './types';
+import { IAuthState, ISuccessAuthData, IAuthStatus } from './types';
 import { SET_AUTH, SET_STATUS, EXIT } from './mutation-types';
 
-export const mutations: MutationTree<AuthState> = {
+export const mutations: MutationTree<IAuthState> = {
   /**
    * Set auth
    * @param state
    * @param data
    */
-  [SET_AUTH](state, data: SuccessAuthData) {
+  [SET_AUTH](state, data: ISuccessAuthData) {
     state.token = data.token;
     state.status = {
       state: true,
@@ -23,7 +23,7 @@ export const mutations: MutationTree<AuthState> = {
    * @param state
    * @param status
    */
-  [SET_STATUS](state, status: AuthStatus) {
+  [SET_STATUS](state, status: IAuthStatus) {
     state.status = status;
   },
 

@@ -1,6 +1,6 @@
-import { MutationTree } from "vuex";
-import Vue from "vue";
-import { TerminalState } from "./types";
+import { MutationTree } from 'vuex';
+import Vue from 'vue';
+import { TerminalState } from './types';
 
 import {
   SET_TICKERS,
@@ -9,43 +9,42 @@ import {
   SET_ORDERS,
   SET_SERIES,
   DELETE_SYMBOL,
-  CREATE_SYMBOL
-} from "./mutation-types";
+  CREATE_SYMBOL,
+} from './mutation-types';
 
 export const mutations: MutationTree<TerminalState> = {
   [SET_TICKERS](state: TerminalState, data: any) {
-    Vue.set(state, "tickers", data);
+    Vue.set(state, 'tickers', data);
   },
   [SET_SYMBOLS](state: TerminalState, data: any) {
-    Vue.set(state, "symbols", data);
+    Vue.set(state, 'symbols', data);
   },
   [SET_POSITIONS](state: TerminalState, data: any) {
-    Vue.set(state, "positions", data);
+    Vue.set(state, 'positions', data);
   },
   [SET_ORDERS](state: TerminalState, data: any) {
-    Vue.set(state, "orders", data);
+    Vue.set(state, 'orders', data);
   },
   [SET_SERIES](state: TerminalState, data: any) {
-    const ohlc = [...state.stockOptions.series, { ...state.stockOptions.series[0], data: data}]
+    const ohlc = [...state.stockOptions.series, { ...state.stockOptions.series[0], data: data}];
     Vue.set(state.stockOptions, 'series', ohlc);
   },
   [DELETE_SYMBOL](state: TerminalState, data: any) {
     const newState = [...state.symbols];
     Vue.set(
       state,
-      "symbols",
-      Vue.$_.filter(newState, function(symbol) {
+      'symbols',
+      Vue.$_.filter(newState, (symbol) => {
         return symbol.ticker !== data.Params;
-      })
+      }),
     );
   },
   [CREATE_SYMBOL](state: TerminalState, data: any) {
     const newState = [...state.symbols, data.Params];
     Vue.set(
       state,
-      "symbols",
-      newState
+      'symbols',
+      newState,
     );
-
-  }
+  },
 };

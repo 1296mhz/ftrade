@@ -13,14 +13,17 @@ import {
 } from './mutation-types';
 
 export const actions: ActionTree<TerminalState, RootState> = {
+  afterSetExtremes({ commit, state }, band) {
+    return 'hello';
+  },
   async tickers({ commit, state }) {
     commit(SET_TICKERS, ['AAPL.NASDAQ', 'AMZN.NASDAQ', 'GOOG.NASDAQ', 'EUR/USD.E.FX', 'USD/JPY.E.FX', 'GBP/USD.E.FX']);
   },
   async deleteSymbolInStorage({ commit, state }, params) {
-    commit(DELETE_SYMBOL, params)
+    commit(DELETE_SYMBOL, params);
   },
   async createSymbolInStorage({ commit, state }, params) {
-    commit(CREATE_SYMBOL, params)
+    commit(CREATE_SYMBOL, params);
   },
   async symbols({ commit, state }) {
     const s = await Vue.$centrifuge.getSymbols();
@@ -46,7 +49,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
         position: Math.floor(Math.random() * 100) + 1,
         avgprice: (Math.random() * 100 + 10).toFixed(2),
         price: (Math.random() * 100 + 10).toFixed(2),
-        pnl: (Math.random() * 100 + 10).toFixed(2)
+        pnl: (Math.random() * 100 + 10).toFixed(2),
       };
     }
     commit(SET_POSITIONS, positions);
@@ -54,15 +57,15 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async orders({ commit, state }) {
     const orders = [
       {
-        id: "0001",
-        state: "open",
-        ticker: "EUR/USD.E.FX",
-        type: "limit",
-        side: "buy",
+        id: '0001',
+        state: 'open',
+        ticker: 'EUR/USD.E.FX',
+        type: 'limit',
+        side: 'buy',
         quantity: 10,
-        time: new Date(2017, 4, 4, 17, 23, 42, 11).toLocaleString()
-      }
-    ]
+        time: new Date(2017, 4, 4, 17, 23, 42, 11).toLocaleString(),
+      },
+    ];
     commit(SET_ORDERS, orders);
   },
   async createSymbol({ commit, state }, ticker) {
@@ -70,6 +73,9 @@ export const actions: ActionTree<TerminalState, RootState> = {
   },
   async deleteSymbol({ commit, state }, ticker) {
     await Vue.$centrifuge.deleteSymbol(ticker);
+  },
+  async getOhlc({ commit, state }, params) {
+    console.log('GetOhlc: ', await Vue.$centrifuge.getOhlc(params));
   },
   async series({ commit, state }): Promise<any> {
     const series = [
@@ -573,8 +579,8 @@ export const actions: ActionTree<TerminalState, RootState> = {
       [1571751000000, 241.16, 242.2, 239.62, 239.96],
       [1571837400000, 242.1, 243.24, 241.22, 243.18],
       [1571923800000, 244.51, 244.8, 241.81, 243.58],
-      [1572010200000, 243.16, 246.73, 242.88, 246.58]
+      [1572010200000, 243.16, 246.73, 242.88, 246.58],
     ];
     commit(SET_SERIES, series);
-  }
+  },
 };

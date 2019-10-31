@@ -4,10 +4,10 @@ import { RootState } from '@/store/types';
 import { GetterTree } from 'vuex';
 
 export const getters: GetterTree<AppState, RootState> = {
-  DRAWER(state: AppState, getters: any): any {
+  DRAWER(state: AppState): any {
     return state.drawer;
   },
-  CURRENT_VIEW(state: AppState, getters: any): any {
+  CURRENT_VIEW(state: AppState): any {
     return state.currentView;
   },
 };
