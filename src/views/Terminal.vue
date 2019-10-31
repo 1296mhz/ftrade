@@ -252,16 +252,22 @@ export default Vue.extend({
       this.ticker = '';
     },
     GetOhlc(ticker) {
-      Vue.$toast.open('You did it!');
+      Vue.$toast.open({
+        message: 'message string',
+        type: 'error',
+        // all other options
+      });
       const d = new Date();
       const ohlcParams = {
         ticker: ticker,
         interval: 'd',
-        begin: 1,
+        begin: 0,
         end: d.getTime(),
-      }
+      };
       this.getOhlc(ohlcParams);
-      Vue.$log.debug(`interval: ${ohlcParams.interval}, begin: ${ohlcParams.begin}, end: ${ohlcParams.end} ticker: ${ticker}`);
+      Vue.$log.debug(
+        `interval: ${ohlcParams.interval}, begin: ${ohlcParams.begin}, end: ${ohlcParams.end} ticker: ${ticker}`
+      );
     },
   },
   mounted() {

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import '@/plugins';
 import router from './router';
+import { eventBus } from './event-bus';
 import vuetify from './plugins/vuetify';
 // import axios from './plugins/axios';
 import HighchartsVue from 'highcharts-vue';
@@ -13,6 +14,8 @@ Vue.config.productionTip = false;
 
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
+Vue.$log.info(`BACKEND API: ${process.env.VUE_APP_BACKEND_API_URI}`);
+Vue.$log.info(`BACKEND SOCKET API: ${process.env.VUE_APP_BACKEND_SOCKET_URI}`);
 
 new Vue({
   router,
