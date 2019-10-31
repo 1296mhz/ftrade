@@ -75,7 +75,8 @@ export const actions: ActionTree<TerminalState, RootState> = {
     await Vue.$centrifuge.deleteSymbol(ticker);
   },
   async getOhlc({ commit, state }, params) {
-    console.log('GetOhlc: ', await Vue.$centrifuge.getOhlc(params));
+    Vue.$log.debug(`params: ${JSON.stringify(params)}`);
+    await Vue.$centrifuge.getOhlc(params);
   },
   async series({ commit, state }): Promise<any> {
     const series = [

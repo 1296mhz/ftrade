@@ -83,7 +83,7 @@ class CentrifugeManager {
   }
 }
 
-const instance = new CentrifugeManager('ws://localhost:8090/connection/websocket');
+const instance = new CentrifugeManager(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : ''}/connection/websocket`);
 
 const plugin = {
   install(obj: any) {

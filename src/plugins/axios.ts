@@ -3,7 +3,7 @@ import Vue from 'vue';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8090',
+  baseURL: `${process.env.VUE_APP_BACKEND_API_URI ? process.env.VUE_APP_BACKEND_API_URI : ''}/`,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

@@ -253,14 +253,14 @@ export default Vue.extend({
     },
     GetOhlc(ticker) {
       const d = new Date();
-      const n = d.getTime();
-      Vue.$log.debug(`interval: d, begin: 0, end: ${n} ticker: ${ticker}`);
-      this.getOhlc({
+      const ohlcParams = {
         ticker: ticker,
         interval: 'd',
         begin: 1,
-        end: n,
-      });
+        end: d.getTime(),
+      }
+      this.getOhlc(ohlcParams);
+      Vue.$log.debug(`interval: ${ohlcParams.interval}, begin: ${ohlcParams.begin}, end: ${ohlcParams.end} ticker: ${ticker}`);
     },
   },
   mounted() {
