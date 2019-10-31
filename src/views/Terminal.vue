@@ -290,11 +290,6 @@ export default Vue.extend({
       this.createSymbol(ticker);
       this.ticker = '';
     },
-    async GetOhlc(ticker) {
-      Vue.$log.debug(
-        `interval: ${ohlcParams.interval}, begin: ${ohlcParams.begin}, end: ${ohlcParams.end} ticker: ${ticker}`
-      );
-    },
   },
   mounted() {
     this.stockOptions.series[0].data = this.seriesOhlc;
