@@ -235,18 +235,17 @@ export default Vue.extend({
     };
   },
   watch: {
-    '$route': {
+    $route: {
       handler: function() {
         this.getSymbols();
       },
-       immediate: true
+      immediate: true,
     },
     loadingSymbols(newVal: boolean) {
       if (!newVal) {
-        console.log(newVal, ' ', "Загружено")
-        console.log(this.symbols)
         this.symbolSelected = [];
-        this.symbolSelected.push(this.symbols[0]);
+        this.setSymbolSelectedState(this.symbols[0]);
+        this.symbolSelected.push(this.symbolSelectedState);
       }
     },
     symbols(newVal: any) {},
@@ -254,8 +253,16 @@ export default Vue.extend({
       this.stockOptions.series = newVal;
     },
     symbolSelected(newWal: any) {
-      console.log("symbolSelected ", this.symbolSelected)
-    }
+      this.setSymbolSelectedState(this.symbolSelected);
+      const d = new Date();
+      const ohlcParams = {
+        ticker: this.symbolSelected[0].ticker,
+        interval: 'd',
+        begin: 0,
+        end: d.getTime(),
+      };
+      this.getOhlc(ohlcParams);
+    },
   },
   computed: {
     ...mapGetters({
@@ -269,8 +276,6 @@ export default Vue.extend({
       errorSymbols: 'terminal/ERROR_SYMBOLS',
       loadingText: 'terminal/LOADING_TEXT',
     }),
-
-
   },
   methods: {
     ...mapActions({
@@ -286,15 +291,9 @@ export default Vue.extend({
       this.ticker = '';
     },
     async GetOhlc(ticker) {
-      const d = new Date();
-      const ohlcParams = {
-        ticker: ticker,
-        interval: 'd',
-        begin: 0,
-        end: d.getTime(),
-      };
-      this.getOhlc(ohlcParams);
-      Vue.$log.debug(`interval: ${ohlcParams.interval}, begin: ${ohlcParams.begin}, end: ${ohlcParams.end} ticker: ${ticker}`);
+      Vue.$log.debug(
+        `interval: ${ohlcParams.interval}, begin: ${ohlcParams.begin}, end: ${ohlcParams.end} ticker: ${ticker}`
+      );
     },
   },
   mounted() {
