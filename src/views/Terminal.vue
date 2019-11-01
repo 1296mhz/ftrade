@@ -216,18 +216,17 @@ export default Vue.extend({
           },
         },
         title: {
-          text: 'AAPL Stock Price',
+          text: '',
         },
         xAxis: {
           events: {
-            afterSetExtremes: this.afterSetExtremes,
+            afterSetExtremes: this.afterSetExtremesBand,
           },
           minRange: 3600 * 1000, // one hour
         },
         series: [
           {
             type: 'candlestick',
-            name: 'AAPL Stock Price',
             data: [],
           },
         ],
@@ -246,6 +245,7 @@ export default Vue.extend({
         this.symbolSelected = [];
         this.setSymbolSelectedState(this.symbols[0]);
         this.symbolSelected.push(this.symbolSelectedState);
+        this.stockOptions.title.text = this.symbolSelected[0].ticker;
       }
     },
     symbols(newVal: any) {},
@@ -254,13 +254,14 @@ export default Vue.extend({
     },
     symbolSelected(newWal: any) {
       this.setSymbolSelectedState(this.symbolSelected);
-      const d = new Date();
+      const currentDate = new Date();
       const ohlcParams = {
         ticker: this.symbolSelected[0].ticker,
         interval: 'd',
         begin: 0,
-        end: d.getTime(),
+        end: currentDate.getTime(),
       };
+      this.stockOptions.title.text = this.symbolSelected[0].ticker;
       this.getOhlc(ohlcParams);
     },
   },
@@ -282,13 +283,54 @@ export default Vue.extend({
       getSymbols: 'terminal/symbols',
       createSymbol: 'terminal/createSymbol',
       deleteSymbol: 'terminal/deleteSymbol',
-      afterSetExtremes: 'terminal/afterSetExtremes',
       getOhlc: 'terminal/getOhlc',
       setSymbolSelectedState: 'terminal/setSymbolSelected',
     }),
     CreateSymbol(ticker) {
       this.createSymbol(ticker);
       this.ticker = '';
+    },
+    afterSetExtremesBand(params) {
+      if (this.symbolSelected[0] && params.type === "setExtremes") {
+        const delta = (Math.round(params.max) - Math.round(params.min)) / 1000;
+
+        if (delta <= 3600) {
+          Vue.$log.debug(`Секундные`);
+          params.interval = 's';
+        }
+        if (delta > 3600 && delta <= 60000) {
+          Vue.$log.debug(`Минутные`);
+          params.interval = 'm';
+        }
+        if (delta > 60000 && delta <= 3600000) {
+          Vue.$log.debug(`Часовые`);
+          params.interval = 'h';
+        }
+        if (delta > 3600000 && delta <= 86400000) {
+          Vue.$log.debug(`Дневные`);
+          params.interval = 'd';
+        }
+        if (delta > 86400000 && delta <= 604800000) {
+          Vue.$log.debug(`Неделя`);
+          params.interval = 'w';
+        }
+        if (delta > 604800000 && delta <= 2592000000.000001) {
+          Vue.$log.debug(`Месяц`);
+          params.interval = 'm';
+        }
+        if (delta > 2592000000.000001 && delta <= 31536000000.428898) {
+          Vue.$log.debug(`Год`);
+          params.interval = 'y';
+        }
+        const ohlcParams = {
+          ticker: this.symbolSelected[0].ticker,
+          interval: params.interval,
+          begin: Math.round(params.min),
+          end: Math.round(params.max),
+        };
+        this.getOhlc(ohlcParams);
+        console.log(`params: `, params);
+      }
     },
   },
   mounted() {

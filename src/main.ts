@@ -4,7 +4,6 @@ import '@/plugins';
 import router from './router';
 import { eventBus } from './event-bus';
 import vuetify from './plugins/vuetify';
-// import axios from './plugins/axios';
 import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';

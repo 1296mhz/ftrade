@@ -15,9 +15,6 @@ import {
 } from './mutation-types';
 
 export const actions: ActionTree<TerminalState, RootState> = {
-  afterSetExtremes({ commit, state }, band) {
-    return 'hello';
-  },
   async tickers({ commit, state }) {
     commit(SET_TICKERS, ['AAPL.NASDAQ', 'AMZN.NASDAQ', 'GOOG.NASDAQ', 'EUR/USD.E.FX', 'USD/JPY.E.FX', 'GBP/USD.E.FX']);
   },
@@ -73,7 +70,6 @@ export const actions: ActionTree<TerminalState, RootState> = {
     commit(SET_LOADING_SYMBOLS, false);
   },
   async getOhlc({ commit, state }, params) {
-    Vue.$log.debug(`params: ${JSON.stringify(params)}`);
     const ohlc = await Vue.$centrifuge.getOhlc(params);
     commit(SET_OHLC, ohlc);
   },
