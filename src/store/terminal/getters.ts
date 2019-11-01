@@ -15,7 +15,7 @@ export const getters: GetterTree<TerminalState, RootState> = {
     return state.tickers;
   },
   OHLC(state: TerminalState): any {
-    return state.ohlc;
+    return state.currentSymbol;
   },
   SYMBOLS(state: TerminalState): any {
     return state.symbols;
@@ -39,6 +39,14 @@ export const getters: GetterTree<TerminalState, RootState> = {
     return state.errorOhlc;
   },
   SYMBOL_SELECTED(state: TerminalState): any {
-    return state.symbolSelected;
+    const { currentSymbol: { ticker, currency, exchange, minIncrement, minIncrementAmount, type } } = state;
+    return {
+      ticker: ticker,
+      currency: currency,
+      exchange: exchange,
+      minIncrement: minIncrement,
+      minIncrementAmount: minIncrementAmount,
+      type: type,
+    }
   }
 };

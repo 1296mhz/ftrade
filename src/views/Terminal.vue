@@ -155,6 +155,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
+
 export default Vue.extend({
   data() {
     return {
@@ -162,7 +163,6 @@ export default Vue.extend({
       amount: '',
       price: '',
       series: [],
-      symbolSelected: [],
       symbol_headers: [
         {
           text: 'Ticker',
@@ -205,6 +205,22 @@ export default Vue.extend({
         { text: 'P&L', value: 'pnl' },
       ],
       stockOptions: {
+        chart: {
+          type: 'candlestick',
+          zoomType: 'x',
+        },
+        navigator: {
+          adaptToUpdatedData: false,
+          series: {
+            data: [],
+          },
+        },
+        scrollbar: {
+          liveRedraw: false,
+        },
+        title: {
+          text: 'Symbol not selected',
+        },
         rangeSelector: {
           enabled: false,
           selected: 1,
@@ -215,54 +231,58 @@ export default Vue.extend({
             visibility: 'hidden',
           },
         },
-        title: {
-          text: '',
-        },
         xAxis: {
           events: {
             afterSetExtremes: this.afterSetExtremesBand,
           },
           minRange: 3600 * 1000, // one hour
         },
+        yAxis: {
+          floor: 0,
+        },
         series: [
           {
-            type: 'candlestick',
             data: [],
+            dataGrouping: {
+              enabled: false,
+            },
           },
         ],
       },
     };
   },
   watch: {
+    // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
     $route: {
       handler: function() {
         this.getSymbols();
       },
       immediate: true,
     },
+    // We follow the object loadingSymbols its value will change false and then we will begin to update the values of the components
     loadingSymbols(newVal: boolean) {
       if (!newVal) {
-        this.symbolSelected = [];
-        this.setSymbolSelectedState(this.symbols[0]);
-        this.symbolSelected.push(this.symbolSelectedState);
-        this.stockOptions.title.text = this.symbolSelected[0].ticker;
+        //this.symbolSelected = [];
+        this.setSymbolSelected(this.symbols);
+       // this.symbolSelected.push(this.symbolSelectedState);
+        // this.stockOptions.title.text = this.symbolSelected[0].ticker;
       }
     },
-    symbols(newVal: any) {},
-    ohlc(newVal: any) {
-      this.stockOptions.series = newVal;
+    ohlc(newVal: any, oldVal: any) {
+    
+      this.stockOptions.series[0].data = newVal.data;
     },
     symbolSelected(newWal: any) {
-      this.setSymbolSelectedState(this.symbolSelected);
-      const currentDate = new Date();
+      this.setSymbolSelected(this.symbolSelected);
+      /*
       const ohlcParams = {
         ticker: this.symbolSelected[0].ticker,
-        interval: 'd',
         begin: 0,
-        end: currentDate.getTime(),
+        end: Vue.$constants.END_DATE_OHLC(),
       };
-      this.stockOptions.title.text = this.symbolSelected[0].ticker;
+      // this.stockOptions.title.text = this.symbolSelected[0].ticker;
       this.getOhlc(ohlcParams);
+      */
     },
   },
   computed: {
@@ -272,11 +292,19 @@ export default Vue.extend({
       positions: 'terminal/POSITIONS',
       orders: 'terminal/ORDERS',
       ohlc: 'terminal/OHLC',
-      symbolSelectedState: 'terminal/SYMBOL_SELECTED',
+      getSymbolSelected: 'terminal/SYMBOL_SELECTED',
       loadingSymbols: 'terminal/LOADING_SYMBOLS',
       errorSymbols: 'terminal/ERROR_SYMBOLS',
       loadingText: 'terminal/LOADING_TEXT',
     }),
+    symbolSelected: {
+      get: function() {
+        return this.getSymbolSelected;
+      },
+      set: function(newValue) {
+        this.setSymbolSelected(newValue)
+      },
+    },
   },
   methods: {
     ...mapActions({
@@ -284,58 +312,24 @@ export default Vue.extend({
       createSymbol: 'terminal/createSymbol',
       deleteSymbol: 'terminal/deleteSymbol',
       getOhlc: 'terminal/getOhlc',
-      setSymbolSelectedState: 'terminal/setSymbolSelected',
+      setSymbolSelected: 'terminal/setSymbolSelected',
     }),
     CreateSymbol(ticker) {
       this.createSymbol(ticker);
       this.ticker = '';
     },
     afterSetExtremesBand(params) {
-      if (this.symbolSelected[0] && params.type === "setExtremes") {
-        const delta = (Math.round(params.max) - Math.round(params.min)) / 1000;
-
-        if (delta <= 3600) {
-          Vue.$log.debug(`Секундные`);
-          params.interval = 's';
-        }
-        if (delta > 3600 && delta <= 60000) {
-          Vue.$log.debug(`Минутные`);
-          params.interval = 'm';
-        }
-        if (delta > 60000 && delta <= 3600000) {
-          Vue.$log.debug(`Часовые`);
-          params.interval = 'h';
-        }
-        if (delta > 3600000 && delta <= 86400000) {
-          Vue.$log.debug(`Дневные`);
-          params.interval = 'd';
-        }
-        if (delta > 86400000 && delta <= 604800000) {
-          Vue.$log.debug(`Неделя`);
-          params.interval = 'w';
-        }
-        if (delta > 604800000 && delta <= 2592000000.000001) {
-          Vue.$log.debug(`Месяц`);
-          params.interval = 'm';
-        }
-        if (delta > 2592000000.000001 && delta <= 31536000000.428898) {
-          Vue.$log.debug(`Год`);
-          params.interval = 'y';
-        }
+      if (this.symbolSelected[0] && params.type === 'setExtremes') {
         const ohlcParams = {
           ticker: this.symbolSelected[0].ticker,
-          interval: params.interval,
           begin: Math.round(params.min),
           end: Math.round(params.max),
         };
         this.getOhlc(ohlcParams);
-        console.log(`params: `, params);
       }
     },
   },
-  mounted() {
-    this.stockOptions.series[0].data = this.seriesOhlc;
-  },
+  mounted() {},
   created() {
     this.getSymbols();
   },

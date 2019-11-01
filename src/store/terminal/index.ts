@@ -12,7 +12,6 @@ export const state: TerminalState = {
   positions: [],
   symbols: [],
   orders: [],
-  ohlc: [],
   symbolSelected: '',
   loadingText: 'Loading',
   errorText: "Error loading",
@@ -20,11 +19,19 @@ export const state: TerminalState = {
   errorSymbols: false,
   loadingOhlc: false,
   errorOhlc: false,
-  currentOhlc: {
+  currentSymbol: {
     ticker: '',
-    min: 0,
-    max: 0,
-    type: 'd',
+    currency: '',
+    exchange: '',
+    minIncrement: 0,
+    minIncrementAmount: 0,
+    type: '',
+    ohlc: {
+      data: [],
+      begin: 0,
+      end: 0,
+      interval: 'd',
+    },
   },
 };
 

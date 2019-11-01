@@ -70,8 +70,31 @@ export const actions: ActionTree<TerminalState, RootState> = {
     commit(SET_LOADING_SYMBOLS, false);
   },
   async getOhlc({ commit, state }, params) {
+    const begin = params.begin ? params.begin : 0;
+    const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
+    const delta = (Math.round(begin) - Math.round(end)) / 1000;
+    let interval = 'd';
+    (delta <= 3600) ? interval = 's' : interval = 'd';
+    (delta > 3600 && delta <= 60000) ? interval = 'm' : interval = 'd';
+    (delta > 60000 && delta <= 3600000) ? interval = 'h' : interval = 'd';
+    (delta > 3600000 && delta <= 86400000) ? interval = 'd' : interval = 'd';
+    (delta > 604800000 && delta <= 2592000000.000001) ? interval = 'M' : interval = 'd';
+    (delta > 2592000000.000001 && delta <= 31536000000.428898) ? interval = 'y' : interval = 'd';
+    console.log(interval)
+    Vue.$log.debug(params);
+
+    params.interval = interval;
     const ohlc = await Vue.$centrifuge.getOhlc(params);
-    commit(SET_OHLC, ohlc);
+    console.log("return ohlc: ", ohlc)
+    const currentOhlc = {
+      ticker: params.ticker,
+      ohlc: ohlc.data,
+      begin: begin,
+      end: end,
+      interval: interval,
+    };
+
+    commit(SET_OHLC, currentOhlc);
   },
   setSymbolSelected({ commit, state }, params) {
     commit(SET_SYMBOL_SELECTED, params);

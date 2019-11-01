@@ -19,7 +19,7 @@ export const mutations: MutationTree<TerminalState> = {
     Vue.set(state, 'tickers', data);
   },
   [SET_OHLC](state: TerminalState, data: any) {
-    Vue.set(state, 'ohlc', data);
+    Vue.set(state, 'currentSymbol', data);
   },
   [SET_SYMBOLS](state: TerminalState, data: any) {
     Vue.set(state, 'symbols', data);
@@ -56,10 +56,22 @@ export const mutations: MutationTree<TerminalState> = {
     );
   },
   [SET_SYMBOL_SELECTED](state: TerminalState, data: any) {
+    const  { ticker, currency, exchange, minIncrement, minIncrementAmount, type } = data[0];
+    console.log("dta", data[0])
+    const newState = { 
+      ...state.currentSymbol,
+      ticker: ticker,
+      currency: currency,
+      exchange: exchange,
+      minIncrement: minIncrement,
+      minIncrementAmount: minIncrementAmount,
+      type: type 
+    };
+    console.log("newState ", newState)
     Vue.set(
       state,
-      'symbolSelected',
-      data,
+      'currentSymbol',
+      newState,
     );
   },
 };

@@ -3,7 +3,6 @@ export interface TerminalState {
   positions: IPosition[];
   symbols: ISymbol[];
   orders: IOrder[];
-  ohlc: [][];
   symbolSelected: string;
   loadingText: string;
   errorText: string;
@@ -11,11 +10,19 @@ export interface TerminalState {
   errorSymbols: boolean;
   loadingOhlc: boolean;
   errorOhlc: boolean;
-  currentOhlc: {
+  currentSymbol: {
     ticker: string;
-    min: number;
-    max: number;
+    currency: string;
+    exchange: string;
+    minIncrement: number;
+    minIncrementAmount: number;
     type: string;
+    ohlc: {
+      data: [][];
+      begin: number;
+      end: number;
+      interval: string;
+    };
   };
 }
 
