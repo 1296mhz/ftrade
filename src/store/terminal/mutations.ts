@@ -20,7 +20,6 @@ export const mutations: MutationTree<TerminalState> = {
     Vue.set(state, 'tickers', data);
   },
   [SET_OHLC](state: TerminalState, data: any) {
-    console.log(SET_OHLC, " ", data)
     Vue.set(state.currentSymbol, 'ohlc', data);
   },
   [SET_OHLC_NAVIGATOR](state: TerminalState, data: any) {

@@ -51,5 +51,8 @@ export const getters: GetterTree<TerminalState, RootState> = {
       minIncrementAmount: minIncrementAmount,
       type: type,
     }]
+  },
+  CURRENT_SYMBOL(state: TerminalState): any {
+    return state.currentSymbol;
   }
 };

@@ -16,7 +16,6 @@
                   </v-card-actions>
                 </v-row>
                 <v-data-table
-                  v-model="symbolSelected"
                   :headers="symbol_headers"
                   :items="symbols"
                   :items-per-page="5"
@@ -29,13 +28,20 @@
                   dense
                   :loading="loadingSymbols"
                   loading-text="Loading... Please wait"
-                  single-select
-                  show-select
-                  single-expand
                 >
-                  <template v-slot:item.actions="{ item }">
-                    <v-icon small @click="deleteSymbol(item.ticker)">delete</v-icon>
-                  </template>
+                <template v-slot:body="{ items }">
+                  <tbody>
+                  <tr v-for="item in items" :key="item.ticker" @click="selectSymbol(item)" :class="{'selectedRow': item === getSymbolSelected}">
+                    <td>{{ item.ticker }}</td>
+                    <td>{{ item.bid }}</td>
+                    <td>{{ item.ask }}</td>
+                    <td>
+                      <v-icon small @click="deleteSymbol(item.ticker)">delete</v-icon>
+                    </td>
+                  </tr>
+                  </tbody>
+                </template>
+ 
                 </v-data-table>
               </v-container>
             </v-card>
@@ -43,7 +49,13 @@
           <v-col xs="12" sm="12" md="12" lg="6" xl="6">
             <v-card height="100%">
               <v-container fluid>
-                <highcharts class="stock" :constructor-type="'stockChart'" :options="stockOptions"></highcharts>
+                <highcharts
+                  class="stock"
+                  :constructor-type="'stockChart'"
+                  :options="stockOptions"
+                  :callback="startCharts"
+                  :updateArgs="['redraw', 'oneToOne', 'animation']"
+                ></highcharts>
               </v-container>
             </v-card>
           </v-col>
@@ -156,10 +168,15 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
-
+import HighchartsVue from 'highcharts-vue';
+import Highcharts from 'highcharts';
+import stockInit from 'highcharts/modules/stock';
+stockInit(Highcharts);
+Vue.use(HighchartsVue);
 export default Vue.extend({
   data() {
     return {
+      selectedSymbol: null,
       ticker: '',
       amount: '',
       price: '',
@@ -215,13 +232,17 @@ export default Vue.extend({
           series: {
             data: [],
           },
+          baseSeries: 0,
+          xAxis: {},
         },
         scrollbar: {
           liveRedraw: false,
+          enabled: false,
         },
         title: {
           text: 'Symbol not selected',
         },
+        reflow: true,
         rangeSelector: {
           enabled: false,
           selected: 1,
@@ -236,7 +257,7 @@ export default Vue.extend({
           events: {
             afterSetExtremes: this.afterSetExtremes,
           },
-          minRange: 3600 * 1000, // one hour
+          minRange: 60 * 1000,
         },
         yAxis: {
           floor: 0,
@@ -268,6 +289,7 @@ export default Vue.extend({
     },
     //This is where the component updates when data changes.
     ohlc(newVal: any) {
+      this.stockOptions.series[0].data = [];
       this.stockOptions.series[0].data = newVal;
     },
     //This is where the component updates when data changes.
@@ -299,6 +321,7 @@ export default Vue.extend({
       errorSymbols: 'terminal/ERROR_SYMBOLS',
       loadingText: 'terminal/LOADING_TEXT',
       getOhlcNavigator: 'terminal/OHLC_NAVIGATOR',
+      currentSymbol: 'terminal/CURRENT_SYMBOL',
     }),
     symbolSelected: {
       get: function() {
@@ -324,8 +347,8 @@ export default Vue.extend({
     },
     afterSetExtremes(params) {
       Vue.$log.debug(params);
+
       if (this.stockOptions.series[0].data.length === 0) {
-        console.log('FILLING');
         const ohlcParams = {
           ticker: this.symbolSelected[0].ticker,
           begin: Math.round(params.min),
@@ -333,9 +356,26 @@ export default Vue.extend({
         };
         this.setOhlc(ohlcParams);
       }
+
       if (params.type === 'setExtremes') {
+        const ohlcParams = {
+          ticker: this.symbolSelected[0].ticker,
+          begin: Math.round(params.min),
+          end: Math.round(params.max),
+        };
+        this.setOhlc(ohlcParams);
       }
     },
+    startCharts() {
+      console.log('Start chart!');
+    },
+    selectSymbol (item) {
+      this.selectedSymbol = item;
+      console.log("SelectedSymbol", this.selectedSymbol )
+      const v = [];
+      v.push(item)
+      this.setSymbolSelected(v);
+    }
   },
   created() {
     this.getSymbols();
@@ -349,5 +389,9 @@ export default Vue.extend({
   display: inline-block;
   position: relative;
   height: 100%;
+}
+.selectedRow {
+    background-color: #b3d4fc;
+    font-weight: bold;
 }
 </style>
