@@ -12,6 +12,7 @@ import {
   SET_OHLC,
   SET_LOADING_SYMBOLS,
   SET_SYMBOL_SELECTED,
+  SET_OHLC_NAVIGATOR,
 } from './mutation-types';
 
 export const actions: ActionTree<TerminalState, RootState> = {
@@ -24,6 +25,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async createSymbolInStorage({ commit, state }, params) {
     commit(CREATE_SYMBOL, params);
   },
+  //Returns an array of SYMBOLS
   async symbols({ commit, state }) {
     commit(SET_LOADING_SYMBOLS, true);
     const s = await Vue.$centrifuge.getSymbols();
@@ -69,7 +71,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
     await Vue.$centrifuge.deleteSymbol(ticker);
     commit(SET_LOADING_SYMBOLS, false);
   },
-  async getOhlc({ commit, state }, params) {
+  async ohlc({ commit, state }, params) {
     const begin = params.begin ? params.begin : 0;
     const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
     const delta = (Math.round(begin) - Math.round(end)) / 1000;
@@ -80,15 +82,15 @@ export const actions: ActionTree<TerminalState, RootState> = {
     (delta > 3600000 && delta <= 86400000) ? interval = 'd' : interval = 'd';
     (delta > 604800000 && delta <= 2592000000.000001) ? interval = 'M' : interval = 'd';
     (delta > 2592000000.000001 && delta <= 31536000000.428898) ? interval = 'y' : interval = 'd';
-    console.log(interval)
     Vue.$log.debug(params);
 
     params.interval = interval;
+    params.begin = begin;
+    params.end = end;
     const ohlc = await Vue.$centrifuge.getOhlc(params);
-    console.log("return ohlc: ", ohlc)
+
     const currentOhlc = {
-      ticker: params.ticker,
-      ohlc: ohlc.data,
+      data: ohlc.data,
       begin: begin,
       end: end,
       interval: interval,
@@ -96,6 +98,27 @@ export const actions: ActionTree<TerminalState, RootState> = {
 
     commit(SET_OHLC, currentOhlc);
   },
+
+  async ohlcNavigator({ commit, state }, params) {
+    const begin = params.begin ? params.begin : 0;
+    const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
+    let interval = 'd';
+    params.interval = interval;
+    params.begin = begin;
+    params.end = end;
+    Vue.$log.debug(params);
+    const ohlc = await Vue.$centrifuge.getOhlc(params);
+
+    const navigatorOhlc = {
+      data: ohlc.data,
+      begin: begin,
+      end: end,
+      interval: interval,
+    };
+
+    commit(SET_OHLC_NAVIGATOR, navigatorOhlc);
+  },
+
   setSymbolSelected({ commit, state }, params) {
     commit(SET_SYMBOL_SELECTED, params);
   },

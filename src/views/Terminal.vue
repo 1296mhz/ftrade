@@ -31,6 +31,7 @@
                   loading-text="Loading... Please wait"
                   single-select
                   show-select
+                  single-expand
                 >
                   <template v-slot:item.actions="{ item }">
                     <v-icon small @click="deleteSymbol(item.ticker)">delete</v-icon>
@@ -233,7 +234,7 @@ export default Vue.extend({
         },
         xAxis: {
           events: {
-            afterSetExtremes: this.afterSetExtremesBand,
+            afterSetExtremes: this.afterSetExtremes,
           },
           minRange: 3600 * 1000, // one hour
         },
@@ -262,27 +263,28 @@ export default Vue.extend({
     // We follow the object loadingSymbols its value will change false and then we will begin to update the values of the components
     loadingSymbols(newVal: boolean) {
       if (!newVal) {
-        //this.symbolSelected = [];
         this.setSymbolSelected(this.symbols);
-       // this.symbolSelected.push(this.symbolSelectedState);
-        // this.stockOptions.title.text = this.symbolSelected[0].ticker;
       }
     },
-    ohlc(newVal: any, oldVal: any) {
-    
-      this.stockOptions.series[0].data = newVal.data;
+    //This is where the component updates when data changes.
+    ohlc(newVal: any) {
+      this.stockOptions.series[0].data = newVal;
     },
-    symbolSelected(newWal: any) {
-      this.setSymbolSelected(this.symbolSelected);
-      /*
+    //This is where the component updates when data changes.
+    getOhlcNavigator(newVal: any, oldVal: any) {
+      this.stockOptions.navigator.series.data = newVal;
+    },
+    //This is where the component updates when data changes.
+    symbolSelected(newVal: any) {
+      this.stockOptions.navigator.series.data = [];
+      this.stockOptions.title.text = this.symbolSelected[0].ticker;
+      Vue.$log.debug(`SymbolSelct ${this.symbolSelected[0].ticker}`);
       const ohlcParams = {
         ticker: this.symbolSelected[0].ticker,
         begin: 0,
         end: Vue.$constants.END_DATE_OHLC(),
       };
-      // this.stockOptions.title.text = this.symbolSelected[0].ticker;
-      this.getOhlc(ohlcParams);
-      */
+      this.setOhlcNavigator(ohlcParams);
     },
   },
   computed: {
@@ -296,13 +298,14 @@ export default Vue.extend({
       loadingSymbols: 'terminal/LOADING_SYMBOLS',
       errorSymbols: 'terminal/ERROR_SYMBOLS',
       loadingText: 'terminal/LOADING_TEXT',
+      getOhlcNavigator: 'terminal/OHLC_NAVIGATOR',
     }),
     symbolSelected: {
       get: function() {
         return this.getSymbolSelected;
       },
       set: function(newValue) {
-        this.setSymbolSelected(newValue)
+        this.setSymbolSelected(newValue);
       },
     },
   },
@@ -311,25 +314,29 @@ export default Vue.extend({
       getSymbols: 'terminal/symbols',
       createSymbol: 'terminal/createSymbol',
       deleteSymbol: 'terminal/deleteSymbol',
-      getOhlc: 'terminal/getOhlc',
+      setOhlc: 'terminal/ohlc',
       setSymbolSelected: 'terminal/setSymbolSelected',
+      setOhlcNavigator: 'terminal/ohlcNavigator',
     }),
     CreateSymbol(ticker) {
       this.createSymbol(ticker);
       this.ticker = '';
     },
-    afterSetExtremesBand(params) {
-      if (this.symbolSelected[0] && params.type === 'setExtremes') {
+    afterSetExtremes(params) {
+      Vue.$log.debug(params);
+      if (this.stockOptions.series[0].data.length === 0) {
+        console.log('FILLING');
         const ohlcParams = {
           ticker: this.symbolSelected[0].ticker,
           begin: Math.round(params.min),
           end: Math.round(params.max),
         };
-        this.getOhlc(ohlcParams);
+        this.setOhlc(ohlcParams);
+      }
+      if (params.type === 'setExtremes') {
       }
     },
   },
-  mounted() {},
   created() {
     this.getSymbols();
   },

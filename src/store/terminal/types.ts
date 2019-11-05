@@ -17,6 +17,12 @@ export interface TerminalState {
     minIncrement: number;
     minIncrementAmount: number;
     type: string;
+    ohlcNavigator: {
+      data: [][],
+      begin: number;
+      end: number;
+      interval: string;
+    }
     ohlc: {
       data: [][];
       begin: number;

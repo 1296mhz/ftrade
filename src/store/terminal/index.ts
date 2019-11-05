@@ -26,6 +26,12 @@ export const state: TerminalState = {
     minIncrement: 0,
     minIncrementAmount: 0,
     type: '',
+    ohlcNavigator: {
+      data: [],
+      begin: 0,
+      end: 0,
+      interval: 'd',
+    },
     ohlc: {
       data: [],
       begin: 0,

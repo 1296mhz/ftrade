@@ -12,6 +12,7 @@ import {
   SET_OHLC,
   SET_LOADING_SYMBOLS,
   SET_SYMBOL_SELECTED,
+  SET_OHLC_NAVIGATOR,
 } from './mutation-types';
 
 export const mutations: MutationTree<TerminalState> = {
@@ -19,7 +20,11 @@ export const mutations: MutationTree<TerminalState> = {
     Vue.set(state, 'tickers', data);
   },
   [SET_OHLC](state: TerminalState, data: any) {
-    Vue.set(state, 'currentSymbol', data);
+    console.log(SET_OHLC, " ", data)
+    Vue.set(state.currentSymbol, 'ohlc', data);
+  },
+  [SET_OHLC_NAVIGATOR](state: TerminalState, data: any) {
+    Vue.set(state.currentSymbol, 'ohlcNavigator', data);
   },
   [SET_SYMBOLS](state: TerminalState, data: any) {
     Vue.set(state, 'symbols', data);
@@ -57,7 +62,6 @@ export const mutations: MutationTree<TerminalState> = {
   },
   [SET_SYMBOL_SELECTED](state: TerminalState, data: any) {
     const  { ticker, currency, exchange, minIncrement, minIncrementAmount, type } = data[0];
-    console.log("dta", data[0])
     const newState = { 
       ...state.currentSymbol,
       ticker: ticker,
@@ -67,7 +71,6 @@ export const mutations: MutationTree<TerminalState> = {
       minIncrementAmount: minIncrementAmount,
       type: type 
     };
-    console.log("newState ", newState)
     Vue.set(
       state,
       'currentSymbol',
