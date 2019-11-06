@@ -272,6 +272,7 @@ export default Vue.extend({
         },
         xAxis: {
           events: {
+            setExtremes: this.setExtremes,
             afterSetExtremes: this.afterSetExtremes,
           },
           minRange: 60 * 1000,
@@ -368,6 +369,19 @@ export default Vue.extend({
       this.createSymbol(ticker);
       this.ticker = '';
     },
+    setExtremes(params) {
+   
+        this.chart = Highcharts.charts[0];
+        this.chart.showLoading('Loading data from server...');
+        const ohlcParams = {
+          ticker: this.symbolSelected.ticker,
+          begin: Math.round(params.min),
+          end: Math.round(params.max),
+        };
+
+        this.setOhlc(ohlcParams);
+
+    },
     afterSetExtremes(params) {
       // Vue.$log.debug(`${params}`);
      // console.log(params);
@@ -382,7 +396,7 @@ export default Vue.extend({
         };
         this.setOhlc(ohlcParams);
       }
-*/
+
       if (params.type === 'setExtremes') {
         this.chart = Highcharts.charts[0];
         this.chart.showLoading('Loading data from server...');
@@ -394,7 +408,7 @@ export default Vue.extend({
 
         this.setOhlc(ohlcParams);
       }
-
+*/
 
     },
     startCharts() {
