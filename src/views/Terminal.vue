@@ -295,8 +295,10 @@ export default Vue.extend({
     },
     //This is where the component updates when data changes.
     ohlc(newVal: any, oldVal: any) {
-      this.stockOptions.series[0].data = [];
-      this.stockOptions.series[0].data = newVal;
+      this.chart = Highcharts.charts[0],
+      //this.stockOptions.series[0].data = [];
+      //this.stockOptions.series[0].data = newVal;
+      this.chart.series[0].setData(newVal);
       this.chart.hideLoading();
     },
     //This is where the component updates when data changes.
@@ -356,9 +358,11 @@ export default Vue.extend({
       this.ticker = '';
     },
     afterSetExtremes(params) {
-      Vue.$log.debug(`${params}`);
+      // Vue.$log.debug(`${params}`);
+      console.log(params)
       this.chart = Highcharts.charts[0];
-     // this.chart.showLoading('Loading data from server...');
+      this.chart.showLoading('Loading data from server...');
+/*
       if (this.stockOptions.series[0].data.length === 0) {
         const ohlcParams = {
           ticker: this.symbolSelected.ticker,
@@ -368,16 +372,18 @@ export default Vue.extend({
         this.chart.showLoading('Loading data from server...');
         this.setOhlc(ohlcParams);
       }
-
+      */
       if (params.type === 'setExtremes') {
         const ohlcParams = {
           ticker: this.symbolSelected.ticker,
           begin: Math.round(params.min),
           end: Math.round(params.max),
         };
-        this.chart.showLoading('Loading data from server...');
+
         this.setOhlc(ohlcParams);
       }
+
+
     },
     startCharts() {
       console.log('Start chart!');
