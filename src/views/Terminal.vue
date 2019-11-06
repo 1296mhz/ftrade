@@ -270,6 +270,7 @@ export default Vue.extend({
             visibility: 'hidden',
           },
         },
+
         xAxis: {
           events: {
             setExtremes: this.setExtremes,
@@ -307,7 +308,7 @@ export default Vue.extend({
     },
     //This is where the component updates when data changes.
     ohlc(newVal: any, oldVal: any) {
-      (this.chart = Highcharts.charts[0]),
+      this.chart = Highcharts.charts[0],
       this.chart.series[0].setData(newVal);
       this.chart.hideLoading();
     },
