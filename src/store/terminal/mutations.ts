@@ -62,7 +62,18 @@ export const mutations: MutationTree<TerminalState> = {
   [SET_SYMBOL_SELECTED](state: TerminalState, data: any) {
     const  { ticker, currency, exchange, minIncrement, minIncrementAmount, type } = data;
     const newState = { 
-      ...state.currentSymbol,
+      ohlcNavigator: {
+        data: [],
+        begin: 0,
+        end: 0,
+        interval: 'd',
+      },
+      ohlc: {
+        data: [],
+        begin: 0,
+        end: 0,
+        interval: 'd',
+      },
       ticker: ticker,
       currency: currency,
       exchange: exchange,
