@@ -43,14 +43,14 @@ export const getters: GetterTree<TerminalState, RootState> = {
   },
   SYMBOL_SELECTED(state: TerminalState): any {
     const { currentSymbol: { ticker, currency, exchange, minIncrement, minIncrementAmount, type } } = state;
-    return [{
+    return {
       ticker: ticker,
       currency: currency,
       exchange: exchange,
       minIncrement: minIncrement,
       minIncrementAmount: minIncrementAmount,
       type: type,
-    }]
+    }
   },
   CURRENT_SYMBOL(state: TerminalState): any {
     return state.currentSymbol;

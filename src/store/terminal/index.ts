@@ -26,6 +26,8 @@ export const state: TerminalState = {
     minIncrement: 0,
     minIncrementAmount: 0,
     type: '',
+    bid: 0,
+    ask: 0,
     ohlcNavigator: {
       data: [],
       begin: 0,

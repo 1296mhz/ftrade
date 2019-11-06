@@ -103,10 +103,12 @@ export const actions: ActionTree<TerminalState, RootState> = {
     const begin = params.begin ? params.begin : 0;
     const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
     let interval = 'd';
+
+    Vue.$log.debug(params);
+
     params.interval = interval;
     params.begin = begin;
     params.end = end;
-    Vue.$log.debug(params);
     const ohlc = await Vue.$centrifuge.getOhlc(params);
 
     const navigatorOhlc = {

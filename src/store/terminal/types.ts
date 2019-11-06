@@ -16,6 +16,8 @@ export interface TerminalState {
     exchange: string;
     minIncrement: number;
     minIncrementAmount: number;
+    bid: number;
+    ask: number;
     type: string;
     ohlcNavigator: {
       data: [][],

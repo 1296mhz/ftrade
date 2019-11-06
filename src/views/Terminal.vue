@@ -29,19 +29,23 @@
                   :loading="loadingSymbols"
                   loading-text="Loading... Please wait"
                 >
-                <template v-slot:body="{ items }">
-                  <tbody>
-                  <tr v-for="item in items" :key="item.ticker" @click="selectSymbol(item)" :class="{'selectedRow': item === getSymbolSelected}">
-                    <td>{{ item.ticker }}</td>
-                    <td>{{ item.bid }}</td>
-                    <td>{{ item.ask }}</td>
-                    <td>
-                      <v-icon small @click="deleteSymbol(item.ticker)">delete</v-icon>
-                    </td>
-                  </tr>
-                  </tbody>
-                </template>
- 
+                  <template v-slot:body="{ items }">
+                    <tbody>
+                      <tr
+                        v-for="item in items"
+                        :key="item.ticker"
+                        @click="selectSymbol(item)"
+                        :class="{'selectedRow': item.ticker === symbolSelected.ticker}"
+                      >
+                        <td>{{ item.ticker }}</td>
+                        <td>{{ item.bid }}</td>
+                        <td>{{ item.ask }}</td>
+                        <td>
+                          <v-icon small @click="deleteSymbol(item.ticker)">delete</v-icon>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </template>
                 </v-data-table>
               </v-container>
             </v-card>
@@ -284,7 +288,8 @@ export default Vue.extend({
     // We follow the object loadingSymbols its value will change false and then we will begin to update the values of the components
     loadingSymbols(newVal: boolean) {
       if (!newVal) {
-        this.setSymbolSelected(this.symbols);
+        console.log("this.symbols", this.symbols)
+        this.setSymbolSelected(this.symbols[0]);
       }
     },
     //This is where the component updates when data changes.
@@ -299,10 +304,10 @@ export default Vue.extend({
     //This is where the component updates when data changes.
     symbolSelected(newVal: any) {
       this.stockOptions.navigator.series.data = [];
-      this.stockOptions.title.text = this.symbolSelected[0].ticker;
-      Vue.$log.debug(`SymbolSelct ${this.symbolSelected[0].ticker}`);
+      this.stockOptions.title.text = this.symbolSelected.ticker;
+      Vue.$log.debug(`SymbolSelct ${this.symbolSelected.ticker}`);
       const ohlcParams = {
-        ticker: this.symbolSelected[0].ticker,
+        ticker: this.symbolSelected.ticker,
         begin: 0,
         end: Vue.$constants.END_DATE_OHLC(),
       };
@@ -350,7 +355,7 @@ export default Vue.extend({
 
       if (this.stockOptions.series[0].data.length === 0) {
         const ohlcParams = {
-          ticker: this.symbolSelected[0].ticker,
+          ticker: this.symbolSelected.ticker,
           begin: Math.round(params.min),
           end: Math.round(params.max),
         };
@@ -369,13 +374,13 @@ export default Vue.extend({
     startCharts() {
       console.log('Start chart!');
     },
-    selectSymbol (item) {
+    selectSymbol(item) {
+      console.log('item ', item);
       this.selectedSymbol = item;
-      console.log("SelectedSymbol", this.selectedSymbol )
-      const v = [];
-      v.push(item)
-      this.setSymbolSelected(v);
-    }
+      this.setSymbolSelected(item);
+
+      console.log('getSymbolSelected', this.getSymbolSelected);
+    },
   },
   created() {
     this.getSymbols();
@@ -391,7 +396,15 @@ export default Vue.extend({
   height: 100%;
 }
 .selectedRow {
-    background-color: #b3d4fc;
-    font-weight: bold;
+  background-color: #b3d4fc;
+  font-weight: bold;
+}
+.selectedRow:hover {
+  background-color: #b3d4fc !important;
+  font-weight: bold;
+}
+.selectedRow:focus {
+  background-color: #b3d4fc !important;
+  font-weight: bold;
 }
 </style>
