@@ -234,9 +234,20 @@ export default Vue.extend({
           zoomType: 'x',
         },
         navigator: {
+          enabled: true,
           adaptToUpdatedData: false,
           series: {
             data: [],
+            type: 'areaspline',
+            color: '#4572A7',
+            fillOpacity: 0.05,
+            dataGrouping: {
+              smoothed: false,
+            },
+            lineWidth: 1,
+            marker: {
+              enabled: false,
+            },
           },
           baseSeries: 0,
           xAxis: {},
@@ -295,10 +306,10 @@ export default Vue.extend({
     },
     //This is where the component updates when data changes.
     ohlc(newVal: any, oldVal: any) {
-      this.chart = Highcharts.charts[0],
-      //this.stockOptions.series[0].data = [];
-      //this.stockOptions.series[0].data = newVal;
-      this.chart.series[0].setData(newVal);
+      (this.chart = Highcharts.charts[0]),
+        //this.stockOptions.series[0].data = [];
+        //this.stockOptions.series[0].data = newVal;
+        this.chart.series[0].setData(newVal);
       this.chart.hideLoading();
     },
     //This is where the component updates when data changes.
@@ -359,10 +370,10 @@ export default Vue.extend({
     },
     afterSetExtremes(params) {
       // Vue.$log.debug(`${params}`);
-      console.log(params)
+      console.log(params);
       this.chart = Highcharts.charts[0];
       this.chart.showLoading('Loading data from server...');
-/*
+      /*
       if (this.stockOptions.series[0].data.length === 0) {
         const ohlcParams = {
           ticker: this.symbolSelected.ticker,
@@ -382,8 +393,6 @@ export default Vue.extend({
 
         this.setOhlc(ohlcParams);
       }
-
-
     },
     startCharts() {
       console.log('Start chart!');
