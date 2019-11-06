@@ -288,7 +288,6 @@ export default Vue.extend({
     // We follow the object loadingSymbols its value will change false and then we will begin to update the values of the components
     loadingSymbols(newVal: boolean) {
       if (!newVal) {
-        console.log("this.symbols", this.symbols)
         this.setSymbolSelected(this.symbols[0]);
       }
     },
