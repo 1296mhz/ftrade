@@ -58,7 +58,6 @@
                   :constructor-type="'stockChart'"
                   :options="stockOptions"
                   :callback="startCharts"
-                  :updateArgs="['redraw', 'oneToOne', 'animation']"
                 ></highcharts>
               </v-container>
             </v-card>
@@ -181,7 +180,7 @@ Vue.use(HighchartsVue);
 export default Vue.extend({
   data() {
     return {
-      chart: Highcharts.charts[0],
+      chart: null,
       selectedSymbolItem: {},
       ticker: '',
       amount: '',
@@ -234,6 +233,7 @@ export default Vue.extend({
           zoomType: 'x',
         },
         navigator: {
+          id: 'navigator',
           enabled: true,
           adaptToUpdatedData: false,
           series: {
@@ -308,9 +308,7 @@ export default Vue.extend({
     //This is where the component updates when data changes.
     ohlc(newVal: any, oldVal: any) {
       (this.chart = Highcharts.charts[0]),
-        //this.stockOptions.series[0].data = [];
-        //this.stockOptions.series[0].data = newVal;
-        this.chart.series[0].setData(newVal);
+      this.chart.series[0].setData(newVal);
       this.chart.hideLoading();
     },
     //This is where the component updates when data changes.
@@ -319,7 +317,7 @@ export default Vue.extend({
     },
     //This is where the component updates when data changes.
     symbolSelected(newVal: any) {
-      // this.chart = Highcharts.charts[0],
+      this.chart = Highcharts.charts[0];
       this.stockOptions.navigator.series.data = [];
       this.stockOptions.title.text = this.symbolSelected.ticker;
       Vue.$log.debug(`SymbolSelct ${this.symbolSelected.ticker}`);
@@ -328,6 +326,7 @@ export default Vue.extend({
         begin: 0,
         end: Vue.$constants.END_DATE_OHLC(),
       };
+      
       this.setOhlcNavigator(ohlcParams);
       this.chart.showLoading('Loading data from server...');
       this.setOhlc(ohlcParams);
@@ -370,49 +369,22 @@ export default Vue.extend({
       this.ticker = '';
     },
     setExtremes(params) {
-   
-        this.chart = Highcharts.charts[0];
-        this.chart.showLoading('Loading data from server...');
-        const ohlcParams = {
-          ticker: this.symbolSelected.ticker,
-          begin: Math.round(params.min),
-          end: Math.round(params.max),
-        };
+      Vue.$log.debug(params)
+      this.chart = Highcharts.charts[0];
+      this.chart.showLoading('Loading data from server...');
+      const ohlcParams = {
+        ticker: this.symbolSelected.ticker,
+        begin: Math.round(params.min),
+        end: Math.round(params.max),
+      };
 
-        this.setOhlc(ohlcParams);
-
+      this.setOhlc(ohlcParams);
     },
     afterSetExtremes(params) {
-      // Vue.$log.debug(`${params}`);
-     // console.log(params);
-/*
-      if (this.stockOptions.series[0].data.length === 0) {
-        this.chart = Highcharts.charts[0];
-        this.chart.showLoading('Loading data from server...');
-        const ohlcParams = {
-          ticker: this.symbolSelected.ticker,
-          begin: Math.round(params.min),
-          end: Math.round(params.max),
-        };
-        this.setOhlc(ohlcParams);
-      }
-
-      if (params.type === 'setExtremes') {
-        this.chart = Highcharts.charts[0];
-        this.chart.showLoading('Loading data from server...');
-        const ohlcParams = {
-          ticker: this.symbolSelected.ticker,
-          begin: Math.round(params.min),
-          end: Math.round(params.max),
-        };
-
-        this.setOhlc(ohlcParams);
-      }
-*/
-
+      Vue.$log.debug(params);
     },
     startCharts() {
-      console.log('Start chart!');
+      Vue.$log.debug(`Start chart!`);
     },
     selectSymbol(item) {
       this.setSymbolSelected(item);
