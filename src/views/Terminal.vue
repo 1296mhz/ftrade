@@ -169,25 +169,15 @@
 
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { VueConstructor } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
 import { symbolHeaders, orderHeaders, positionHeaders } from './constants';
 stockInit(Highcharts);
 
-// declare module 'vue/types/vue' {
-//   interface VueConstructor {
-//     setSymbolSelected: any
-//   }
-// }
 
-// declare module 'vue/types/options' {
-//   interface ComponentOptions<V extends Vue> {
-//     setSymbolSelected: any
-//   }
-// }
-export default Vue.extend({
+export default (Vue as VueConstructor<any>).extend({
   data() {
     return {
       chart: null,
