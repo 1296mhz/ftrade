@@ -3,7 +3,7 @@ import jwt_decode from 'jwt-decode';
 
 const constants = {
   END_DATE_OHLC: () => {
-    return Number(process.env.VUE_APP_END_DATE_OHLC)
+    return Number(process.env.VUE_APP_END_DATE_OHLC);
   },
 };
 

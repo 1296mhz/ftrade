@@ -3,6 +3,17 @@ import centrifuge from 'centrifuge';
 import store from '../store';
 import { IOhlcParams } from '../store/terminal/types';
 
+function errorHandler(response) {
+  Vue.$log.error(`Error: ${response}`);
+  if (response.code) {
+    Vue.$toast.error(`Error code: ${response.code}, Message: ${response.message}`, {
+      position: 'top-right',
+    });
+    return false;
+  } else {
+    return true;
+  }
+}
 class CentrifugeManager {
   public instance: any;
   private id: string = '';
@@ -12,7 +23,7 @@ class CentrifugeManager {
     this.instance.on('connect', async (ctx) => {
       this.connectFlag = true;
 
-      let SymbolsSub = this.instance.subscribe(`symbols#${this.id}`, (message) => {
+      this.instance.subscribe(`symbols#${this.id}`, (message) => {
         switch (message.data.Command) {
           case 'delete':
             store.dispatch('terminal/deleteSymbolInStorage', message.data);
@@ -21,21 +32,11 @@ class CentrifugeManager {
             store.dispatch('terminal/createSymbolInStorage', message.data);
             break;
         }
-      }).on(`message`, (data) => {
-        console.log(`Error: ${data}`)
-      }).on(`error`, (data) => {
-        console.log(`Error: ${data}`)
-      }).on(`leave`, (data) => {
-        console.log(`Error: ${data}`)
       });
-
-
     });
 
-
-
     this.instance.on('error', (ctx) => {
-        console.log("Ctx ", ctx)
+      Vue.$log.debug(`Error: ${ctx}`);
     });
 
     this.instance.on('disconnect', (ctx) => {
@@ -64,22 +65,21 @@ class CentrifugeManager {
   public async getSymbols() {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'GetSymbols' });
-      return response.data;
+      return (errorHandler(response)) ? response.data : 'error';
     }
-
   }
 
   public async createSymbol(ticker: string) {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'CreateSymbol', params: { ticker: ticker } });
-      return response;
+      return (errorHandler(response)) ? response : 'error';
     }
   }
 
   public async deleteSymbol(ticker: string) {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'DeleteSymbol', params: ticker });
-      return response;
+      return (errorHandler(response)) ? response : 'error';
     }
   }
 

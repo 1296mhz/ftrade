@@ -14,7 +14,7 @@ export const state: TerminalState = {
   orders: [],
   symbolSelected: '',
   loadingText: 'Loading',
-  errorText: "Error loading",
+  errorText: 'Error loading',
   loadingSymbols: false,
   errorSymbols: false,
   loadingOhlc: false,

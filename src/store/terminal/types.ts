@@ -20,13 +20,13 @@ export interface TerminalState {
     ask: number;
     type: string;
     ohlcNavigator: {
-      data: [][],
+      data: Array<[]>,
       begin: number;
       end: number;
       interval: string;
     }
     ohlc: {
-      data: [][];
+      data: Array<[]>;
       begin: number;
       end: number;
       interval: string;

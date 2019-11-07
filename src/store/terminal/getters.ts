@@ -1,8 +1,6 @@
-import Vue from 'vue';
 import { TerminalState } from './types';
 import { RootState } from '@/store/types';
 import { GetterTree } from 'vuex';
-import { state } from '../app';
 
 export const getters: GetterTree<TerminalState, RootState> = {
   LOADING_TEXT(state: TerminalState): any {
@@ -50,9 +48,9 @@ export const getters: GetterTree<TerminalState, RootState> = {
       minIncrement: minIncrement,
       minIncrementAmount: minIncrementAmount,
       type: type,
-    }
+    };
   },
   CURRENT_SYMBOL(state: TerminalState): any {
     return state.currentSymbol;
-  }
+  },
 };

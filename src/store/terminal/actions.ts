@@ -25,7 +25,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async createSymbolInStorage({ commit, state }, params) {
     commit(CREATE_SYMBOL, params);
   },
-  //Returns an array of SYMBOLS
+  // Returns an array of SYMBOLS
   async symbols({ commit, state }) {
     commit(SET_LOADING_SYMBOLS, true);
     const s = await Vue.$centrifuge.getSymbols();
@@ -102,7 +102,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async ohlcNavigator({ commit, state }, params) {
     const begin = params.begin ? params.begin : 0;
     const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
-    let interval = 'd';
+    const interval = 'd';
 
     Vue.$log.debug(params);
 

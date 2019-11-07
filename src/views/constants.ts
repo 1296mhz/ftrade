@@ -1,4 +1,4 @@
-export const symbol_headers = [
+export const symbolHeaders = [
   {
     text: 'Ticker',
     align: 'left',
