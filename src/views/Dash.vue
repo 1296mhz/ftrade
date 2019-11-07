@@ -48,6 +48,7 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { eventBus } from '../main';
 export default {
   name: 'App',
   props: {
@@ -72,5 +73,8 @@ export default {
       logout: 'auth/exit',
     }),
   },
+  created() {
+     eventBus.$emit('info', `Welcome to Gimaym! ${new Date().toDateString()}`);
+  }
 };
 </script>

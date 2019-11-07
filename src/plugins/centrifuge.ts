@@ -2,13 +2,12 @@ import Vue from 'vue';
 import centrifuge from 'centrifuge';
 import store from '../store';
 import { IOhlcParams } from '../store/terminal/types';
+import { eventBus } from '../main';
 
 function errorHandler(response) {
   Vue.$log.error(`Error: ${response}`);
   if (response.code) {
-    Vue.$toast.error(`Error code: ${response.code}, Message: ${response.message}`, {
-      position: 'top-right',
-    });
+    eventBus.$emit('error', `Error code: ${response.code}, Message: ${response.message}` );
     return false;
   } else {
     return true;
