@@ -75,6 +75,6 @@ export default {
   },
   created() {
      eventBus.$emit('info', `Welcome to Gimaym! ${new Date().toDateString()}`);
-  }
+  },
 };
 </script>
