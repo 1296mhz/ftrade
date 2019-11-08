@@ -4,8 +4,8 @@ import store from '../store';
 import { IOhlcParams } from '../store/terminal/types';
 import { eventBus } from '../main';
 
-function errorHandler(response) {
-  Vue.$log.error(`Error: ${response}`);
+function responseHandler(response) {
+  Vue.$log.debug(response);
   if (response.code) {
     eventBus.$emit('error', `Error code: ${response.code}, Message: ${response.message}` );
     return false;
@@ -20,6 +20,7 @@ class CentrifugeManager {
   constructor(url) {
     this.instance = new centrifuge(url);
     this.instance.on('connect', async (ctx) => {
+      this.instance.removeAllListeners();
       this.connectFlag = true;
 
       this.instance.subscribe(`symbols#${this.id}`, (message) => {
@@ -32,6 +33,10 @@ class CentrifugeManager {
             break;
         }
       });
+
+      // let TmpSub = this.instance.subscribe(`symbols:AAPL.NASDAQ`, (message) => {
+      //   console.log(message);
+      //   });
     });
 
     this.instance.on('error', (ctx) => {
@@ -64,21 +69,21 @@ class CentrifugeManager {
   public async getSymbols() {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'GetSymbols' });
-      return (errorHandler(response)) ? response.data : 'error';
+      return (responseHandler(response)) ? response.data : 'error';
     }
   }
 
   public async createSymbol(ticker: string) {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'CreateSymbol', params: { ticker: ticker } });
-      return (errorHandler(response)) ? response : 'error';
+      return (responseHandler(response)) ? response : 'error';
     }
   }
 
   public async deleteSymbol(ticker: string) {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'DeleteSymbol', params: ticker });
-      return (errorHandler(response)) ? response : 'error';
+      return (responseHandler(response)) ? response : 'error';
     }
   }
 

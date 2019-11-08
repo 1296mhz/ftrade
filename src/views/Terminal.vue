@@ -347,9 +347,6 @@ export default (Vue as VueConstructor<any>).extend({
 
       this.setOhlc(ohlcParams);
     },
-    afterSetExtremes(params) {
-      Vue.$log.debug(params);
-    },
     startCharts() {
       Vue.$log.debug(`Start chart!`);
     },

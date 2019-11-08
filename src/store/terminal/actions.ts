@@ -74,7 +74,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async ohlc({ commit, state }, params) {
     const begin = params.begin ? params.begin : 0;
     const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
-    const delta = (Math.round(end) - Math.round(begin)) / 1000;
+    const delta = end - begin;
     let interval = 'd';
 
     if (delta < 216000000) {
