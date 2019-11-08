@@ -13,6 +13,8 @@ import {
   SET_LOADING_SYMBOLS,
   SET_SYMBOL_SELECTED,
   SET_OHLC_NAVIGATOR,
+  SET_SYMBOL_BID,
+  SET_SYMBOL_ASK,
 } from './mutation-types';
 
 export const mutations: MutationTree<TerminalState> = {
@@ -60,31 +62,60 @@ export const mutations: MutationTree<TerminalState> = {
     );
   },
   [SET_SYMBOL_SELECTED](state: TerminalState, data: any) {
-    const { ticker, currency, exchange, minIncrement, minIncrementAmount, type } = data;
-    const newState = {
-      ohlcNavigator: {
-        data: [],
-        begin: 0,
-        end: 0,
-        interval: 'd',
-      },
-      ohlc: {
-        data: [],
-        begin: 0,
-        end: 0,
-        interval: 'd',
-      },
-      ticker: ticker,
-      currency: currency,
-      exchange: exchange,
-      minIncrement: minIncrement,
-      minIncrementAmount: minIncrementAmount,
-      type: type,
-    };
+    if (data !== undefined) {
+      const { ticker, currency, exchange, minIncrement, minIncrementAmount, type } = data;
+      const newState = {
+        ohlcNavigator: {
+          data: [],
+          begin: 0,
+          end: 0,
+          interval: 'd',
+        },
+        ohlc: {
+          data: [],
+          begin: 0,
+          end: 0,
+          interval: 'd',
+        },
+        ticker: ticker,
+        currency: currency,
+        exchange: exchange,
+        minIncrement: minIncrement,
+        minIncrementAmount: minIncrementAmount,
+        type: type,
+      };
+      Vue.set(
+        state,
+        'currentSymbol',
+        newState,
+      );
+    }
+
+  },
+  [SET_SYMBOL_BID](state: TerminalState, data: any) {
+    const newStateSymbols = [...state.symbols];
     Vue.set(
       state,
-      'currentSymbol',
-      newState,
+      'symbols',
+      newStateSymbols.map((symbol) => {
+        if (symbol.ticker === data.data.ticker) {
+          symbol.bid = data.data.bid;
+        }
+        return symbol;
+      }),
+    );
+  },
+  [SET_SYMBOL_ASK](state: TerminalState, data: any) {
+    const newStateSymbols = [...state.symbols];
+    Vue.set(
+      state,
+      'symbols',
+      newStateSymbols.map((symbol) => {
+        if (symbol.ticker === data.data.ticker) {
+          symbol.ask = data.data.ask;
+        }
+        return symbol;
+      }),
     );
   },
 };

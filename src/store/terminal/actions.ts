@@ -13,6 +13,8 @@ import {
   SET_LOADING_SYMBOLS,
   SET_SYMBOL_SELECTED,
   SET_OHLC_NAVIGATOR,
+  SET_SYMBOL_BID,
+  SET_SYMBOL_ASK,
 } from './mutation-types';
 
 export const actions: ActionTree<TerminalState, RootState> = {
@@ -70,6 +72,12 @@ export const actions: ActionTree<TerminalState, RootState> = {
     commit(SET_LOADING_SYMBOLS, true);
     await Vue.$centrifuge.deleteSymbol(ticker);
     commit(SET_LOADING_SYMBOLS, false);
+  },
+  async setBidSymbol({ commit, state }, data) {
+    commit(SET_SYMBOL_BID, data);
+  },
+  async setAskSymbol({ commit, state }, data) {
+    commit(SET_SYMBOL_ASK, data);
   },
   async ohlc({ commit, state }, params) {
     const begin = params.begin ? params.begin : 0;
