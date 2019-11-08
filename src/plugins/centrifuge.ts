@@ -44,7 +44,7 @@ class SymbolSubs{
     });
   }
   public unsubscribe(message) {
-    const index = Vue.$_.findIndex(this.symbols, (symbol: any) => { symbol.channel === `symbols:${message.data.Params}`; });
+    const index = Vue.$_.findIndex(this.symbols, (symbol: any) => { return symbol.channel === `symbols:${message.data.Params}`; });
     this.symbols[index].unsubscribe();
     this.symbols.splice(index, 1);
   }
