@@ -128,7 +128,7 @@ class CentrifugeManager {
   public async getOhlc(params: IOhlcParams) {
     if (this.connectFlag) {
       const response = await this.instance.rpc({ method: 'GetOhlc', params: params });
-      return response;
+      return (responseHandler(response)) ? response : 'error';
     }
   }
 }
