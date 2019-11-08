@@ -76,12 +76,13 @@ export const actions: ActionTree<TerminalState, RootState> = {
     const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
     const delta = (Math.round(end) - Math.round(begin)) / 1000;
     let interval = 'd';
-    (delta <= 3600) ? interval = 's' : interval = 'd';
-    (delta > 3600 && delta <= 60000) ? interval = 'm' : interval = 'd';
-    (delta > 60000 && delta <= 3600000) ? interval = 'h' : interval = 'd';
-    (delta > 3600000 && delta <= 86400000) ? interval = 'd' : interval = 'd';
-    (delta > 604800000 && delta <= 2592000000.000001) ? interval = 'M' : interval = 'd';
-    (delta > 2592000000.000001 && delta <= 31536000000.428898) ? interval = 'y' : interval = 'd';
+
+    if (delta < 216000000) {
+      interval = 'm';
+    } else if (delta < 4320000000) {
+      interval = 'h';
+    }
+
     Vue.$log.debug(params);
 
     params.interval = interval;
