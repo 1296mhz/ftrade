@@ -40,11 +40,11 @@ class SymbolSubs{
         if (newMessage.data.bid) {
           store.dispatch('terminal/setBidSymbol', newMessage);
         };
-       })
+       });
     });
   }
-  public unsubscribe(instance, store, message) {
-    const index = Vue.$_.findIndex(this.symbols, function (symbol: any) { return symbol.channel === `symbols:${message.data.Params}`; });
+  public unsubscribe(message) {
+    const index = Vue.$_.findIndex(this.symbols, (symbol: any) => { symbol.channel === `symbols:${message.data.Params}`; });
     this.symbols[index].unsubscribe();
     this.symbols.splice(index, 1);
   }
@@ -65,7 +65,7 @@ class CentrifugeManager {
       this.instance.subscribe(`symbols#${this.id}`, (message) => {
         switch (message.data.Command) {
           case 'delete':
-            this.symbolSubscribes.unsubscribe(this.instance, store, message);
+            this.symbolSubscribes.unsubscribe(message);
             store.dispatch('terminal/deleteSymbolInStorage', message.data);
             break;
           case 'create':
