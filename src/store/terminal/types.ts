@@ -83,5 +83,3 @@ export interface IOhlc  {
   series: number[];
 }
 
-
-

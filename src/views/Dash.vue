@@ -1,5 +1,7 @@
 <template>
   <v-app id="inspire">
+  <!-- <v-overlay :value="overlay"> -->
+
     <v-navigation-drawer 
     v-model="drawer" 
     app 
@@ -32,10 +34,7 @@
     <v-app-bar app color="indigo" dark>
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
-
-
       <accounts-list></accounts-list>
-
       <v-btn icon @click="logout()">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
@@ -45,15 +44,25 @@
       <div height="80vh">
       <router-view></router-view>
       </div>
+   <!-- <v-progress-circular
+      :size="70"
+      :width="7"
+      color="purple"
+      indeterminate
+    ></v-progress-circular> -->
+   
     </v-content>
-
+ <!-- </v-overlay> -->
   </v-app>
 </template>
-<script>
+
+<script lang="ts">
+import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { eventBus } from '../main';
 import AccountList from '../components/AccountsList';
-export default {
+
+export default Vue.extend({
   name: 'App',
   props: {
     source: String,
@@ -63,6 +72,7 @@ export default {
   },
   data() {
     return {
+      overlay: false,
       drawer: true,
       mini: true,
     };
@@ -78,10 +88,20 @@ export default {
   methods: {
     ...mapActions({
       logout: 'auth/exit',
+      setAccounts: 'app/accounts',
     }),
+    hellOWorld() {
+      console.log("HELLOWORLD")
+    }
   },
   created() {
      eventBus.$emit('info', `Welcome to Gimaym!`);
+     console.log("Connect flag", Vue.$centrifuge.connectFlag);
   },
-};
+  mounted() {
+      Vue.$log.debug('Dash component start!');
+      
+
+  },
+});
 </script>

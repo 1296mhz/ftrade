@@ -5,6 +5,8 @@ import { RootState } from '@/store/types';
 import {
   SET_DRAWER,
   SET_CURRENT_VIEW,
+  SET_CENTRIFUGE_CONNECTED_FLAG,
+  SET_ACCOUNTS,
 } from './mutation-types';
 
 /*
@@ -18,4 +20,14 @@ export const actions: ActionTree<AppState, RootState> = {
   async currentView({ commit, state }, payload) {
     commit(SET_CURRENT_VIEW, payload);
   },
+  async accounts({ commit, state}, params) {
+    console.log("SETACCOUNTS")
+    const accounts = await Vue.$centrifuge.getAccounts();
+    console.log("accounts", accounts)
+   
+    commit(SET_ACCOUNTS, accounts);
+  },
+  centrifugeConnectedFlag({ commit, state}, params) {
+    commit(  SET_CENTRIFUGE_CONNECTED_FLAG, params)
+  }
 };

@@ -39,9 +39,11 @@ const router = new Router({
 // check auth
 router.beforeEach((to, from, next) => {
   const loggedIn = store.state.auth.token;
+  //Not logged in
   if (!loggedIn && to.path !== '/login') {
     return next('/login');
   }
+  //Logged in
   if (loggedIn && to.path === '/login') {
     return next('/');
   }

@@ -129,7 +129,6 @@ export const actions: ActionTree<TerminalState, RootState> = {
 
     commit(SET_OHLC_NAVIGATOR, navigatorOhlc);
   },
-
   setSymbolSelected({ commit, state }, params) {
     commit(SET_SYMBOL_SELECTED, params);
   },

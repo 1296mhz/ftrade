@@ -16,6 +16,12 @@ import {
   SET_SYMBOL_BID,
   SET_SYMBOL_ASK,
 } from './mutation-types';
+import { state } from '../app';
+
+interface IDeleteSymbol {
+  Command: string;
+  Params: string;
+}
 
 export const mutations: MutationTree<TerminalState> = {
   [SET_TICKERS](state: TerminalState, data: any) {
@@ -36,7 +42,8 @@ export const mutations: MutationTree<TerminalState> = {
   [SET_ORDERS](state: TerminalState, data: any) {
     Vue.set(state, 'orders', data);
   },
-  [DELETE_SYMBOL](state: TerminalState, data: any) {
+  [DELETE_SYMBOL](state: TerminalState, data: IDeleteSymbol) {
+    console.log("delete symbols ", data)
     const newState = [...state.symbols];
     Vue.set(
       state,
@@ -118,4 +125,5 @@ export const mutations: MutationTree<TerminalState> = {
       }),
     );
   },
+
 };

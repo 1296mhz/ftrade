@@ -19,14 +19,15 @@ class CentrifugeManager {
   public instance: any;
   public symbolSubscribes = new SymbolSubsTerminal();
   private id: string = '';
-  private connectFlag: boolean = false;
+  public connectFlag: boolean = false;
   constructor(url) {
+    store.dispatch('app/centrifugeConnectedFlag', false);
     this.instance = new centrifuge(url);
 
     this.instance.on('connect', async (ctx) => {
       this.instance.removeAllListeners();
       this.connectFlag = true;
-
+      store.dispatch('app/centrifugeConnectedFlag', true);
       this.instance.subscribe(`symbols#${this.id}`, (message) => {
         switch (message.data.Command) {
           case 'delete':
@@ -69,7 +70,7 @@ class CentrifugeManager {
   }
 
   public async getSymbols() {
-    if (this.connectFlag) {
+    if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'GetSymbols' });
       this.symbolSubscribes.subscribeMassive(this.instance, store, response.data);
       return (responseHandler(response)) ? response.data : 'error';
@@ -77,22 +78,30 @@ class CentrifugeManager {
   }
 
   public async createSymbol(ticker: string) {
-    if (this.connectFlag) {
+    if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'CreateSymbol', params: { ticker: ticker } });
       return (responseHandler(response)) ? response : 'error';
     }
   }
 
   public async deleteSymbol(ticker: string) {
-    if (this.connectFlag) {
+    if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'DeleteSymbol', params: ticker });
       return (responseHandler(response)) ? response : 'error';
     }
   }
 
   public async getOhlc(params: IOhlcParams) {
-    if (this.connectFlag) {
+    if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'GetOhlc', params: params });
+      return (responseHandler(response)) ? response : 'error';
+    }
+  }
+
+  public async getAccounts() {
+    if (store.state.app.centrifugeConnectedFlag) {
+      const response = await this.instance.rpc({ method: 'GetAccounts' });
+      console.log("Cent ", response)
       return (responseHandler(response)) ? response : 'error';
     }
   }

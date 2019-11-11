@@ -10,6 +10,9 @@ const namespaced: boolean = true;
 export const state: AppState = {
   drawer: null,
   currentView: '',
+  accounts: [],
+  appReady: false,
+  centrifugeConnectedFlag: false,
 };
 
 const appModule: Module<AppState, RootState> = {
