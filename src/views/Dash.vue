@@ -33,6 +33,9 @@
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
 
+
+      <accounts-list></accounts-list>
+
       <v-btn icon @click="logout()">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
@@ -49,10 +52,14 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { eventBus } from '../main';
+import AccountList from '../components/AccountsList';
 export default {
   name: 'App',
   props: {
     source: String,
+  },
+    components: {
+    'accounts-list': AccountList,
   },
   data() {
     return {
