@@ -48,7 +48,6 @@ class SymbolSubs{
     this.symbols[index].unsubscribe();
     this.symbols.splice(index, 1);
   }
-
 }
 class CentrifugeManager {
   public instance: any;
