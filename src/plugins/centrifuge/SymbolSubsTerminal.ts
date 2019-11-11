@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 // Subscribe and unsubscribe from characters
 export default class SymbolSubsTerminal{
   symbols: Array<any> = [];
