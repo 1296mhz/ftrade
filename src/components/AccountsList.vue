@@ -28,21 +28,19 @@ export default (Vue as VueConstructor<any>).extend({
   }),
   watch: {
     account: newVal => {
-      console.log(newVal);
+      // console.log(newVal);
     },
   },
   computed: {
     disableCombo: function() {
       if (this.accounts.length < 1) {
         this.label = 'Account not found';
-       // this.disabled = true;
-        return true
+        // this.disabled = true;
+        return true;
       }
-
     },
     aDefault: {
       get: function() {
-
         if (!this.account) {
           return this.accounts[0];
         }
@@ -50,7 +48,6 @@ export default (Vue as VueConstructor<any>).extend({
         return this.account;
       },
       set: function(account) {
-        console.log(this.account);
         this.account = account;
       },
     },
