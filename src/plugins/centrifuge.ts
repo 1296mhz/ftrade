@@ -4,6 +4,7 @@ import store from '../store';
 import { IOhlcParams } from '../store/terminal/types';
 import { eventBus } from '../main';
 import SymbolSubsTerminal from './centrifuge/SymbolSubsTerminal';
+
 function responseHandler(response) {
   Vue.$log.debug(response);
   if (response.code) {
@@ -14,19 +15,16 @@ function responseHandler(response) {
   }
 }
 
-
 class CentrifugeManager {
   public instance: any;
   public symbolSubscribes = new SymbolSubsTerminal();
   private id: string = '';
-  public connectFlag: boolean = false;
   constructor(url) {
     store.dispatch('app/centrifugeConnectedFlag', false);
     this.instance = new centrifuge(url);
 
     this.instance.on('connect', async (ctx) => {
       this.instance.removeAllListeners();
-      this.connectFlag = true;
       store.dispatch('app/centrifugeConnectedFlag', true);
       this.instance.subscribe(`symbols#${this.id}`, (message) => {
         switch (message.data.Command) {
@@ -47,7 +45,7 @@ class CentrifugeManager {
     });
 
     this.instance.on('disconnect', (ctx) => {
-      this.connectFlag = false;
+      store.dispatch('app/centrifugeConnectedFlag', false);
       this.instance.removeAllListeners();
     });
     return this;
@@ -101,7 +99,6 @@ class CentrifugeManager {
   public async getAccounts() {
     if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'GetAccounts' });
-      console.log("Cent ", response)
       return (responseHandler(response)) ? response : 'error';
     }
   }

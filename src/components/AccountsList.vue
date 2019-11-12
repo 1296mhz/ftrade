@@ -16,25 +16,25 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { VueConstructor } from 'vue';
 
-export default Vue.extend({
+export default (Vue as VueConstructor<any>).extend({
   data: () => ({
     accounts: ['Hello', 'GoodBuy'],
     account: '',
     disabled: false,
-    label: 'Select a account'
+    label: 'Select a account',
   }),
   watch: {
-    account: newVal => {
-      console.log(newVal);
+    account: (newVal) => {
+      Vue.$log.debug('Account object mutate');
     },
   },
   computed: {
     aDefault: {
       get: function() {
         if (this.accounts.length <= 0) {
-          this.label = 'Account not found'
+          this.label = 'Account not found';
           this.disabled = true;
         }
 

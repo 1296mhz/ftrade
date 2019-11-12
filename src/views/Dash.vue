@@ -57,12 +57,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { VueConstructor } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { eventBus } from '../main';
-import AccountList from '../components/AccountsList';
+import AccountList from '../components/AccountsList.vue';
 
-export default Vue.extend({
+export default (Vue as VueConstructor<any>).extend({
   name: 'App',
   props: {
     source: String,
@@ -90,18 +90,12 @@ export default Vue.extend({
       logout: 'auth/exit',
       setAccounts: 'app/accounts',
     }),
-    hellOWorld() {
-      console.log("HELLOWORLD")
-    }
   },
   created() {
      eventBus.$emit('info', `Welcome to Gimaym!`);
-     console.log("Connect flag", Vue.$centrifuge.connectFlag);
   },
   mounted() {
       Vue.$log.debug('Dash component start!');
-      
-
   },
 });
 </script>

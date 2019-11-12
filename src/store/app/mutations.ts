@@ -21,11 +21,10 @@ export const mutations: MutationTree<AppState> = {
     Vue.set(state, 'centrifugeConnectedFlag', data);
   },
   [SET_ACCOUNTS](state: AppState, data: any) {
-    console.log(data)
     const newAccountsList = [...state.accounts, data];
     Vue.set(state, 'accounts', newAccountsList);
   },
   [SET_APP_READY](state: AppState, data: boolean) {
     Vue.set(state, 'appReaday', data);
-  }
+  },
 };

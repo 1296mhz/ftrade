@@ -19,7 +19,6 @@ new Vue({
   store,
   vuetify,
   created() {
-    //this.$store.dispatch('app/setAccounts');
     this.$store.dispatch('terminal/tickers');
     this.$store.dispatch('terminal/positions');
     this.$store.dispatch('terminal/orders');

@@ -43,7 +43,6 @@ export const mutations: MutationTree<TerminalState> = {
     Vue.set(state, 'orders', data);
   },
   [DELETE_SYMBOL](state: TerminalState, data: IDeleteSymbol) {
-    console.log("delete symbols ", data)
     const newState = [...state.symbols];
     Vue.set(
       state,

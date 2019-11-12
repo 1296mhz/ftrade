@@ -1,7 +1,7 @@
 export interface AppState {
   drawer: any;
   currentView: string;
-  accounts: Array<IAccount>;
+  accounts: IAccount[];
   appReady: boolean;
   centrifugeConnectedFlag: boolean;
 }

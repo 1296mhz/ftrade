@@ -176,7 +176,6 @@ import stockInit from 'highcharts/modules/stock';
 import { symbolHeaders, orderHeaders, positionHeaders } from './constants';
 stockInit(Highcharts);
 
-
 export default (Vue as VueConstructor<any>).extend({
   data() {
     return {
