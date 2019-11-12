@@ -20,7 +20,7 @@ export const actions: ActionTree<AppState, RootState> = {
   async currentView({ commit, state }, payload) {
     commit(SET_CURRENT_VIEW, payload);
   },
-  async accounts({ commit, state}) {
+ async accounts({ commit, state}) {
     const accounts = await Vue.$centrifuge.getAccounts();
     commit(SET_ACCOUNTS, accounts.data);
   },

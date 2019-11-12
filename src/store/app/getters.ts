@@ -11,7 +11,13 @@ export const getters: GetterTree<AppState, RootState> = {
     return state.currentView;
   },
   ACCOUNTS(state: AppState): any {
-    return state.accounts;
+    return Vue.$_.map(state.accounts[0], (item: any, index) => {
+      return {
+        text: item.Name,
+        value: item.Id,
+      }
+    });
+   
   },
   CENTRIFUGE_CONNECTED_FLAG(state: AppState): boolean {
     return state.centrifugeConnectedFlag;

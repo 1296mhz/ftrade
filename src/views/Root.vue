@@ -37,7 +37,7 @@
     <v-app-bar app color="indigo" dark>
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <accounts-list accounts="accounts"></accounts-list>
+      <accounts-list :accounts="getAccounts"></accounts-list>
       <v-btn icon @click="logout()">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
@@ -76,17 +76,20 @@ export default (Vue as VueConstructor<any>).extend({
     };
   },
   watch: {
-    centrifugeConnectedFlag(newVal: boolean) {
+    getCentrifugeConnectedFlag(newVal: boolean) {
       Vue.$log.debug(`Watch fire - ${newVal}`);
-      (!newVal) ? eventBus.$emit('info', `Welcome to Gimaym!`) : '';
-      if(!newVal) {
-        this.setAccounts;
+      if (newVal) {
+         eventBus.$emit('info', `Welcome to Gimaym!`) 
+         this.setAccounts();
       }
-     this.setAccounts();
+
+      if(!newVal) {
+        console.log('Соединение не установлено')
+      }
+    
     },
     accounts(newVal: any) {
-      console.log("NEWEWEW ACCOUNTS")
-      console.log(this.accounts)
+     // console.log("Update accounts ", this.getAccounts);
     }
   },
   computed: {
@@ -108,12 +111,14 @@ export default (Vue as VueConstructor<any>).extend({
     },
     accounts: {
       get: function(){
+        //return [{ text: 'Acc1', value: '1'},{ text: 'Acc2', value: '2'}]
+        console.log(" this.getAccounts", this.getAccounts)
         return this.getAccounts;
       },
       set: function() {
         this.setAccounts;
       }
-    }
+    },
   },
   methods: {
     ...mapActions({
