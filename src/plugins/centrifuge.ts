@@ -21,11 +21,16 @@ class CentrifugeManager {
   private id: string = '';
   constructor(url) {
     store.dispatch('app/centrifugeConnectedFlag', false);
-    this.instance = new centrifuge(url);
+    this.instance = new centrifuge(url, {
+      minRetry: 1000,
+      maxRetry: 10000,
+      onTransportClose: function (ctx: any) {
+        eventBus.$emit('error', `Trying reconnect! Error code: ${ctx.event.code}, Message: ${ctx.reason}`);
+      },
+    });
 
     this.instance.on('connect', async (ctx) => {
       Vue.$log.debug(ctx)
-      this.instance.removeAllListeners();
       store.dispatch('app/centrifugeConnectedFlag', true);
       this.instance.subscribe(`symbols#${this.id}`, (message) => {
         switch (message.data.Command) {
@@ -41,17 +46,18 @@ class CentrifugeManager {
       });
     });
 
-    this.instance.on('error', (ctx) => {
-      store.dispatch('app/centrifugeConnectedFlag', false);
-      eventBus.$emit('error', `Connection lost!`);
-      Vue.$log.error(`Error instance: ${ctx}`);
+
+    this.instance.on('reconnect', function (ctx) {
+
+      console.log("Reconnect: ", ctx)
+
     });
 
-    this.instance.on('disconnect', function(ctx) {
+    this.instance.on('disconnect', function (ctx) {
       Vue.$log.error(`Disconnected: ${ctx}`)
-      Vue.$log.debug(ctx);
+      console.log(ctx)
       store.dispatch('app/centrifugeConnectedFlag', false);
-      this.instance.removeAllListeners();
+      //this.instance.removeAllListeners();
     });
     return this;
   }
@@ -68,10 +74,11 @@ class CentrifugeManager {
   }
 
   public disconnect() {
-    this.instance.removeAllListeners();
+    // this.instance.removeAllListeners();
+    Vue.$log.debug('Далее  disconnect')
     this.instance.disconnect();
     // Только после того как заработает дисконнект
-    // store.dispatch('app/centrifugeConnectedFlag', false);
+    //
   }
 
   public async getSymbols() {
