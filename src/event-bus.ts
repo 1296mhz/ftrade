@@ -19,7 +19,10 @@ eventBus.$on('debug', (data) => {
   Vue.$log.debug(data);
 });
 
-eventBus.$on('warning', (data) => {
+eventBus.$on('warn', (data) => {
   Vue.$log.warn(data);
+  Vue.$toast.warning(data, {
+    position: 'top-right',
+  });
 });
 

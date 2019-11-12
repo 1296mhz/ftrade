@@ -25,7 +25,7 @@ class CentrifugeManager {
       minRetry: 1000,
       maxRetry: 10000,
       onTransportClose: function (ctx: any) {
-        eventBus.$emit('error', `Trying reconnect! Error code: ${ctx.event.code}, Message: ${ctx.reason}`);
+        eventBus.$emit('warn', `Trying reconnect! Error code: ${ctx.event.code}, Message: ${ctx.reason}`);
       },
     });
 
