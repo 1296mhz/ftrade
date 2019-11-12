@@ -41,10 +41,13 @@ class CentrifugeManager {
     });
 
     this.instance.on('error', (ctx) => {
-      Vue.$log.error(`Error: ${ctx}`);
+      store.dispatch('app/centrifugeConnectedFlag', false);
+      eventBus.$emit('error', `Connection lost!`);
+      Vue.$log.error(`Error instance: ${ctx}`);
     });
 
     this.instance.on('disconnect', (ctx) => {
+      Vue.$log.error(`Disconnected: ${ctx}`);
       store.dispatch('app/centrifugeConnectedFlag', false);
       this.instance.removeAllListeners();
     });
@@ -65,6 +68,8 @@ class CentrifugeManager {
   public disconnect() {
     this.instance.removeAllListeners();
     this.instance.disconnect();
+    console.log("dIS")
+    store.dispatch('app/centrifugeConnectedFlag', false);
   }
 
   public async getSymbols() {
@@ -98,7 +103,9 @@ class CentrifugeManager {
 
   public async getAccounts() {
     if (store.state.app.centrifugeConnectedFlag) {
+      console.log("Вызываем getAccounts")
       const response = await this.instance.rpc({ method: 'GetAccounts' });
+      console.log(response)
       return (responseHandler(response)) ? response : 'error';
     }
   }

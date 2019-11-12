@@ -20,9 +20,9 @@ export const actions: ActionTree<AppState, RootState> = {
   async currentView({ commit, state }, payload) {
     commit(SET_CURRENT_VIEW, payload);
   },
-  async accounts({ commit, state}, params) {
+  async accounts({ commit, state}) {
     const accounts = await Vue.$centrifuge.getAccounts();
-    commit(SET_ACCOUNTS, accounts);
+    commit(SET_ACCOUNTS, accounts.data);
   },
   centrifugeConnectedFlag({ commit, state}, params) {
     commit(SET_CENTRIFUGE_CONNECTED_FLAG, params);

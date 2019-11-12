@@ -20,7 +20,7 @@ import Vue, { VueConstructor } from 'vue';
 
 export default (Vue as VueConstructor<any>).extend({
   data: () => ({
-    accounts: ['Hello', 'GoodBuy'],
+    props: ['accounts'],
     account: '',
     disabled: false,
     label: 'Select a account',

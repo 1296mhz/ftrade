@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Dash from './views/Dash.vue';
+import Root from './views/Root.vue';
 import Terminal from './views/Terminal.vue';
 import Dashboard from './views/Dashboard.vue';
 import Login from './views/Login.vue';
@@ -17,7 +17,7 @@ const router = new Router({
     {
       path: '/',
       name: 'main',
-      component: Dash,
+      component: Root,
       children: [
         {
           path: '/dashboard',
