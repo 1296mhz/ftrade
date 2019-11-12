@@ -111,8 +111,6 @@ export default (Vue as VueConstructor<any>).extend({
     },
     accounts: {
       get: function(){
-        //return [{ text: 'Acc1', value: '1'},{ text: 'Acc2', value: '2'}]
-        console.log(" this.getAccounts", this.getAccounts)
         return this.getAccounts;
       },
       set: function() {

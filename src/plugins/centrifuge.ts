@@ -24,6 +24,7 @@ class CentrifugeManager {
     this.instance = new centrifuge(url);
 
     this.instance.on('connect', async (ctx) => {
+      Vue.$log.debug(ctx)
       this.instance.removeAllListeners();
       store.dispatch('app/centrifugeConnectedFlag', true);
       this.instance.subscribe(`symbols#${this.id}`, (message) => {
@@ -46,8 +47,9 @@ class CentrifugeManager {
       Vue.$log.error(`Error instance: ${ctx}`);
     });
 
-    this.instance.on('disconnect', (ctx) => {
-      Vue.$log.error(`Disconnected: ${ctx}`);
+    this.instance.on('disconnect', function(ctx) {
+      Vue.$log.error(`Disconnected: ${ctx}`)
+      Vue.$log.debug(ctx);
       store.dispatch('app/centrifugeConnectedFlag', false);
       this.instance.removeAllListeners();
     });
