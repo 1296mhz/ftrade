@@ -10,7 +10,7 @@
       auto-select-first
       dense
       hide-no-data
-      :disabled="disabled"
+      :disabled="disableCombo"
       return-object
     ></v-combobox>
   </v-col>
@@ -32,12 +32,16 @@ export default (Vue as VueConstructor<any>).extend({
     },
   },
   computed: {
+    disableCombo: function() {
+      if (this.accounts.length < 1) {
+        this.label = 'Account not found';
+       // this.disabled = true;
+        return true
+      }
+
+    },
     aDefault: {
       get: function() {
-        if (this.accounts.length < 1) {
-          this.label = 'Account not found';
-          this.disabled = true;
-        }
 
         if (!this.account) {
           return this.accounts[0];
