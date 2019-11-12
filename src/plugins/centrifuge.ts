@@ -46,18 +46,9 @@ class CentrifugeManager {
       });
     });
 
-
-    this.instance.on('reconnect', function (ctx) {
-
-      console.log("Reconnect: ", ctx)
-
-    });
-
     this.instance.on('disconnect', function (ctx) {
       Vue.$log.error(`Disconnected: ${ctx}`)
-      console.log(ctx)
       store.dispatch('app/centrifugeConnectedFlag', false);
-      //this.instance.removeAllListeners();
     });
     return this;
   }
@@ -74,11 +65,7 @@ class CentrifugeManager {
   }
 
   public disconnect() {
-    // this.instance.removeAllListeners();
-    Vue.$log.debug('Далее  disconnect')
     this.instance.disconnect();
-    // Только после того как заработает дисконнект
-    //
   }
 
   public async getSymbols() {
