@@ -221,10 +221,6 @@ export default (Vue as VueConstructor<any>).extend({
         v => (v && v >= 1) || 'Price cannot be less than one',
       ],
       side: '',
-      disableButton: () => {
-        console.log("this.$refs.form.validate()", this.$refs.form.validate())
-        return (this.$refs.form.validate()) ? true : false;
-      },
       validOrder: false,
       series: [],
       symbol_headers: symbolHeaders,
