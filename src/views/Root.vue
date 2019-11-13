@@ -37,7 +37,7 @@
     <v-app-bar app color="indigo" dark>
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <accounts-list :accounts="getAccounts"></accounts-list>
+      <accounts-list :accounts="accounts"></accounts-list>
       <v-btn icon @click="logout()">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
@@ -111,7 +111,7 @@ export default (Vue as VueConstructor<any>).extend({
     },
     accounts: {
       get: function(){
-        return this.getAccounts;
+      return this.getAccounts;
       },
       set: function() {
         this.setAccounts;
