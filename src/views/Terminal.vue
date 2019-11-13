@@ -169,10 +169,10 @@
 
                   <v-row no-gutters>
                     <v-col class="ma-1">
-                      <v-btn small block color="success" :disabled="disableField || !validOrder ">Buy</v-btn>
+                      <v-btn small block color="success" :disabled="disableField || !validOrder" @click="newOrder('buy')">Buy</v-btn>
                     </v-col>
                     <v-col class="ma-1">
-                      <v-btn small block color="error" :disabled="disableField || !validOrder">Sell</v-btn>
+                      <v-btn small block color="error" :disabled="disableField || !validOrder" @click="newOrder('sell')">Sell</v-btn>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -439,6 +439,16 @@ export default (Vue as VueConstructor<any>).extend({
         ':' +
         d.getSeconds()
       );
+    },
+    newOrder(side) {
+      const newOrder = {
+        account: this.getCurrentAccount.Id,
+        side: side,
+        price: this.price,
+        volume: this.volume,
+        ticker: this.currentSymbol.ticker,
+      }
+      this.sendOrder(newOrder);
     },
   },
   created() {
