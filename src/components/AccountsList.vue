@@ -37,8 +37,6 @@ export default (Vue as VueConstructor<any>).extend({
     },
     disableCombo: function() {
       if (this.accounts.length < 1) {
-        this.label = 'Account not found';
-        // this.disabled = true;
         return true;
       }
     },

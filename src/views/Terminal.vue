@@ -123,28 +123,45 @@
 
                   <v-row dense>
                     <v-col>
-                      <v-select dense :items="['Limit','Market']" value="Limit"></v-select>
+                      <v-select
+                        dense
+                        :items="['Limit','Market']"
+                        value="Limit"
+                        :disabled="disableField"
+                      ></v-select>
                     </v-col>
                     <v-col>
-                      <v-select dense :items="['Day','GTC']" value="Day"></v-select>
+                      <v-select dense :items="['Day','GTC']" value="Day" :disabled="disableField"></v-select>
                     </v-col>
                   </v-row>
 
                   <v-row dense>
                     <v-col>
-                      <v-text-field dense v-model="amount" label="Amount" required></v-text-field>
+                      <v-text-field
+                        dense
+                        v-model="amount"
+                        label="Amount"
+                        required
+                        :disabled="disableField"
+                      ></v-text-field>
                     </v-col>
                     <v-col>
-                      <v-text-field dense v-model="price" label="Price" required></v-text-field>
+                      <v-text-field
+                        dense
+                        v-model="price"
+                        label="Price"
+                        required
+                        :disabled="disableField"
+                      ></v-text-field>
                     </v-col>
                   </v-row>
 
                   <v-row no-gutters>
                     <v-col class="ma-1">
-                      <v-btn small block color="success">Buy</v-btn>
+                      <v-btn small block color="success" :disabled="disableField">Buy</v-btn>
                     </v-col>
                     <v-col class="ma-1">
-                      <v-btn small block color="error">Sell</v-btn>
+                      <v-btn small block color="error" :disabled="disableField">Sell</v-btn>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -311,14 +328,28 @@ export default (Vue as VueConstructor<any>).extend({
       loadingText: 'terminal/LOADING_TEXT',
       getOhlcNavigator: 'terminal/OHLC_NAVIGATOR',
       currentSymbol: 'terminal/CURRENT_SYMBOL',
+      getAccounts: 'app/ACCOUNTS',
     }),
     symbolSelected: {
-        get: function() {
-          return this.getSymbolSelected;
-        },
-        set: function(newValue) {
-          this.setSymbolSelected(newValue);
-        },
+      get: function() {
+        return this.getSymbolSelected;
+      },
+      set: function(newValue) {
+        this.setSymbolSelected(newValue);
+      },
+    },
+    accounts: {
+      get: function() {
+        return this.getAccounts;
+      },
+      set: function() {
+        this.setAccounts;
+      },
+    },
+    disableField: function() {
+      if (this.accounts.length < 1) {
+        return true;
+      }
     },
   },
   methods: {
@@ -329,6 +360,7 @@ export default (Vue as VueConstructor<any>).extend({
       setOhlc: 'terminal/ohlc',
       setSymbolSelected: 'terminal/setSymbolSelected',
       setOhlcNavigator: 'terminal/ohlcNavigator',
+      setAccounts: 'app/accounts',
     }),
     CreateSymbol(ticker: any) {
       this.createSymbol(ticker);

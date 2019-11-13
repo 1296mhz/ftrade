@@ -17,7 +17,6 @@ export const getters: GetterTree<AppState, RootState> = {
         value: item.Id,
       }
     });
-   
   },
   CENTRIFUGE_CONNECTED_FLAG(state: AppState): boolean {
     return state.centrifugeConnectedFlag;
