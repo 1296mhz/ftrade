@@ -119,7 +119,7 @@
         <v-row xs="12" sm="12" md="4" lg="2" xl="2">
           <v-col>
             <v-card>
-              <v-form ref="form" lazy-validation>
+              <v-form ref="form" v-model="validOrder" lazy-validation>
                 <v-container fluid height="100vh">
                   <v-row dense>
                     <v-col>
@@ -148,8 +148,9 @@
                     <v-col>
                       <v-text-field
                         dense
-                        v-model="amount"
-                        label="Amount"
+                        v-model="volume"
+                        label="Volume"
+                        :rules="volumeRules"
                         required
                         :disabled="disableField"
                       ></v-text-field>
@@ -159,6 +160,7 @@
                         dense
                         v-model="price"
                         label="Price"
+                        :rules="priceRules"
                         required
                         :disabled="disableField"
                       ></v-text-field>
@@ -167,10 +169,10 @@
 
                   <v-row no-gutters>
                     <v-col class="ma-1">
-                      <v-btn small block color="success" :disabled="disableField">Buy</v-btn>
+                      <v-btn small block color="success" :disabled="disableField || !validOrder ">Buy</v-btn>
                     </v-col>
                     <v-col class="ma-1">
-                      <v-btn small block color="error" :disabled="disableField">Sell</v-btn>
+                      <v-btn small block color="error" :disabled="disableField || !validOrder">Sell</v-btn>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -208,8 +210,22 @@ export default (Vue as VueConstructor<any>).extend({
       chart: null,
       selectedSymbolItem: {},
       ticker: '',
-      amount: '',
-      price: '',
+      volume: 1,
+      volumeRules: [
+        v => !!v || 'Volume is required',
+        v => (v && v >= 1) || 'Volume cannot be less than one',
+      ],
+      price: 1,
+      priceRules: [
+        v => !!v || 'Price is required',
+        v => (v && v >= 1) || 'Price cannot be less than one',
+      ],
+      side: '',
+      disableButton: () => {
+        console.log("this.$refs.form.validate()", this.$refs.form.validate())
+        return (this.$refs.form.validate()) ? true : false;
+      },
+      validOrder: false,
       series: [],
       symbol_headers: symbolHeaders,
       order_headers: orderHeaders,
@@ -324,6 +340,10 @@ export default (Vue as VueConstructor<any>).extend({
       this.setOhlcNavigator(ohlcParams);
       this.chart.showLoading('Loading data from server...');
     },
+    getCurrentAccount(newVal: any) {
+      console.log('CHANGE ACCOUNT', newVal.Id);
+      // this.setSymbolSelected(newVal.Id);
+    },
   },
   computed: {
     ...mapGetters({
@@ -373,6 +393,7 @@ export default (Vue as VueConstructor<any>).extend({
       setSymbolSelected: 'terminal/setSymbolSelected',
       setOhlcNavigator: 'terminal/ohlcNavigator',
       setAccounts: 'app/accounts',
+      sendOrder: 'terminal/sendOrder',
     }),
     CreateSymbol(ticker: any) {
       this.createSymbol(ticker);
@@ -404,6 +425,7 @@ export default (Vue as VueConstructor<any>).extend({
     getStateOrderColor(state) {
       if (state === 'filled') return 'blue lighten-1';
       else if (state === 'canceled') return 'grey darken-1';
+      else if (state === 'green') return 'grey darken-1';
       else return 'lime darken-4';
     },
     getTimeOrderFormat(time) {
@@ -437,10 +459,6 @@ export default (Vue as VueConstructor<any>).extend({
 </script>
 
 <style scoped lang="css">
-.buy {
-}
-.sell {
-}
 .back {
   background-color: white;
   display: inline-block;

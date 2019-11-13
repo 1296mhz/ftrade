@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { TerminalState } from './types';
+import { TerminalState, ISendOrder } from './types';
 import { ActionTree } from 'vuex';
 import { RootState } from '@/store/types';
 import {
@@ -49,27 +49,31 @@ export const actions: ActionTree<TerminalState, RootState> = {
     }
     commit(SET_POSITIONS, positions);
   },
-  async orders({ commit, state }, account: string) {
+  async orders({ commit, state }, account: string): Promise<any> {
     const orders = await Vue.$centrifuge.getAccountOrders(account);
     commit(SET_ORDERS, orders);
   },
-  async createSymbol({ commit, state }, ticker) {
+  async sendOrder({ commit, state }, order: ISendOrder): Promise<any> {
+    const orders = await Vue.$centrifuge.sendOrder(order);
+    commit(SET_ORDERS, orders);
+  },
+  async createSymbol({ commit, state }, ticker): Promise<any> {
     commit(SET_LOADING_SYMBOLS, true);
     const s = await Vue.$centrifuge.createSymbol(ticker);
     commit(SET_LOADING_SYMBOLS, false);
   },
-  async deleteSymbol({ commit, state }, ticker) {
+  async deleteSymbol({ commit, state }, ticker): Promise<any> {
     commit(SET_LOADING_SYMBOLS, true);
     await Vue.$centrifuge.deleteSymbol(ticker);
     commit(SET_LOADING_SYMBOLS, false);
   },
-  async setBidSymbol({ commit, state }, data) {
+  async setBidSymbol({ commit, state }, data): Promise<any> {
     commit(SET_SYMBOL_BID, data);
   },
-  async setAskSymbol({ commit, state }, data) {
+  async setAskSymbol({ commit, state }, data): Promise<any> {
     commit(SET_SYMBOL_ASK, data);
   },
-  async ohlc({ commit, state }, params) {
+  async ohlc({ commit, state }, params): Promise<any> {
     const begin = params.begin ? params.begin : 0;
     const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
     const delta = end - begin;
@@ -98,7 +102,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
     commit(SET_OHLC, currentOhlc);
   },
 
-  async ohlcNavigator({ commit, state }, params) {
+  async ohlcNavigator({ commit, state }, params): Promise<any> {
     const begin = params.begin ? params.begin : 0;
     const end = params.end ? params.end : Vue.$constants.END_DATE_OHLC();
     const interval = 'd';
@@ -119,7 +123,7 @@ export const actions: ActionTree<TerminalState, RootState> = {
 
     commit(SET_OHLC_NAVIGATOR, navigatorOhlc);
   },
-  setSymbolSelected({ commit, state }, params) {
+  setSymbolSelected({ commit, state }, params): void {
     commit(SET_SYMBOL_SELECTED, params);
   },
 };

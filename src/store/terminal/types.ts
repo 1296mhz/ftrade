@@ -72,6 +72,13 @@ export interface IOrder {
   volume: number;
 }
 
+export interface ISendOrder {
+  account: string;
+  ticker: string;
+  price: number;
+  side: string;
+  volume: number;
+}
 export interface IOhlcParams {
   ticker: string;
   interval: string;

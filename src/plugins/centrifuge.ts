@@ -102,6 +102,13 @@ class CentrifugeManager {
       return (responseHandler(response)) ? response.data : 'error';
     }
   }
+
+  public async sendOrder(order) {
+    if (store.state.app.centrifugeConnectedFlag) {
+      const response = await this.instance.rpc({ method: 'SendOrder', params: order });
+      return (responseHandler(response)) ? response.data : 'error';
+    }
+  }
 }
 
 const instance = new CentrifugeManager(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : ''}/connection/websocket`);
