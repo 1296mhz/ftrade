@@ -49,18 +49,8 @@ export const actions: ActionTree<TerminalState, RootState> = {
     }
     commit(SET_POSITIONS, positions);
   },
-  async orders({ commit, state }) {
-    const orders = [
-      {
-        id: '0001',
-        state: 'open',
-        ticker: 'EUR/USD.E.FX',
-        type: 'limit',
-        side: 'buy',
-        quantity: 10,
-        time: new Date(2017, 4, 4, 17, 23, 42, 11).toLocaleString(),
-      },
-    ];
+  async orders({ commit, state }, account: string) {
+    const orders = await Vue.$centrifuge.getAccountOrders(account);
     commit(SET_ORDERS, orders);
   },
   async createSymbol({ commit, state }, ticker) {

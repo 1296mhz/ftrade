@@ -7,6 +7,8 @@ import {
   SET_CURRENT_VIEW,
   SET_CENTRIFUGE_CONNECTED_FLAG,
   SET_ACCOUNTS,
+  SET_CURRENT_ACCOUNT,
+  SET_CURRENT_ACCOUNT_COMBOBOX,
 } from './mutation-types';
 
 /*
@@ -20,11 +22,17 @@ export const actions: ActionTree<AppState, RootState> = {
   async currentView({ commit, state }, payload) {
     commit(SET_CURRENT_VIEW, payload);
   },
- async accounts({ commit, state}) {
+  async accounts({ commit, state }) {
     const accounts = await Vue.$centrifuge.getAccounts();
     commit(SET_ACCOUNTS, accounts.data);
   },
-  centrifugeConnectedFlag({ commit, state}, params) {
+  centrifugeConnectedFlag({ commit, state }, params) {
     commit(SET_CENTRIFUGE_CONNECTED_FLAG, params);
+  },
+  currentAccount({ commit, state }, params) {
+    commit(SET_CURRENT_ACCOUNT, params);
+  },
+  currentAccountCombobox({ commit, state }, params) {
+    commit(SET_CURRENT_ACCOUNT_COMBOBOX, params);
   },
 };

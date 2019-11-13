@@ -87,8 +87,17 @@
                   <v-tab-item transition="none" reverse-transition="none">
                     <v-data-table dense :headers="order_headers" :items="orders" item-key="id">
                       <template v-slot:item.state="{ item }">
-                        <v-chip color="green" dark label x-small>{{ item.state }}</v-chip>
+                        <v-chip
+                          :color="getStateOrderColor(item.state)"
+                          dark
+                          label
+                          x-small
+                        >{{ item.state }}</v-chip>
                       </template>
+                      <template v-slot:item.side="{ item }">
+                        <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
+                      </template>
+                      <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
                     </v-data-table>
                   </v-tab-item>
                   <v-tab-item transition="none" reverse-transition="none">
@@ -275,6 +284,7 @@ export default (Vue as VueConstructor<any>).extend({
     $route: {
       handler: function() {
         this.getSymbols();
+        this.getOrders(this.getCurrentAccount.Id);
       },
       immediate: true,
     },
@@ -329,6 +339,7 @@ export default (Vue as VueConstructor<any>).extend({
       getOhlcNavigator: 'terminal/OHLC_NAVIGATOR',
       currentSymbol: 'terminal/CURRENT_SYMBOL',
       getAccounts: 'app/ACCOUNTS',
+      getCurrentAccount: 'app/CURRENT_ACCOUNT',
     }),
     symbolSelected: {
       get: function() {
@@ -342,8 +353,8 @@ export default (Vue as VueConstructor<any>).extend({
       get: function() {
         return this.getAccounts;
       },
-      set: function() {
-        this.setAccounts;
+      set: () => {
+        // this.setAccounts;
       },
     },
     disableField: function() {
@@ -355,6 +366,7 @@ export default (Vue as VueConstructor<any>).extend({
   methods: {
     ...mapActions({
       getSymbols: 'terminal/symbols',
+      getOrders: 'terminal/orders',
       createSymbol: 'terminal/createSymbol',
       deleteSymbol: 'terminal/deleteSymbol',
       setOhlc: 'terminal/ohlc',
@@ -384,9 +396,36 @@ export default (Vue as VueConstructor<any>).extend({
     selectSymbol(item) {
       this.setSymbolSelected(item);
     },
+    getSideColor(side) {
+      if (side === 'buy') return 'green';
+      else if (side === 'sell') return 'red';
+      else return 'lime darken-4';
+    },
+    getStateOrderColor(state) {
+      if (state === 'filled') return 'blue lighten-1';
+      else if (state === 'canceled') return 'grey darken-1';
+      else return 'lime darken-4';
+    },
+    getTimeOrderFormat(time) {
+      const d = new Date(time);
+      return (
+        d.getFullYear() +
+        '-' +
+        ('0' + (d.getMonth() + 1)).slice(-2) +
+        '-' +
+        ('0' + d.getDate()).slice(-2) +
+        ' ' +
+        d.getHours() +
+        ':' +
+        ('0' + d.getMinutes()).slice(-2) +
+        ':' +
+        d.getSeconds()
+      );
+    },
   },
   created() {
     this.getSymbols();
+    this.getOrders(this.getCurrentAccount.Id);
   },
   beforeDestroy() {
     if (Highcharts.charts[0] !== undefined) {
@@ -398,6 +437,10 @@ export default (Vue as VueConstructor<any>).extend({
 </script>
 
 <style scoped lang="css">
+.buy {
+}
+.sell {
+}
 .back {
   background-color: white;
   display: inline-block;

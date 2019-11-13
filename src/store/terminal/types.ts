@@ -20,7 +20,7 @@ export interface TerminalState {
     ask: number;
     type: string;
     ohlcNavigator: {
-      data: Array<[]>,
+      data: Array<[]>;
       begin: number;
       end: number;
       interval: string;
@@ -60,25 +60,26 @@ export interface IPosition {
   pnl: number;
 }
 
-export interface IOrder  {
-  id: number;
-  state: string;
-  ticker: string;
-  type: string;
+export interface IOrder {
+  account: string;
+  id: string;
+  leaves: number;
+  price: number;
   side: string;
-  quantity: number;
-  time: string;
+  state: string;
+  symbol: string;
+  time: number;
+  volume: number;
 }
 
-
-export interface IOhlcParams  {
+export interface IOhlcParams {
   ticker: string;
   interval: string;
   begin: number;
   end: number;
 }
 
-export interface IOhlc  {
+export interface IOhlc {
   ticker: string;
   series: number[];
 }

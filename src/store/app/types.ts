@@ -4,8 +4,14 @@ export interface AppState {
   accounts: IAccount[];
   appReady: boolean;
   centrifugeConnectedFlag: boolean;
+  currentAccount: IAccount;
 }
 export interface IAccount {
   Id: string;
   Name: string;
+}
+
+export interface IAccountCombobox {
+  text: string;
+  value: string;
 }

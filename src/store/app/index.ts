@@ -13,6 +13,7 @@ export const state: AppState = {
   accounts: [],
   appReady: false,
   centrifugeConnectedFlag: false,
+  currentAccount: null,
 };
 
 const appModule: Module<AppState, RootState> = {

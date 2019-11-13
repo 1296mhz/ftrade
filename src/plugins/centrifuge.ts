@@ -4,6 +4,7 @@ import store from '../store';
 import { IOhlcParams } from '../store/terminal/types';
 import { eventBus } from '../main';
 import SymbolSubsTerminal from './centrifuge/SymbolSubsTerminal';
+import OrdersSubsTerminal from './centrifuge/OrdersSubsTerminal';
 
 function responseHandler(response) {
   Vue.$log.debug(response);
@@ -17,14 +18,15 @@ function responseHandler(response) {
 
 class CentrifugeManager {
   public instance: any;
-  public symbolSubscribes = new SymbolSubsTerminal();
+  public symbolSubscribesTerminal = new SymbolSubsTerminal();
+  public ordersSubsTerminal = new OrdersSubsTerminal();
   private id: string = '';
   constructor(url) {
     store.dispatch('app/centrifugeConnectedFlag', false);
     this.instance = new centrifuge(url, {
       minRetry: 1000,
       maxRetry: 10000,
-      onTransportClose: function (ctx: any) {
+      onTransportClose: (ctx: any) => {
         eventBus.$emit('warn', `Trying reconnect! Error code: ${ctx.event.code}, Message: ${ctx.reason}`);
       },
     });
@@ -32,18 +34,7 @@ class CentrifugeManager {
     this.instance.on('connect', async (ctx) => {
       Vue.$log.debug(ctx)
       store.dispatch('app/centrifugeConnectedFlag', true);
-      this.instance.subscribe(`symbols#${this.id}`, (message) => {
-        switch (message.data.Command) {
-          case 'delete':
-            this.symbolSubscribes.unsubscribe(message);
-            store.dispatch('terminal/deleteSymbolInStorage', message.data);
-            break;
-          case 'create':
-            this.symbolSubscribes.subscribe(this.instance, store, message);
-            store.dispatch('terminal/createSymbolInStorage', message.data);
-            break;
-        }
-      });
+      this.ordersSubsTerminal.subscribe(this.instance, store, 'id0001', this.id);
     });
 
     this.instance.on('disconnect', function (ctx) {
@@ -60,6 +51,7 @@ class CentrifugeManager {
   public setId(id) {
     this.id = id;
   }
+
   public connect() {
     this.instance.connect();
   }
@@ -71,7 +63,7 @@ class CentrifugeManager {
   public async getSymbols() {
     if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'GetSymbols' });
-      this.symbolSubscribes.subscribeMassive(this.instance, store, response.data);
+      this.symbolSubscribesTerminal.subscribeMassive(this.instance, store, response.data);
       return (responseHandler(response)) ? response.data : 'error';
     }
   }
@@ -101,6 +93,13 @@ class CentrifugeManager {
     if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'GetAccounts' });
       return (responseHandler(response)) ? response : 'error';
+    }
+  }
+
+  public async getAccountOrders(account) {
+    if (store.state.app.centrifugeConnectedFlag) {
+      const response = await this.instance.rpc({ method: 'GetAccountOrders', params: { account: account } });
+      return (responseHandler(response)) ? response.data : 'error';
     }
   }
 }

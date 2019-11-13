@@ -20,17 +20,11 @@
 import Vue, { VueConstructor } from 'vue';
 
 export default (Vue as VueConstructor<any>).extend({
-  props: ['accounts'],
+  props: ['setCurrentAccount', 'account', 'accounts'],
   data: () => ({
-    account: '',
     disabled: false,
     label: 'Select a account',
   }),
-  watch: {
-    account: newVal => {
-      // console.log(newVal);
-    },
-  },
   computed: {
     accountMessage: function() {
       return this.accounts.length < 1 ? 'Account not found' : 'Choose account';
@@ -42,14 +36,10 @@ export default (Vue as VueConstructor<any>).extend({
     },
     aDefault: {
       get: function() {
-        if (!this.account) {
-          return this.accounts[0];
-        }
-
         return this.account;
       },
       set: function(account) {
-        this.account = account;
+        this.setCurrentAccount(account);
       },
     },
   },

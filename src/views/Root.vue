@@ -37,7 +37,7 @@
     <v-app-bar app color="indigo" dark>
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <accounts-list :accounts="accounts"></accounts-list>
+      <accounts-list :setCurrentAccount="setCurrentAccount" :account="currentAccount" :accounts="accounts"></accounts-list>
       <v-btn icon @click="logout()">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
@@ -79,24 +79,24 @@ export default (Vue as VueConstructor<any>).extend({
     getCentrifugeConnectedFlag(newVal: boolean) {
       Vue.$log.debug(`Watch fire - ${newVal}`);
       if (newVal) {
-         eventBus.$emit('info', `Welcome to Gimaym!`) 
+         eventBus.$emit('info', `Welcome to Gimaym!`);
          this.setAccounts();
       }
 
-      if(!newVal) {
-        console.log('Соединение не установлено')
-      }
-    
+      if (!newVal) { Vue.$log.debug(`Connection lost`); }
     },
     accounts(newVal: any) {
-     // console.log("Update accounts ", this.getAccounts);
-    }
+      if (this.accounts.length >= 1) {
+        this.setCurrentAccount(this.accounts[0]);
+      }
+    },
   },
   computed: {
     ...mapGetters({
       currentView: 'app/CURRENT_VIEW',
       getCentrifugeConnectedFlag: 'app/CENTRIFUGE_CONNECTED_FLAG',
       getAccounts: 'app/ACCOUNTS',
+      getCurrentAccount: 'app/CURRENT_ACCOUNT_COMBOBOX',
     }),
     currentViewText: function() {
       return this.currentView[0].toUpperCase() + this.currentView.slice(1);
@@ -107,21 +107,30 @@ export default (Vue as VueConstructor<any>).extend({
       },
       set: function(value) {
         this.setCentrifugeConnectedFlag(value);
-      }
+      },
     },
     accounts: {
-      get: function(){
+      get: function() {
       return this.getAccounts;
       },
-      set: function() {
-        this.setAccounts;
-      }
+      set: () => {
+        // this.setAccounts;
+      },
+    },
+    currentAccount: {
+      get: function() {
+        return this.getCurrentAccount;
+      },
+      set: function(account) {
+        this.setCurrentAccount(account);
+      },
     },
   },
   methods: {
     ...mapActions({
       logout: 'auth/exit',
       setAccounts: 'app/accounts',
+      setCurrentAccount: 'app/currentAccountCombobox',
       setCentrifugeConnectedFlag: 'app/centrifugeConnectedFlag',
     }),
   },
