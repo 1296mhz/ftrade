@@ -25,15 +25,6 @@ export const symbolHeaders = [
   },
 ];
 
-// export const orderHeaders = [
-//   { text: 'State', value: 'state' },
-//   { text: 'Ticker', value: 'ticker' },
-//   { text: 'Type', value: 'type' },
-//   { text: 'Side', value: 'side' },
-//   { text: 'Quantity', value: 'quantity' },
-//   { text: 'Time', value: 'time' },
-// ];
-
 export const orderHeaders = [
   { text: 'Id', value: 'id' },
   { text: 'Symbol', value: 'symbol' },

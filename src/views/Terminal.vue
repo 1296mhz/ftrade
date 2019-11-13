@@ -449,6 +449,7 @@ export default (Vue as VueConstructor<any>).extend({
         ticker: this.currentSymbol.ticker,
       }
       this.sendOrder(newOrder);
+      Vue.$log.info(newOrder);
     },
   },
   created() {
