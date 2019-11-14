@@ -5,6 +5,7 @@ import { IOhlcParams } from '../store/terminal/types';
 import { eventBus } from '../main';
 import SymbolSubsTerminal from './centrifuge/SymbolSubsTerminal';
 import OrdersSubsTerminal from './centrifuge/OrdersSubsTerminal';
+import TradesSubsTerminal from './centrifuge/TradesSubsTerminal';
 
 function responseHandler(response) {
   Vue.$log.debug(response);
@@ -20,6 +21,7 @@ class CentrifugeManager {
   public instance: any;
   public symbolSubscribesTerminal = new SymbolSubsTerminal();
   public ordersSubsTerminal = new OrdersSubsTerminal();
+  public tradesSubsTerminal = new TradesSubsTerminal();
   private id: string = '';
   constructor(url) {
     store.dispatch('app/centrifugeConnectedFlag', false);
@@ -34,7 +36,6 @@ class CentrifugeManager {
     this.instance.on('connect', async (ctx) => {
       Vue.$log.debug(ctx);
       store.dispatch('app/centrifugeConnectedFlag', true);
-      this.ordersSubsTerminal.subscribe(this.instance, store, 'id0001', this.id);
     });
 
     this.instance.on('disconnect', (ctx) => {
@@ -99,14 +100,15 @@ class CentrifugeManager {
   public async getAccountOrders(accountId) {
     if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'GetAccountOrders', params: { account: accountId } });
+      this.ordersSubsTerminal.subscribe(this.instance, store, accountId, this.id);
       return (responseHandler(response)) ? response.data : 'error';
     }
   }
 
-
   public async getAccountTrades(accountId) {
     if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'GetAccountTrades', params: { account: accountId } });
+      this.tradesSubsTerminal.subscribe(this.instance, store, accountId, this.id);
       return (responseHandler(response)) ? response.data : 'error';
     }
   }
