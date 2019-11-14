@@ -98,15 +98,19 @@
                         <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
                       </template>
                       <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
+
+                      <template v-slot:item.actions="{ item }">
+                         <v-icon small @click="cancelOrder(item.id)">cancel</v-icon>
+                      </template>
                     </v-data-table>
                   </v-tab-item>
                   <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table
-                      dense
-                      :headers="position_headers"
-                      :items="positions"
-                      item-key="id"
-                    ></v-data-table>
+                    <v-data-table dense :headers="trades_headers" :items="trades" item-key="id">
+                      <template v-slot:item.side="{ item }">
+                        <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
+                      </template>
+                      <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
+                    </v-data-table>
                   </v-tab-item>
                 </v-tabs>
               </v-container>
@@ -169,10 +173,22 @@
 
                   <v-row no-gutters>
                     <v-col class="ma-1">
-                      <v-btn small block color="success" :disabled="disableField || !validOrder" @click="newOrder('buy')">Buy</v-btn>
+                      <v-btn
+                        small
+                        block
+                        color="success"
+                        :disabled="disableField || !validOrder"
+                        @click="newOrder('buy')"
+                      >Buy</v-btn>
                     </v-col>
                     <v-col class="ma-1">
-                      <v-btn small block color="error" :disabled="disableField || !validOrder" @click="newOrder('sell')">Sell</v-btn>
+                      <v-btn
+                        small
+                        block
+                        color="error"
+                        :disabled="disableField || !validOrder"
+                        @click="newOrder('sell')"
+                      >Sell</v-btn>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -201,7 +217,12 @@ import Vue, { VueConstructor } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
-import { symbolHeaders, orderHeaders, positionHeaders } from './constants';
+import {
+  symbolHeaders,
+  orderHeaders,
+  positionHeaders,
+  tradesHeaders,
+} from './constants';
 stockInit(Highcharts);
 
 export default (Vue as VueConstructor<any>).extend({
@@ -226,6 +247,7 @@ export default (Vue as VueConstructor<any>).extend({
       symbol_headers: symbolHeaders,
       order_headers: orderHeaders,
       position_headers: positionHeaders,
+      trades_headers: tradesHeaders,
       stockOptions: {
         chart: {
           type: 'candlestick',
@@ -297,6 +319,7 @@ export default (Vue as VueConstructor<any>).extend({
       handler: function() {
         this.getSymbols();
         this.getOrders(this.getCurrentAccount.Id);
+        this.getTrades(this.getCurrentAccount.Id);
       },
       immediate: true,
     },
@@ -347,6 +370,7 @@ export default (Vue as VueConstructor<any>).extend({
       tickers: 'terminal/TICKERS',
       positions: 'terminal/POSITIONS',
       orders: 'terminal/ORDERS',
+      trades: 'terminal/TRADES',
       ohlc: 'terminal/OHLC',
       getSymbolSelected: 'terminal/SYMBOL_SELECTED',
       loadingSymbols: 'terminal/LOADING_SYMBOLS',
@@ -383,6 +407,7 @@ export default (Vue as VueConstructor<any>).extend({
     ...mapActions({
       getSymbols: 'terminal/symbols',
       getOrders: 'terminal/orders',
+      getTrades: 'terminal/trades',
       createSymbol: 'terminal/createSymbol',
       deleteSymbol: 'terminal/deleteSymbol',
       setOhlc: 'terminal/ohlc',
@@ -447,9 +472,12 @@ export default (Vue as VueConstructor<any>).extend({
         price: this.price,
         volume: this.volume,
         ticker: this.currentSymbol.ticker,
-      }
+      };
       this.sendOrder(newOrder);
       Vue.$log.info(newOrder);
+    },
+    cancelOrder(orderId) {
+      Vue.$log.debug(`Cancel order: ${orderId}`)
     },
   },
   created() {

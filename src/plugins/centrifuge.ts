@@ -96,9 +96,17 @@ class CentrifugeManager {
     }
   }
 
-  public async getAccountOrders(account) {
+  public async getAccountOrders(accountId) {
     if (store.state.app.centrifugeConnectedFlag) {
-      const response = await this.instance.rpc({ method: 'GetAccountOrders', params: { account: account } });
+      const response = await this.instance.rpc({ method: 'GetAccountOrders', params: { account: accountId } });
+      return (responseHandler(response)) ? response.data : 'error';
+    }
+  }
+
+
+  public async getAccountTrades(accountId) {
+    if (store.state.app.centrifugeConnectedFlag) {
+      const response = await this.instance.rpc({ method: 'GetAccountTrades', params: { account: accountId } });
       return (responseHandler(response)) ? response.data : 'error';
     }
   }

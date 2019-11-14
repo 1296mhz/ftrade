@@ -13,4 +13,7 @@ export const SET_SYMBOL_SELECTED = 'SET_SYMBOL_SELECTED';
 export const SET_OHLC_NAVIGATOR = 'SET_OHLC_NAVIGATOR';
 export const SET_SYMBOL_BID = 'SET_SYMBOL_BID';
 export const SET_SYMBOL_ASK = 'SET_SYMBOL_ASK';
+export const SET_TRADES = 'SET_TRADES';
+
+
 

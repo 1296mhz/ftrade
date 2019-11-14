@@ -3,6 +3,7 @@ export interface TerminalState {
   positions: IPosition[];
   symbols: ISymbol[];
   orders: IOrder[];
+  trades: ITrade[];
   symbolSelected: string;
   loadingText: string;
   errorText: string;
@@ -33,7 +34,6 @@ export interface TerminalState {
     };
   };
 }
-
 export interface ISeries {
   name: string;
   data: number[];
@@ -43,14 +43,12 @@ export interface ISeries {
     valueDecimals: number;
   };
 }
-
 interface ISymbol {
   ticker: string;
   color: string;
   bid: number;
   ask: number;
 }
-
 export interface IPosition {
   id: number;
   ticker: string;
@@ -59,7 +57,6 @@ export interface IPosition {
   price: number;
   pnl: number;
 }
-
 export interface IOrder {
   account: string;
   id: string;
@@ -71,12 +68,22 @@ export interface IOrder {
   time: number;
   volume: number;
 }
-
 export interface ISendOrder {
   account: string;
   ticker: string;
   price: number;
   side: string;
+  volume: number;
+}
+export interface ITrade {
+  account: string;
+  fee: number;
+  id: string;
+  order: string;
+  price: number;
+  side: string;
+  symbol: string;
+  time: number;
   volume: number;
 }
 export interface IOhlcParams {
@@ -85,7 +92,6 @@ export interface IOhlcParams {
   begin: number;
   end: number;
 }
-
 export interface IOhlc {
   ticker: string;
   series: number[];

@@ -27,6 +27,9 @@ export const getters: GetterTree<TerminalState, RootState> = {
   ORDERS(state: TerminalState): any {
     return state.orders;
   },
+  TRADES(state: TerminalState): any {
+    return state.trades;
+  },
   LOADING_SYMBOLS(state: TerminalState): any {
     return state.loadingSymbols;
   },

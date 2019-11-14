@@ -15,6 +15,7 @@ import {
   SET_OHLC_NAVIGATOR,
   SET_SYMBOL_BID,
   SET_SYMBOL_ASK,
+  SET_TRADES,
 } from './mutation-types';
 
 export const actions: ActionTree<TerminalState, RootState> = {
@@ -56,6 +57,10 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async sendOrder({ commit, state }, order: ISendOrder): Promise<any> {
     const orders = await Vue.$centrifuge.sendOrder(order);
     commit(SET_ORDERS, orders);
+  },
+  async trades({ commit, state }, accountId: string): Promise<any> {
+    const trades = await Vue.$centrifuge.getAccountTrades(accountId);
+    commit(SET_TRADES, trades);
   },
   async createSymbol({ commit, state }, ticker): Promise<any> {
     commit(SET_LOADING_SYMBOLS, true);

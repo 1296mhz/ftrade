@@ -12,6 +12,7 @@ export const state: TerminalState = {
   positions: [],
   symbols: [],
   orders: [],
+  trades: [],
   symbolSelected: '',
   loadingText: 'Loading',
   errorText: 'Error loading',

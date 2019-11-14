@@ -15,8 +15,8 @@ import {
   SET_OHLC_NAVIGATOR,
   SET_SYMBOL_BID,
   SET_SYMBOL_ASK,
+  SET_TRADES,
 } from './mutation-types';
-import { state } from '../app';
 
 interface IDeleteSymbol {
   Command: string;
@@ -41,6 +41,9 @@ export const mutations: MutationTree<TerminalState> = {
   },
   [SET_ORDERS](state: TerminalState, data: any) {
     Vue.set(state, 'orders', data);
+  },
+  [SET_TRADES](state: TerminalState, data: any) {
+    Vue.set(state, 'trades', data);
   },
   [DELETE_SYMBOL](state: TerminalState, data: IDeleteSymbol) {
     const newState = [...state.symbols];
@@ -96,7 +99,6 @@ export const mutations: MutationTree<TerminalState> = {
         newState,
       );
     }
-
   },
   [SET_SYMBOL_BID](state: TerminalState, data: any) {
     const newStateSymbols = [...state.symbols];
@@ -124,5 +126,4 @@ export const mutations: MutationTree<TerminalState> = {
       }),
     );
   },
-
 };
