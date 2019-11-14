@@ -16,6 +16,8 @@ import {
   SET_SYMBOL_BID,
   SET_SYMBOL_ASK,
   SET_TRADES,
+  SET_UPDATE_TRADES,
+  SET_UPDATE_ORDERS,
 } from './mutation-types';
 
 interface IDeleteSymbol {
@@ -125,5 +127,11 @@ export const mutations: MutationTree<TerminalState> = {
         return symbol;
       }),
     );
+  },
+  [SET_UPDATE_TRADES](state: TerminalState, data: any) {
+    const newStateTrades = [...state.trades];
+  },
+  [SET_UPDATE_ORDERS](state: TerminalState, data: any) {
+    const newStateOrders = [...state.orders];
   },
 };

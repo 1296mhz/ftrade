@@ -16,6 +16,8 @@ import {
   SET_SYMBOL_BID,
   SET_SYMBOL_ASK,
   SET_TRADES,
+  SET_UPDATE_TRADES,
+  SET_UPDATE_ORDERS,
 } from './mutation-types';
 
 export const actions: ActionTree<TerminalState, RootState> = {
@@ -81,6 +83,12 @@ export const actions: ActionTree<TerminalState, RootState> = {
   },
   async setAskSymbol({ commit, state }, data): Promise<any> {
     commit(SET_SYMBOL_ASK, data);
+  },
+  async setUpdateTrades({ commit, state }, data): Promise<any> {
+    commit(SET_UPDATE_TRADES, data);
+  },
+  async setUpdateOrders({ commit, state }, data): Promise<any> {
+    commit(SET_UPDATE_ORDERS, data);
   },
   async ohlc({ commit, state }, params): Promise<any> {
     const begin = params.begin ? params.begin : 0;

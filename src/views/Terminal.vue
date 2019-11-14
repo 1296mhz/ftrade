@@ -291,7 +291,6 @@ export default (Vue as VueConstructor<any>).extend({
             visibility: 'hidden',
           },
         },
-
         xAxis: {
           events: {
             setExtremes: this.setExtremes,
