@@ -32,13 +32,13 @@ class CentrifugeManager {
     });
 
     this.instance.on('connect', async (ctx) => {
-      Vue.$log.debug(ctx)
+      Vue.$log.debug(ctx);
       store.dispatch('app/centrifugeConnectedFlag', true);
       this.ordersSubsTerminal.subscribe(this.instance, store, 'id0001', this.id);
     });
 
-    this.instance.on('disconnect', function (ctx) {
-      Vue.$log.error(`Disconnected: ${ctx}`)
+    this.instance.on('disconnect', (ctx) => {
+      Vue.$log.error(`Disconnected: ${ctx}`);
       store.dispatch('app/centrifugeConnectedFlag', false);
     });
     return this;
@@ -114,7 +114,14 @@ class CentrifugeManager {
   public async sendOrder(order) {
     if (store.state.app.centrifugeConnectedFlag) {
       const response = await this.instance.rpc({ method: 'SendOrder', params: order });
-      return (responseHandler(response)) ? response.data : 'error';
+      return (responseHandler(response)) ? response : 'error';
+    }
+  }
+
+  public async cancelOrder(params) {
+    if (store.state.app.centrifugeConnectedFlag) {
+      const response = await this.instance.rpc({ method: 'CancelOrder', params: params });
+      return (responseHandler(response)) ? response : 'error';
     }
   }
 }

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { TerminalState, ISendOrder } from './types';
+import { TerminalState, ISendOrder, ICancelOrder } from './types';
 import { ActionTree } from 'vuex';
 import { RootState } from '@/store/types';
 import {
@@ -57,6 +57,10 @@ export const actions: ActionTree<TerminalState, RootState> = {
   async sendOrder({ commit, state }, order: ISendOrder): Promise<any> {
     const orders = await Vue.$centrifuge.sendOrder(order);
     commit(SET_ORDERS, orders);
+  },
+  async cancelOrder({ commit, state }, params: ICancelOrder): Promise<any> {
+    const reponse = await Vue.$centrifuge.cancelOrder(params);
+    // commit(SET_ORDERS, orders);
   },
   async trades({ commit, state }, accountId: string): Promise<any> {
     const trades = await Vue.$centrifuge.getAccountTrades(accountId);

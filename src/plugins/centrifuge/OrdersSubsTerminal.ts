@@ -5,6 +5,7 @@ export default class OrdersSubsTerminal {
   private orders = {};
   public subscribe(instance, store, accountId, userId) {
     const orders = instance.subscribe(`orders#${accountId}#${userId}`, (newMessage) => {
+      Vue.$log.debug(`${newMessage}`);
     });
   }
 }

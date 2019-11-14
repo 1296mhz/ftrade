@@ -75,6 +75,11 @@ export interface ISendOrder {
   side: string;
   volume: number;
 }
+
+export interface ICancelOrder {
+  account: string;
+  order: string;
+}
 export interface ITrade {
   account: string;
   fee: number;

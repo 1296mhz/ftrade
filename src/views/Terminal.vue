@@ -100,7 +100,7 @@
                       <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
 
                       <template v-slot:item.actions="{ item }">
-                         <v-icon small @click="cancelOrder(item.id)">cancel</v-icon>
+                         <v-icon small @click="cancelOrder({ account: getCurrentAccount.Id, order: item.id })">cancel</v-icon>
                       </template>
                     </v-data-table>
                   </v-tab-item>
@@ -233,13 +233,13 @@ export default (Vue as VueConstructor<any>).extend({
       ticker: '',
       volume: 1,
       volumeRules: [
-        v => !!v || 'Volume is required',
-        v => (v && v >= 1) || 'Volume cannot be less than one',
+        (v) => !!v || 'Volume is required',
+        (v) => (v && v >= 1) || 'Volume cannot be less than one',
       ],
       price: 1,
       priceRules: [
-        v => !!v || 'Price is required',
-        v => (v && v >= 1) || 'Price cannot be less than one',
+        (v) => !!v || 'Price is required',
+        (v) => (v && v >= 1) || 'Price cannot be less than one',
       ],
       side: '',
       validOrder: false,
@@ -360,7 +360,7 @@ export default (Vue as VueConstructor<any>).extend({
       this.chart.showLoading('Loading data from server...');
     },
     getCurrentAccount(newVal: any) {
-      console.log('CHANGE ACCOUNT', newVal.Id);
+      Vue.$log.debug(`${newVal.Id}`);
       // this.setSymbolSelected(newVal.Id);
     },
   },
@@ -415,6 +415,7 @@ export default (Vue as VueConstructor<any>).extend({
       setOhlcNavigator: 'terminal/ohlcNavigator',
       setAccounts: 'app/accounts',
       sendOrder: 'terminal/sendOrder',
+      cancelOrder: 'terminal/cancelOrder',
     }),
     CreateSymbol(ticker: any) {
       this.createSymbol(ticker);
@@ -439,15 +440,15 @@ export default (Vue as VueConstructor<any>).extend({
       this.setSymbolSelected(item);
     },
     getSideColor(side) {
-      if (side === 'buy') return 'green';
-      else if (side === 'sell') return 'red';
-      else return 'lime darken-4';
+      if (side === 'buy') { return 'green'; }
+      if (side === 'sell') { return 'red'; }
+      return 'lime darken-4';
     },
     getStateOrderColor(state) {
-      if (state === 'filled') return 'blue lighten-1';
-      else if (state === 'canceled') return 'grey darken-1';
-      else if (state === 'green') return 'grey darken-1';
-      else return 'lime darken-4';
+      if (state === 'filled') { return 'blue lighten-1'; }
+      if (state === 'canceled') { return 'grey darken-1'; }
+      if (state === 'green') { return 'grey darken-1'; }
+      return 'lime darken-4';
     },
     getTimeOrderFormat(time) {
       const d = new Date(time);
@@ -476,9 +477,13 @@ export default (Vue as VueConstructor<any>).extend({
       this.sendOrder(newOrder);
       Vue.$log.info(newOrder);
     },
-    cancelOrder(orderId) {
-      Vue.$log.debug(`Cancel order: ${orderId}`)
-    },
+    // cancelOrder(orderId) {
+    //   const cOrder = {
+    //     account: this.getCurrentAccount.Id,
+    //     order: orderId,
+    //   }
+    //   Vue.$log.debug(`Cancel order: ${orderId}`)
+    // },
   },
   created() {
     this.getSymbols();

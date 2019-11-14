@@ -26,81 +26,105 @@ export const symbolHeaders = [
 ];
 
 export const orderHeaders = [
-  { 
+  {
     text: 'Id',
-    value: 'id'
+    value: 'id',
   },
   {
     text: 'Symbol',
-    value: 'symbol'
+    value: 'symbol',
   },
   {
     text: 'State',
-    value: 'state'
+    value: 'state',
   },
   {
     text: 'Type',
-    value: 'type'
+    value: 'type',
   },
   {
     text: 'Leaves',
-    value: 'leaves'
+    value: 'leaves',
   },
   {
     text: 'Side',
-    value: 'side'
+    value: 'side',
   },
   {
     text: 'Price',
-    value: 'price'
+    value: 'price',
   },
   {
     text: 'Volume',
-    value: 'volume'
+    value: 'volume',
   },
-  { 
+  {
     text: 'Time',
-    value: 'time'
+    value: 'time',
   },
-  { 
+  {
     text: 'Actions',
     align: 'center',
     sortable: false,
-    value: 'actions'
+    value: 'actions',
   },
 ];
 
 export const positionHeaders = [
   {
     text: 'Ticker',
-    value: 'ticker'
+    value: 'ticker',
   },
   {
     text: 'Position',
-    value: 'position'
+    value: 'position',
   },
   {
     text: 'Avg.Price',
-    value: 'avgprice'
+    value: 'avgprice',
   },
   {
     text: 'Price',
-    value: 'price'
+    value: 'price',
   },
   {
     text: 'P&L',
-    value: 'pnl'
+    value: 'pnl',
   },
 ];
 
 export const tradesHeaders = [
-  { text: 'Id', value: 'id' },
-  { text: 'Symbol', value: 'symbol' },
-  { text: 'Order', value: 'order' },
-  { text: 'Side', value: 'side' },
-  { text: 'Price', value: 'price' },
-  { text: 'Volume', value: 'volume' },
-  { text: 'Fee', value: 'fee' },
-  { text: 'Time', value: 'time' },
+  {
+    text: 'Id',
+    value: 'id',
+  },
+  {
+    text: 'Symbol',
+    value: 'symbol',
+  },
+  {
+    text: 'Order',
+    value: 'order',
+  },
+  {
+    text: 'Side',
+    value: 'side',
+  },
+  {
+    text: 'Price',
+    value: 'price',
+  },
+  {
+    text: 'Volume',
+    value: 'volume',
+  },
+  {
+    text: 'Fee',
+    value: 'fee',
+  },
+  {
+    text: 'Time',
+    value: 'time',
+  },
 ];
 
