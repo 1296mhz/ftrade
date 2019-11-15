@@ -64,13 +64,12 @@ export default (Vue as VueConstructor<any>).extend({
     username: null,
     password: null,
     drawer: null,
-    token: '',
   }),
   watch: {},
   methods: {
     ...mapActions({
       login: 'auth/login',
-      // loginToken: 'auth/loginToken',
+      loginToken: 'auth/loginToken',
     }),
     async submit() {
       const payload = {
@@ -84,6 +83,8 @@ export default (Vue as VueConstructor<any>).extend({
   computed: {
     ...mapGetters({
       status: 'auth/status',
+      token: 'auth/token',
+      usernameToken: 'auth/usernameToken',
     }),
     loading: {
       get() {
@@ -101,18 +102,17 @@ export default (Vue as VueConstructor<any>).extend({
     },
   },
   mounted() {
-    // if (localStorage.getItem('token')) {
-    //   try {
-    //     console.log('Токен найден');
-    //     this.token = JSON.parse(localStorage.getItem('token'));
-    //     this.loginToken(this.token);
-    //     Vue.$log.debug(this.token);
-    //   } catch (e) {
-    //     console.log('удаляем Токен');
-
-    //     localStorage.removeItem('token');
+    console.log(this.usernameToken)
+    // if (this.token || this.usernameToken){
+    //   console.log("Токен найден и пользователь")
+    //   const payload = {
+    //     token: this.token,
+    //     username: this.usernameToken,
     //   }
-    // }
+    //   console.log("Payload ", payload)
+     // const response = this.loginToken(payload);
+     // this.$router.push('/dashboard');
+    //}
   },
 });
 </script>

@@ -17,6 +17,7 @@ export const actions: ActionTree<IAuthState, RootState> = {
       message: 'Loading',
     };
     commit(SET_STATUS, loading);
+
     try {
       const response: any = await Vue.$http.get(`/auth?user=${data.username}&pass=${data.password}`);
       const unpakedToken: any = Vue.$utils.parseJwt(response.data);
@@ -49,27 +50,47 @@ export const actions: ActionTree<IAuthState, RootState> = {
       commit(SET_STATUS, error);
     }
   },
-  // async loginToken({ commit, dispatch }, token: any) {
-  //   const loading = {
-  //     state: true,
-  //     message: 'Loading',
-  //   };
-  //   commit(SET_STATUS, loading);
-  //   const userAccount = {
-  //     token: JSON.stringify(token),
-  //     id: token.sub,
-  //     username: token.username,
-  //   };
-  //   const completed = {
-  //     state: false,
-  //     message: 'Completed',
-  //   };
-  //   commit(SET_STATUS, completed);
-  //   commit(SET_AUTH, userAccount);
-  //   Vue.$centrifuge.setId(userAccount.id);
-  //   Vue.$centrifuge.setToken(token);
-  //   Vue.$centrifuge.connect();
-  // },
+  loginToken({ commit, dispatch }, data: string){
+    const loading = {
+      state: true,
+      message: 'Loading',
+    };
+    commit(SET_STATUS, loading);
+   // console.log('Data ', data)
+
+    /*
+    try {
+    //  const response: any = await Vue.$http.get(`/auth?user=${data.username}&pass=${data.password}`);
+    console.log('data ', data)
+      const unpakedToken: any = Vue.$utils.parseJwt(data.token);
+      const userAccount = {
+        token: data,
+        id: unpakedToken.sub,
+        username: data.username,
+      };
+      const completed = {
+        state: false,
+        message: 'Completed',
+      };
+      commit(SET_STATUS, completed);
+      commit(SET_AUTH, userAccount);
+  
+      Vue.$centrifuge.setId(userAccount.id);
+      Vue.$centrifuge.setToken(data);
+      Vue.$centrifuge.connect();
+    } catch (err) {
+      let message = err;
+      if (err.response) {
+        message = err.response.data;
+      }
+      const error = {
+        state: true,
+        message: message,
+      };
+      commit(SET_STATUS, error);
+    }
+*/
+  },
   /**
    * Logout
    * @param param0

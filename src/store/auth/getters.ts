@@ -9,4 +9,10 @@ export const getters: GetterTree<IAuthState, RootState> = {
   status(state) {
     return state.status;
   },
+  token() {
+    return JSON.parse(localStorage.getItem('token'));
+  },
+  usernameToken() {
+    return JSON.parse(localStorage.getItem('username'));
+  }
 };

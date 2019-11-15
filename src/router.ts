@@ -39,11 +39,7 @@ const router = new Router({
 // check auth
 router.beforeEach((to, from, next) => {
   const loggedIn = store.state.auth.token;
-  const currentToken = JSON.parse(localStorage.getItem('token'));
-  // if(currentToken) {
-  //   console.log("Токен найден")
-  //   return next('/');
-  // }
+
   // Not logged in
   if (!loggedIn && to.path !== '/login') {
     return next('/login');
@@ -52,6 +48,7 @@ router.beforeEach((to, from, next) => {
   if (loggedIn && to.path === '/login') {
     return next('/');
   }
+
   store.dispatch('app/currentView', to.name);
   next();
 });

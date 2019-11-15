@@ -16,6 +16,8 @@ export const mutations: MutationTree<IAuthState> = {
     };
     state.username = data.username;
     state.id = data.id;
+    localStorage.setItem('username', data.username);
+    localStorage.setItem('token', data.token);
   },
 
   /**
@@ -37,5 +39,7 @@ export const mutations: MutationTree<IAuthState> = {
       state: false,
       message: 'Unknown',
     };
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
   },
 };
