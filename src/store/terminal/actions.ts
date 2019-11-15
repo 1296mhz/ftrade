@@ -19,6 +19,8 @@ import {
   SET_UPDATE_TRADES,
   SET_UPDATE_ORDERS,
 } from './mutation-types';
+import { state } from '.';
+import { map } from 'highcharts';
 
 export const actions: ActionTree<TerminalState, RootState> = {
   async tickers({ commit, state }) {
@@ -86,7 +88,14 @@ export const actions: ActionTree<TerminalState, RootState> = {
     commit(SET_UPDATE_TRADES, data);
   },
   async setUpdateOrders({ commit, state }, data): Promise<any> {
-    commit(SET_UPDATE_ORDERS, data);
+    let orders = [];
+    switch (data.Command) {
+      case 'update':
+        orders = Vue.$_.map(state.orders, (order) => {
+          return (order.id === data.Params.id) ? data.Params : order;
+        });
+    }
+    commit(SET_UPDATE_ORDERS, orders);
   },
   async ohlc({ commit, state }, params): Promise<any> {
     const begin = params.begin ? params.begin : 0;

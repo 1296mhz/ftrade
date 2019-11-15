@@ -11,6 +11,7 @@ export default class OrdersSubsTerminal {
       }
     }
     this.orders = instance.subscribe(`orders#${accountId}#${userId}`, (newMessage) => {
+      store.dispatch('terminal/setUpdateOrders', newMessage);
       Vue.$log.debug(`Orders: ${newMessage}`);
     });
   }

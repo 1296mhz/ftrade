@@ -11,6 +11,7 @@ export default class TradesSubsTerminal {
       }
     }
     this.trades = instance.subscribe(`trades#${accountId}#${userId}`, (newMessage) => {
+      store.dispatch('terminal/setUpdateTrades', newMessage);
       Vue.$log.debug(`Trades: ${newMessage}`);
     });
   }
