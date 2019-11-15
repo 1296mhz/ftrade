@@ -31,6 +31,9 @@ export const actions: ActionTree<IAuthState, RootState> = {
       };
       commit(SET_STATUS, completed);
       commit(SET_AUTH, userAccount);
+      const token = JSON.stringify(response.data);
+      localStorage.setItem('token', token);
+      console.log(localStorage.getItem('token'))
       Vue.$centrifuge.setId(userAccount.id);
       Vue.$centrifuge.setToken(response.data);
       Vue.$centrifuge.connect();
@@ -46,7 +49,27 @@ export const actions: ActionTree<IAuthState, RootState> = {
       commit(SET_STATUS, error);
     }
   },
-
+  // async loginToken({ commit, dispatch }, token: any) {
+  //   const loading = {
+  //     state: true,
+  //     message: 'Loading',
+  //   };
+  //   commit(SET_STATUS, loading);
+  //   const userAccount = {
+  //     token: JSON.stringify(token),
+  //     id: token.sub,
+  //     username: token.username,
+  //   };
+  //   const completed = {
+  //     state: false,
+  //     message: 'Completed',
+  //   };
+  //   commit(SET_STATUS, completed);
+  //   commit(SET_AUTH, userAccount);
+  //   Vue.$centrifuge.setId(userAccount.id);
+  //   Vue.$centrifuge.setToken(token);
+  //   Vue.$centrifuge.connect();
+  // },
   /**
    * Logout
    * @param param0

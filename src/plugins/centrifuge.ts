@@ -29,7 +29,9 @@ class CentrifugeManager {
       minRetry: 1000,
       maxRetry: 10000,
       onTransportClose: (ctx: any) => {
-        eventBus.$emit('warn', `Trying reconnect! Error code: ${ctx.event.code}, Message: ${ctx.reason}`);
+        if (store.state.auth.status.state) {
+          eventBus.$emit('warn', `Trying reconnect! Error code: ${ctx.event.code}, Message: ${ctx.reason}`);
+        }
       },
     });
 

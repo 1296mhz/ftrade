@@ -19,9 +19,7 @@ new Vue({
   store,
   vuetify,
   created() {
-    this.$store.dispatch('terminal/tickers');
     this.$store.dispatch('terminal/positions');
-    this.$store.dispatch('terminal/orders');
   },
   render: (h) => h(App),
 }).$mount('#app');

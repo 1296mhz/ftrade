@@ -50,12 +50,13 @@
   </v-app>
 </template>
 
-<script>
-/* eslint-disable */
+<script lang="ts">
+import Vue, { VueConstructor } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
-import { AuthStatus } from '../store/auth/types';
+import { IAuthStatus } from '../store/auth/types';
 
-export default {
+export default (Vue as VueConstructor<any>).extend({
+  name: 'Login',
   props: {
     source: String,
   },
@@ -63,11 +64,13 @@ export default {
     username: null,
     password: null,
     drawer: null,
+    token: '',
   }),
   watch: {},
   methods: {
     ...mapActions({
       login: 'auth/login',
+      // loginToken: 'auth/loginToken',
     }),
     async submit() {
       const payload = {
@@ -97,5 +100,19 @@ export default {
       },
     },
   },
-};
+  mounted() {
+    // if (localStorage.getItem('token')) {
+    //   try {
+    //     console.log('Токен найден');
+    //     this.token = JSON.parse(localStorage.getItem('token'));
+    //     this.loginToken(this.token);
+    //     Vue.$log.debug(this.token);
+    //   } catch (e) {
+    //     console.log('удаляем Токен');
+
+    //     localStorage.removeItem('token');
+    //   }
+    // }
+  },
+});
 </script>
