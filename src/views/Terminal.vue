@@ -225,13 +225,13 @@ export default (Vue as VueConstructor<any>).extend({
       ticker: '',
       volume: 1,
       volumeRules: [
-        v => !!v || 'Volume is required',
-        v => (v && v >= 1) || 'Volume cannot be less than one',
+        (v) => !!v || 'Volume is required',
+        (v) => (v && v >= 1) || 'Volume cannot be less than one',
       ],
       price: 1,
       priceRules: [
-        v => !!v || 'Price is required',
-        v => (v && v >= 1) || 'Price cannot be less than one',
+        (v) => !!v || 'Price is required',
+        (v) => (v && v >= 1) || 'Price cannot be less than one',
       ],
       side: '',
       validOrder: false,
