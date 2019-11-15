@@ -1,9 +1,9 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col xs="12" sm="12" md="8" lg="10" xl="10">
+      <v-col xs="12" sm="12" md="12" lg="12" xl="12">
         <v-row>
-          <v-col xs="12" sm="12" md="12" lg="6" xl="6">
+          <v-col xs="12" sm="12" md="12" lg="5" xl="5">
             <v-card height="100%">
               <v-container fluid>
                 <v-row align="center" justify="start">
@@ -50,9 +50,9 @@
               </v-container>
             </v-card>
           </v-col>
-          <v-col xs="12" sm="12" md="12" lg="6" xl="6">
+          <v-col xs="12" sm="12" md="8" lg="5" xl="5">
             <v-card height="100%">
-              <v-container fluid>
+              <v-container>
                 <highcharts
                   class="stock"
                   :constructor-type="'stockChart'"
@@ -62,69 +62,11 @@
               </v-container>
             </v-card>
           </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
+
+          <v-col xs="12" sm="12" md="4" lg="2" xl="2">
             <v-card height="100%">
               <v-container fluid>
-                <v-tabs height="45">
-                  <v-tab>Positions</v-tab>
-                  <v-tab>Orders</v-tab>
-                  <v-tab>Trades</v-tab>
-
-                  <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table
-                      dense
-                      height="300"
-                      :headers="position_headers"
-                      :items="positions"
-                      item-key="id"
-                      fixed-header
-                      disable-pagination
-                      hide-default-footer
-                    ></v-data-table>
-                  </v-tab-item>
-                  <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table dense :headers="order_headers" :items="orders" item-key="id">
-                      <template v-slot:item.state="{ item }">
-                        <v-chip
-                          :color="getStateOrderColor(item.state)"
-                          dark
-                          label
-                          x-small
-                        >{{ item.state }}</v-chip>
-                      </template>
-                      <template v-slot:item.side="{ item }">
-                        <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
-                      </template>
-                      <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
-
-                      <template v-slot:item.actions="{ item }">
-                         <v-icon small @click="cancelOrder({ account: getCurrentAccount.Id, order: item.id })">cancel</v-icon>
-                      </template>
-                    </v-data-table>
-                  </v-tab-item>
-                  <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table dense :headers="trades_headers" :items="trades" item-key="id">
-                      <template v-slot:item.side="{ item }">
-                        <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
-                      </template>
-                      <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
-                    </v-data-table>
-                  </v-tab-item>
-                </v-tabs>
-              </v-container>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-col>
-
-      <v-col xs="12" sm="12" md="4" lg="2" xl="2">
-        <v-row xs="12" sm="12" md="4" lg="2" xl="2">
-          <v-col>
-            <v-card>
-              <v-form ref="form" v-model="validOrder" lazy-validation>
-                <v-container fluid height="100vh">
+                <v-form ref="form" v-model="validOrder" lazy-validation>
                   <v-row dense>
                     <v-col>
                       <v-text-field dense disabled label="Bid" outline />
@@ -193,17 +135,64 @@
                       >Sell</v-btn>
                     </v-col>
                   </v-row>
-                </v-container>
-              </v-form>
+                </v-form>
+              </v-container>
             </v-card>
           </v-col>
         </v-row>
-        <v-row xs="12" sm="12" md="4" lg="2" xl="2">
+        <v-row>
           <v-col>
-            <v-card>
+            <v-card height="100%">
               <v-container fluid>
-                <v-card-title>Prices</v-card-title>
-                <v-card-text>I'm card text</v-card-text>
+                <v-tabs height="45">
+                  <v-tab>Positions</v-tab>
+                  <v-tab>Orders</v-tab>
+                  <v-tab>Trades</v-tab>
+
+                  <v-tab-item transition="none" reverse-transition="none">
+                    <v-data-table
+                      dense
+                      height="300"
+                      :headers="position_headers"
+                      :items="positions"
+                      item-key="id"
+                      fixed-header
+                      disable-pagination
+                      hide-default-footer
+                    ></v-data-table>
+                  </v-tab-item>
+                  <v-tab-item transition="none" reverse-transition="none">
+                    <v-data-table dense :headers="order_headers" :items="orders" item-key="id">
+                      <template v-slot:item.state="{ item }">
+                        <v-chip
+                          :color="getStateOrderColor(item.state)"
+                          dark
+                          label
+                          x-small
+                        >{{ item.state }}</v-chip>
+                      </template>
+                      <template v-slot:item.side="{ item }">
+                        <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
+                      </template>
+                      <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
+
+                      <template v-slot:item.actions="{ item }">
+                        <v-icon
+                          small
+                          @click="cancelOrder({ account: getCurrentAccount.Id, order: item.id })"
+                        >cancel</v-icon>
+                      </template>
+                    </v-data-table>
+                  </v-tab-item>
+                  <v-tab-item transition="none" reverse-transition="none">
+                    <v-data-table dense :headers="trades_headers" :items="trades" item-key="id">
+                      <template v-slot:item.side="{ item }">
+                        <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
+                      </template>
+                      <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
+                    </v-data-table>
+                  </v-tab-item>
+                </v-tabs>
               </v-container>
             </v-card>
           </v-col>
@@ -236,13 +225,13 @@ export default (Vue as VueConstructor<any>).extend({
       ticker: '',
       volume: 1,
       volumeRules: [
-        (v) => !!v || 'Volume is required',
-        (v) => (v && v >= 1) || 'Volume cannot be less than one' ,
+        v => !!v || 'Volume is required',
+        v => (v && v >= 1) || 'Volume cannot be less than one',
       ],
       price: 1,
       priceRules: [
-        (v) => !!v || 'Price is required',
-        (v) => (v && v >= 1) || 'Price cannot be less than one',
+        v => !!v || 'Price is required',
+        v => (v && v >= 1) || 'Price cannot be less than one',
       ],
       side: '',
       validOrder: false,
@@ -442,14 +431,24 @@ export default (Vue as VueConstructor<any>).extend({
       this.setSymbolSelected(item);
     },
     getSideColor(side) {
-      if (side === 'buy') { return 'green'; }
-      if (side === 'sell') { return 'red'; }
+      if (side === 'buy') {
+        return 'green';
+      }
+      if (side === 'sell') {
+        return 'red';
+      }
       return 'lime darken-4';
     },
     getStateOrderColor(state) {
-      if (state === 'filled') { return 'blue lighten-1'; }
-      if (state === 'canceled') { return 'grey darken-1'; }
-      if (state === 'green') { return 'grey darken-1'; }
+      if (state === 'filled') {
+        return 'blue lighten-1';
+      }
+      if (state === 'canceled') {
+        return 'grey darken-1';
+      }
+      if (state === 'green') {
+        return 'grey darken-1';
+      }
       return 'lime darken-4';
     },
     getTimeOrderFormat(time) {

@@ -10,7 +10,7 @@
   },
   "rules": {
     "no-shadowed-variable": [
-      false,
+      true,
       {
         "class": true,
         "enum": true,
