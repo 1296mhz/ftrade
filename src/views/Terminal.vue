@@ -237,12 +237,12 @@ export default (Vue as VueConstructor<any>).extend({
       volume: 1,
       volumeRules: [
         (v) => !!v || 'Volume is required',
-        (v) => (v && v >= 1 && typeof v === 'number') || 'Volume cannot be less than one' ? parseFloat(v) : '',
+        (v) => (v && v >= 1) || 'Volume cannot be less than one' ,
       ],
       price: 1,
       priceRules: [
         (v) => !!v || 'Price is required',
-        (v) => (v && v >= 1 && typeof v === 'number') || 'Price cannot be less than one' ? parseFloat(v) : '',
+        (v) => (v && v >= 1) || 'Price cannot be less than one',
       ],
       side: '',
       validOrder: false,

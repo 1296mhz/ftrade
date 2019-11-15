@@ -61,7 +61,6 @@ export const actions: ActionTree<TerminalState, RootState> = {
   },
   async cancelOrder({ commit, state }, params: ICancelOrder): Promise<any> {
     const reponse = await Vue.$centrifuge.cancelOrder(params);
-    // commit(SET_ORDERS, orders);
   },
   async trades({ commit, state }, accountId: string): Promise<any> {
     const trades = await Vue.$centrifuge.getAccountTrades(accountId);
