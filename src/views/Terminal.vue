@@ -157,6 +157,7 @@
                         :rules="volumeRules"
                         required
                         :disabled="disableField"
+                        type="number"
                       ></v-text-field>
                     </v-col>
                     <v-col>
@@ -167,6 +168,7 @@
                         :rules="priceRules"
                         required
                         :disabled="disableField"
+                        type="number"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -217,6 +219,7 @@ import Vue, { VueConstructor } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
+import { ISendOrder } from '../store/terminal/types';
 import {
   symbolHeaders,
   orderHeaders,
@@ -234,12 +237,12 @@ export default (Vue as VueConstructor<any>).extend({
       volume: 1,
       volumeRules: [
         (v) => !!v || 'Volume is required',
-        (v) => (v && v >= 1) || 'Volume cannot be less than one',
+        (v) => (v && v >= 1 && typeof v === 'number') || 'Volume cannot be less than one' ? parseFloat(v) : '',
       ],
       price: 1,
       priceRules: [
         (v) => !!v || 'Price is required',
-        (v) => (v && v >= 1) || 'Price cannot be less than one',
+        (v) => (v && v >= 1 && typeof v === 'number') || 'Price cannot be less than one' ? parseFloat(v) : '',
       ],
       side: '',
       validOrder: false,
@@ -465,12 +468,12 @@ export default (Vue as VueConstructor<any>).extend({
         d.getSeconds()
       );
     },
-    newOrder(side) {
-      const newOrder = {
+    newOrder(side: string) {
+      const newOrder: ISendOrder = {
         account: this.getCurrentAccount.Id,
         side: side,
-        price: this.price,
-        volume: this.volume,
+        price: parseFloat(this.price),
+        volume: parseFloat(this.volume),
         ticker: this.currentSymbol.ticker,
       };
       this.sendOrder(newOrder);
