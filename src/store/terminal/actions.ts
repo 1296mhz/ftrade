@@ -58,7 +58,6 @@ export const actions: ActionTree<TerminalState, RootState> = {
   },
   async sendOrder({ commit, state }, order: ISendOrder): Promise<any> {
     const orders = await Vue.$centrifuge.sendOrder(order);
-    commit(SET_ORDERS, orders);
   },
   async cancelOrder({ commit, state }, params: ICancelOrder): Promise<any> {
     const reponse = await Vue.$centrifuge.cancelOrder(params);
