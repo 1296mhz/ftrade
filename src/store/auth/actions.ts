@@ -12,6 +12,7 @@ export const actions: ActionTree<IAuthState, RootState> = {
    * @param data { username: string, password: string }
    */
   async login({ commit, dispatch }, data: IAuthData) {
+    console.log("login ", data)
     const loading = {
       state: true,
       message: 'Loading',
@@ -20,10 +21,11 @@ export const actions: ActionTree<IAuthState, RootState> = {
 
     try {
       const response: any = await Vue.$http.get(`/auth?user=${data.username}&pass=${data.password}`);
-      const unpakedToken: any = Vue.$utils.parseJwt(response.data);
+      const unpackedToken: any = Vue.$utils.parseJwt(response.data);
+
       const userAccount = {
         token: response.data,
-        id: unpakedToken.sub,
+        id: unpackedToken.sub,
         username: data.username,
       };
       const completed = {
@@ -32,9 +34,10 @@ export const actions: ActionTree<IAuthState, RootState> = {
       };
       commit(SET_STATUS, completed);
       commit(SET_AUTH, userAccount);
-      const token = JSON.stringify(response.data);
-      localStorage.setItem('token', token);
-      console.log(localStorage.getItem('token'))
+
+      localStorage.setItem('username', userAccount.username);
+      localStorage.setItem('token', userAccount.token);
+
       Vue.$centrifuge.setId(userAccount.id);
       Vue.$centrifuge.setToken(response.data);
       Vue.$centrifuge.connect();
@@ -50,23 +53,18 @@ export const actions: ActionTree<IAuthState, RootState> = {
       commit(SET_STATUS, error);
     }
   },
-  loginToken({ commit, dispatch }, data: string){
+  loginToken({ commit, dispatch, state }) {
     const loading = {
       state: true,
       message: 'Loading',
     };
     commit(SET_STATUS, loading);
-   // console.log('Data ', data)
-
-    /*
     try {
-    //  const response: any = await Vue.$http.get(`/auth?user=${data.username}&pass=${data.password}`);
-    console.log('data ', data)
-      const unpakedToken: any = Vue.$utils.parseJwt(data.token);
+      const unpakedToken: any = Vue.$utils.parseJwt(state.token);
       const userAccount = {
-        token: data,
+        token: state.token,
         id: unpakedToken.sub,
-        username: data.username,
+        username: state.username,
       };
       const completed = {
         state: false,
@@ -74,9 +72,9 @@ export const actions: ActionTree<IAuthState, RootState> = {
       };
       commit(SET_STATUS, completed);
       commit(SET_AUTH, userAccount);
-  
+
       Vue.$centrifuge.setId(userAccount.id);
-      Vue.$centrifuge.setToken(data);
+      Vue.$centrifuge.setToken(state.token);
       Vue.$centrifuge.connect();
     } catch (err) {
       let message = err;
@@ -89,7 +87,7 @@ export const actions: ActionTree<IAuthState, RootState> = {
       };
       commit(SET_STATUS, error);
     }
-*/
+
   },
   /**
    * Logout
@@ -98,6 +96,5 @@ export const actions: ActionTree<IAuthState, RootState> = {
   exit({ commit }) {
     commit(EXIT);
     Vue.$centrifuge.disconnect();
-    router.push('login');
   },
 };

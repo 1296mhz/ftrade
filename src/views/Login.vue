@@ -102,17 +102,6 @@ export default (Vue as VueConstructor<any>).extend({
     },
   },
   mounted() {
-    console.log(this.usernameToken)
-    // if (this.token || this.usernameToken){
-    //   console.log("Токен найден и пользователь")
-    //   const payload = {
-    //     token: this.token,
-    //     username: this.usernameToken,
-    //   }
-    //   console.log("Payload ", payload)
-     // const response = this.loginToken(payload);
-     // this.$router.push('/dashboard');
-    //}
   },
 });
 </script>

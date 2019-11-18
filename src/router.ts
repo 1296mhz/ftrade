@@ -39,11 +39,17 @@ const router = new Router({
 // check auth
 router.beforeEach((to, from, next) => {
   const loggedIn = store.state.auth.token;
+  const connected = store.state.app.centrifugeConnectedFlag;
 
+  if (loggedIn && !connected) {
+    store.dispatch('auth/loginToken');
+  }
+  
   // Not logged in
   if (!loggedIn && to.path !== '/login') {
     return next('/login');
   }
+
   // Logged in
   if (loggedIn && to.path === '/login') {
     return next('/');

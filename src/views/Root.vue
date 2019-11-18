@@ -38,7 +38,7 @@
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <accounts-list :setCurrentAccount="setCurrentAccount" :account="currentAccount" :accounts="accounts"></accounts-list>
-      <v-btn icon @click="logout()">
+      <v-btn icon @click="exit()">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
     </v-app-bar>
@@ -133,6 +133,10 @@ export default (Vue as VueConstructor<any>).extend({
       setCurrentAccount: 'app/currentAccountCombobox',
       setCentrifugeConnectedFlag: 'app/centrifugeConnectedFlag',
     }),
+    async exit() {
+      await this.logout();
+      this.$router.push('/login');
+    }
   },
 });
 </script>
