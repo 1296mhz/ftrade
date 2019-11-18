@@ -58,6 +58,7 @@
                   :constructor-type="'stockChart'"
                   :options="stockOptions"
                   :callback="startCharts"
+                  :highcharts="instance"
                 ></highcharts>
               </v-container>
             </v-card>
@@ -221,6 +222,7 @@ export default (Vue as VueConstructor<any>).extend({
   data() {
     return {
       chart: null,
+      instance: Highcharts,
       selectedSymbolItem: {},
       ticker: '',
       volume: 1,
@@ -319,26 +321,28 @@ export default (Vue as VueConstructor<any>).extend({
     loadingSymbols(newVal: boolean) {
       if (!newVal) {
         Vue.$log.debug('Load symbols');
-        this.setSymbolSelected(this.symbols[0]);
+        if (this.symbols) {
+          this.setSymbolSelected(this.symbols[0]);
+        }
       }
     },
     // This is where the component updates when data changes.
     ohlc(newVal: any, oldVal: any) {
-      this.chart = Highcharts.charts[0];
+      this.chart = this.instance.charts[0];
       this.stockOptions.series[0].data = [null];
       this.stockOptions.series[0].data = newVal;
       this.chart.hideLoading();
     },
     // This is where the component updates when data changes.
     getOhlcNavigator(newVal: any, oldVal: any) {
-      this.chart = Highcharts.charts[0];
+      this.chart = this.instance.charts[0];
       this.stockOptions.navigator.series.data = [null];
       this.stockOptions.navigator.series.data = newVal;
       this.chart.xAxis[0].setExtremes();
     },
     // This is where the component updates when data changes.
     symbolSelected(newVal: any) {
-      this.chart = Highcharts.charts[0];
+      this.chart = this.instance.charts[0];
       this.stockOptions.navigator.series.data = [null];
       this.stockOptions.title.text = this.symbolSelected.ticker;
       Vue.$log.debug(`SymbolSelct ${this.symbolSelected.ticker}`);
@@ -414,7 +418,7 @@ export default (Vue as VueConstructor<any>).extend({
     },
     setExtremes(params: any) {
       Vue.$log.debug(params);
-      this.chart = Highcharts.charts[0];
+      this.chart = this.instance.charts[0];
       this.chart.showLoading('Loading data from server...');
       const ohlcParams = {
         ticker: this.symbolSelected.ticker,
@@ -491,9 +495,9 @@ export default (Vue as VueConstructor<any>).extend({
     this.getOrders(this.getCurrentAccount.Id);
   },
   beforeDestroy() {
-    if (Highcharts.charts[0] !== undefined) {
-      Highcharts.charts[0].destroy();
-      Highcharts.charts.splice(0, 1);
+    if (this.instance.charts[0] !== undefined) {
+      this.instance.charts[0].destroy();
+      this.instance.charts.splice(0, 1);
     }
   },
 });
