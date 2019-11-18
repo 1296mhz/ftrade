@@ -101,7 +101,5 @@ export default (Vue as VueConstructor<any>).extend({
       },
     },
   },
-  mounted() {
-  },
 });
 </script>

@@ -18,7 +18,7 @@ const init = {
   },
   username: '',
   id: '',
-}
+};
 
 const token = localStorage.getItem('token');
 if (token) {

@@ -136,7 +136,7 @@ export default (Vue as VueConstructor<any>).extend({
     async exit() {
       await this.logout();
       this.$router.push('/login');
-    }
+    },
   },
 });
 </script>

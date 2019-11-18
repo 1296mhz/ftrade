@@ -32,10 +32,8 @@ export const mutations: MutationTree<IAuthState> = {
    * @param state
    */
   [EXIT](state) {
-    console.log("Mutation exit ")
     localStorage.removeItem('username');
     localStorage.removeItem('token');
-    console.log("Mutation exit ", localStorage)
     state.token = state.username = state.id = '';
     state.status = {
       state: false,

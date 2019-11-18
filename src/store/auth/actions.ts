@@ -12,7 +12,6 @@ export const actions: ActionTree<IAuthState, RootState> = {
    * @param data { username: string, password: string }
    */
   async login({ commit, dispatch }, data: IAuthData) {
-    console.log("login ", data)
     const loading = {
       state: true,
       message: 'Loading',

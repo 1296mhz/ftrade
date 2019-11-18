@@ -44,12 +44,10 @@ router.beforeEach((to, from, next) => {
   if (loggedIn && !connected) {
     store.dispatch('auth/loginToken');
   }
-  
   // Not logged in
   if (!loggedIn && to.path !== '/login') {
     return next('/login');
   }
-
   // Logged in
   if (loggedIn && to.path === '/login') {
     return next('/');
