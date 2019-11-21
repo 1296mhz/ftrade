@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { TerminalState, ISendOrder, ICancelOrder } from './types';
 import { ActionTree } from 'vuex';
-import { RootState } from '@/store/types';
+import { IMainState } from '@/store/types';
 import {
   SET_TICKERS,
   SET_SYMBOLS,
@@ -22,7 +22,7 @@ import {
 import { state } from '.';
 import { map } from 'highcharts';
 
-export const actions: ActionTree<TerminalState, RootState> = {
+export const actions: ActionTree<TerminalState, IMainState> = {
   async tickers({ commit, state }) {
     commit(SET_TICKERS, ['AAPL.NASDAQ', 'AMZN.NASDAQ', 'GOOG.NASDAQ', 'EUR/USD.E.FX', 'USD/JPY.E.FX', 'GBP/USD.E.FX']);
   },

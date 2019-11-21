@@ -1,10 +1,10 @@
 import Vue from 'vue';
 import { AppState } from './types';
-import { RootState } from '@/store/types';
+import { IMainState } from '@/store/types';
 import { GetterTree } from 'vuex';
 import { IAccount, IAccountCombobox } from './types';
 import { eventBus } from '@/main';
-export const getters: GetterTree<AppState, RootState> = {
+export const getters: GetterTree<AppState, IMainState> = {
   DRAWER(state: AppState): any {
     return state.drawer;
   },

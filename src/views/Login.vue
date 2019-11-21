@@ -11,35 +11,13 @@
               </v-toolbar>
               <v-card-text>
                 <v-form @submit.prevent="submit">
-                  <v-text-field
-                    v-model="username"
-                    label="Login"
-                    name="login"
-                    prepend-icon="person"
-                    type="text"
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="password"
-                    id="password"
-                    label="Password"
-                    name="password"
-                    prepend-icon="lock"
-                    type="password"
-                  ></v-text-field>
+                  <v-text-field v-model="username" label="Login" prepend-icon="person" type="text"></v-text-field>
+                  <v-text-field v-model="password" label="Password" prepend-icon="lock" type="password"></v-text-field>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn
-                      color="primary"
-                      :loading="loading"
-                      :disabled="loading"
-                      type="submit"
-                    >Login</v-btn>
+                    <v-btn color="primary" :loading="loading" :disabled="loading" type="submit">Login</v-btn>
                   </v-card-actions>
-                  <v-alert
-                    :value="status.state"
-                    type="error"
-                    transition="scale-transition"
-                  >{{status.message}}</v-alert>
+                  <v-alert :value="error != ''" type="error" transition="scale-transition">{{error}}</v-alert>
                 </v-form>
               </v-card-text>
             </v-card>
@@ -51,55 +29,38 @@
 </template>
 
 <script lang="ts">
-import Vue, { VueConstructor } from 'vue';
-import { mapGetters, mapActions } from 'vuex';
-import { IAuthStatus } from '../store/auth/types';
+import Vue from 'vue';
+// import { mapGetters, mapActions } from 'vuex';
+// import { IAuthStatus } from '../store/auth/types';
 
-export default (Vue as VueConstructor<any>).extend({
-  name: 'Login',
-  props: {
-    source: String,
-  },
+export default Vue.extend({
   data: () => ({
     username: null,
     password: null,
-    drawer: null,
+    loading: false,
   }),
-  watch: {},
   methods: {
-    ...mapActions({
+/*    ...mapActions({
       login: 'auth/login',
       loginToken: 'auth/loginToken',
-    }),
+    }),*/
     async submit() {
       const payload = {
         password: this.password,
         username: this.username,
       };
-      const response = await this.login(payload);
-      this.$router.push('/dashboard');
+      await this.$store.dispatch('Login', payload)
+        .then(() => this.$router.push('/dashboard'))
+        .catch(() => {});
     },
   },
   computed: {
-    ...mapGetters({
+    error() { return this.$store.state.error; },
+    /*...mapGetters({
       status: 'auth/status',
       token: 'auth/token',
       usernameToken: 'auth/usernameToken',
-    }),
-    loading: {
-      get() {
-        let status = false;
-        if (this.status.message === 'Loading') {
-          status = true;
-        }
-        return status;
-      },
-    },
-    error: {
-      get() {
-        return this.status.state;
-      },
-    },
+    }),*/
   },
 });
 </script>

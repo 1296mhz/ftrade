@@ -2,10 +2,10 @@ import Vue from 'vue';
 import { IAuthState, IAuthData } from './types';
 import { SET_STATUS, EXIT, SET_AUTH } from './mutation-types';
 import { ActionTree } from 'vuex';
-import { RootState } from '@/store/types';
+import { IMainState } from '@/store/types';
 import router from '@/router';
 
-export const actions: ActionTree<IAuthState, RootState> = {
+export const actions: ActionTree<IAuthState, IMainState> = {
   /**
    * Login
    * @param param0
@@ -19,7 +19,7 @@ export const actions: ActionTree<IAuthState, RootState> = {
     commit(SET_STATUS, loading);
 
     try {
-      const response: any = await Vue.$http.get(`/auth?user=${data.username}&pass=${data.password}`);
+      const response: any = await Vue.$axios.get(`/auth?user=${data.username}&pass=${data.password}`);
       const unpackedToken: any = Vue.$utils.parseJwt(response.data);
 
       const userAccount = {

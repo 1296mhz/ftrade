@@ -7,6 +7,25 @@ import SymbolSubsTerminal from './centrifuge/SymbolSubsTerminal';
 import OrdersSubsTerminal from './centrifuge/OrdersSubsTerminal';
 import TradesSubsTerminal from './centrifuge/TradesSubsTerminal';
 
+// Define centrifuge plugin
+const centrifugePlugin = {
+  install(vue: typeof Vue) {
+    vue.$cf = new centrifuge(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : ''}/connection/websocket`);
+  },
+};
+
+// Use in vue
+Vue.use(centrifugePlugin);
+
+declare module 'vue/types/vue' {
+  interface VueConstructor {
+    $cf: centrifuge;
+  }
+}
+
+
+
+//////////////////////////////////////
 function responseHandler(response) {
   Vue.$log.debug(response);
   if (response.code) {

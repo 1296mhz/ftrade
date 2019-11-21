@@ -5,7 +5,7 @@ import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
 import { Module } from 'vuex';
-import { RootState } from '@/store/types';
+import { IMainState } from '@/store/types';
 import Vue from 'vue';
 
 const namespaced: boolean = true;
@@ -33,7 +33,7 @@ init.username = localStorage.getItem('username');
 
 export const state: IAuthState = init;
 
-const authModule: Module<IAuthState, RootState> = {
+const authModule: Module<IAuthState, IMainState> = {
   namespaced,
   state,
   actions,

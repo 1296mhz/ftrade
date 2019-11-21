@@ -1,8 +1,8 @@
 import { TerminalState } from './types';
-import { RootState } from '@/store/types';
+import { IMainState } from '@/store/types';
 import { GetterTree } from 'vuex';
 
-export const getters: GetterTree<TerminalState, RootState> = {
+export const getters: GetterTree<TerminalState, IMainState> = {
   LOADING_TEXT(state: TerminalState): any {
     return state.loadingText;
   },

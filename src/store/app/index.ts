@@ -3,7 +3,7 @@ import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
 import { Module } from 'vuex';
-import { RootState } from '@/store/types';
+import { IMainState } from '@/store/types';
 
 const namespaced: boolean = true;
 
@@ -16,7 +16,7 @@ export const state: AppState = {
   currentAccount: null,
 };
 
-const appModule: Module<AppState, RootState> = {
+const appModule: Module<AppState, IMainState> = {
   namespaced,
   state,
   actions,
