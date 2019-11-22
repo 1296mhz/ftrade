@@ -30,8 +30,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-// import { mapGetters, mapActions } from 'vuex';
-// import { IAuthStatus } from '../store/auth/types';
 
 export default Vue.extend({
   data: () => ({
@@ -39,28 +37,23 @@ export default Vue.extend({
     password: null,
     loading: false,
   }),
-  methods: {
-/*    ...mapActions({
-      login: 'auth/login',
-      loginToken: 'auth/loginToken',
-    }),*/
-    async submit() {
-      const payload = {
-        password: this.password,
-        username: this.username,
-      };
-      await this.$store.dispatch('Login', payload)
-        .then(() => this.$router.push('/dashboard'))
-        .catch(() => {});
-    },
-  },
+
   computed: {
     error() { return this.$store.state.error; },
-    /*...mapGetters({
-      status: 'auth/status',
-      token: 'auth/token',
-      usernameToken: 'auth/usernameToken',
-    }),*/
+  },
+
+  methods: {
+    async submit() {
+      try {
+        await this.$store.dispatch('Login', {
+          password: this.password,
+          username: this.username,
+        });
+        await this.$store.dispatch('GetAccounts');
+
+        this.$router.push('/dashboard');
+      } catch {/**/}
+    },
   },
 });
 </script>

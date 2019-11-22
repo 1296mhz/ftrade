@@ -8,6 +8,9 @@ export interface IMainState {
   error: string;
   userId: string;
 
+  // Accounts
+  accounts: IAccount[];
+
   // Modules
   app: AppState;
   auth: IAuthState;
@@ -18,4 +21,27 @@ export interface IMainState {
 export interface ILoginPayload {
   username: string;
   password: string;
+}
+
+// User account
+export interface IAccount {
+  id: string;
+  name: string;
+}
+
+// Terminal state interface
+export interface ITerminalState {
+  account: string;
+
+  symbols: ISymbol[];
+}
+
+// Symbol
+export interface ISymbol {
+  ticker: string;
+  type: string;
+  currency: string;
+  exchange: string;
+  minIncrement: number;
+  minIncrementAmount: number;
 }

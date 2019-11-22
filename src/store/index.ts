@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import { IMainState, ILoginPayload } from './types';
+import { IMainState, ILoginPayload, IAccount } from './types';
 import AppModule, { state as AppState, state } from './app';
 import AuthModule, { state as AuthState } from './auth';
-import TerminalModule, { state as TerminalState } from './terminal';
+import TerminalModule, { state as TerminalState } from './terminal/index';
 import jwt_decode from 'jwt-decode';
 
 Vue.use(Vuex);
@@ -12,9 +12,13 @@ const options: StoreOptions<IMainState> = {
 
   // State
   state: {
+    // Connection
     connected: false,
     error: '',
     userId: '',
+
+    // Accounts
+    accounts: [],
 
     app: AppState,
     auth: AuthState,
@@ -33,6 +37,10 @@ const options: StoreOptions<IMainState> = {
 
     SetError(state, error: string) {
       state.error = error;
+    },
+
+    SetAccounts(state, accounts: IAccount[]) {
+      state.accounts = accounts;
     },
   },
 
@@ -77,7 +85,15 @@ const options: StoreOptions<IMainState> = {
 
       } catch (err) {
         commit('SetError', err.message);
+        throw err;
       }
+    },
+
+    // Request user virtual accounts
+    async GetAccounts({commit}) {
+      const resp = await Vue.$cf.rpc({ method: 'GetAccounts' });
+      console.log(resp);
+      commit('SetAccounts', resp.data);
     },
   },
 
@@ -87,8 +103,6 @@ const options: StoreOptions<IMainState> = {
     auth: AuthModule,
     terminal: TerminalModule,
   },
-  plugins: [
-  ],
 };
 
 export default new Vuex.Store<IMainState>(options);
