@@ -51,7 +51,7 @@ export default Vue.extend({
         });
         await this.$store.dispatch('GetAccounts');
 
-        this.$router.push('/dashboard');
+        this.$router.push('/terminal');
       } catch {/**/}
     },
   },

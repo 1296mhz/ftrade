@@ -1,12 +1,11 @@
 <template>
  <div>
-    <v-overlay :value="!centrifugeConnectedFlag" :z-index="zIndex" :opacity="opacity">
+    <v-overlay :value="false">
       <v-progress-circular indeterminate size="64" color="purple"></v-progress-circular>
     </v-overlay>
   <v-app id="inspire">
 
     <v-navigation-drawer 
-    v-model="drawer" 
     app 
     mini-variant
     permanent 
@@ -37,7 +36,9 @@
     <v-app-bar app color="indigo" dark>
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <accounts-list :setCurrentAccount="setCurrentAccount" :account="currentAccount" :accounts="accounts"></accounts-list>
+      <v-col cols="5" xs="6" sm="6" md="3" lg="2" xl="2">
+        <v-select :items="accounts" label="Select Account" dense single-line></v-select>
+      </v-col>
       <v-btn icon @click="exit()">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
@@ -53,45 +54,23 @@
 </template>
 
 <script lang="ts">
-import Vue, { VueConstructor } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
-import { eventBus } from '../main';
-import AccountList from '../components/AccountsList.vue';
+import Vue from 'vue';
+// import { mapActions, mapGetters } from 'vuex';
+// import { eventBus } from '../main';
 
-export default (Vue as VueConstructor<any>).extend({
-  name: 'App',
-  props: {
-    source: String,
-  },
-    components: {
-    'accounts-list': AccountList,
-  },
+export default Vue.extend({
   data() {
     return {
       opacity: 0.46,
-      zIndex: 10,
-      overlay: false,
-      drawer: true,
-      mini: true,
+      currentViewText: 'Terminal',
     };
   },
-  watch: {
-    getCentrifugeConnectedFlag(newVal: boolean) {
-      Vue.$log.debug(`Watch fire - ${newVal}`);
-      if (newVal) {
-         eventBus.$emit('info', `Welcome to Gimaym!`);
-         this.setAccounts();
-      }
 
-      if (!newVal) { Vue.$log.debug(`Connection lost`); }
-    },
-    accounts(newVal: any) {
-      if (this.accounts.length >= 1) {
-        this.setCurrentAccount(this.accounts[0]);
-      }
-    },
-  },
   computed: {
+    accounts() { return this.$store.getters.accounts; },
+  },
+
+/*
     ...mapGetters({
       currentView: 'app/CURRENT_VIEW',
       getCentrifugeConnectedFlag: 'app/CENTRIFUGE_CONNECTED_FLAG',
@@ -126,6 +105,7 @@ export default (Vue as VueConstructor<any>).extend({
       },
     },
   },
+
   methods: {
     ...mapActions({
       logout: 'auth/exit',
@@ -138,5 +118,6 @@ export default (Vue as VueConstructor<any>).extend({
       this.$router.push('/login');
     },
   },
+  */
 });
 </script>

@@ -19,7 +19,7 @@ import {
   SET_UPDATE_TRADES,
   SET_UPDATE_ORDERS,
 } from './mutation-types';
-import { state } from '.';
+// import { state } from '.';
 import { map } from 'highcharts';
 
 export const actions: ActionTree<TerminalState, IMainState> = {

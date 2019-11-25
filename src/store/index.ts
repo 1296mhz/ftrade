@@ -25,6 +25,17 @@ const options: StoreOptions<IMainState> = {
     terminal: TerminalState,
   },
 
+  // Getters
+  getters: {
+    accounts: (state) => {
+      return state.accounts.map((acc) => {
+        return {
+          value: acc.id,
+          text: acc.name };
+      });
+    },
+  },
+
   // Mutations
   mutations:  {
     SetUserId(state, id: string) {
@@ -63,24 +74,24 @@ const options: StoreOptions<IMainState> = {
         commit('SetUserId', data.sub);
 
         // Centrifuge connect
-        Vue.$cf.setToken(token);
-        Vue.$cf.removeAllListeners();
-        Vue.$cf.on('connect', (ctx) => {
+        Vue.$cf.SetToken(token);
+        Vue.$cf.RemoveAllListeners();
+        Vue.$cf.On('connect', (ctx) => {
           commit('SetConnected', true);
         });
-        Vue.$cf.on('disconnect', (ctx) => {
+        Vue.$cf.On('disconnect', (ctx) => {
           commit('SetConnected', false);
         });
 
         // Resolve on connect
         return new Promise((resolve, reject) => {
-          Vue.$cf.on('connect', (ctx) => {
+          Vue.$cf.On('connect', (ctx) => {
             resolve();
           });
-          Vue.$cf.on('disconnect', (ctx) => {
+          Vue.$cf.On('disconnect', (ctx) => {
             reject();
           });
-          Vue.$cf.connect();
+          Vue.$cf.Connect();
         });
 
       } catch (err) {
@@ -90,10 +101,12 @@ const options: StoreOptions<IMainState> = {
     },
 
     // Request user virtual accounts
-    async GetAccounts({commit}) {
-      const resp = await Vue.$cf.rpc({ method: 'GetAccounts' });
-      console.log(resp);
-      commit('SetAccounts', resp.data);
+    GetAccounts({commit}) {
+      return Vue.$cf.RPC({ method: 'GetAccounts' }).then((data) => {
+        commit('SetAccounts', data);
+      }).catch((error) => {
+        commit('SetError', error);
+      });
     },
   },
 

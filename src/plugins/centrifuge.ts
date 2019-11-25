@@ -9,9 +9,41 @@ import TradesSubsTerminal from './centrifuge/TradesSubsTerminal';
 
 // Define centrifuge plugin
 const centrifugePlugin = {
+  // Plugin install
   install(vue: typeof Vue) {
-    vue.$cf = new centrifuge(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : ''}/connection/websocket`);
+    this.cf = new centrifuge(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : ''}/connection/websocket`);
+    vue.$cf = this;
   },
+
+  // Set authorization token
+  SetToken(token: string): void {
+    this.cf.setToken(token);
+  },
+
+  // Remove event listeners
+  RemoveAllListeners(): void {
+    this.cf.removeAllListeners();
+  },
+
+  // Add event listener
+  On(event: string, listener: (...args: any[]) => void): void {
+    this.cf.on(event, listener);
+  },
+
+  // Start connection
+  Connect(): void {
+    this.cf.connect();
+  },
+
+  // Remote procedure call
+  async RPC(data: any) {
+    const resp = await this.cf.rpc(data);
+    if (!resp.data) {
+      throw resp.message;
+    }
+    return resp.data;
+  },
+
 };
 
 // Use in vue
@@ -19,7 +51,7 @@ Vue.use(centrifugePlugin);
 
 declare module 'vue/types/vue' {
   interface VueConstructor {
-    $cf: centrifuge;
+    $cf: typeof centrifugePlugin;
   }
 }
 
