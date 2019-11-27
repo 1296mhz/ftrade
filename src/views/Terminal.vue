@@ -15,6 +15,16 @@
                     <v-text-field v-model="ticker" label="Ticker" name="ticker" type="text"></v-text-field>
                   </v-card-actions>
                 </v-row>
+
+
+                <v-data-table dense height="300" :headers="symbolsHeaders" :items="symbols" item-key="ticker" v-model="selectedSymbols"
+                  single-select disable-sort fixed-header disable-pagination hide-default-footer @click:row="TestSelect">
+                  <template v-slot:item.action="{ item }">
+                    <v-icon small @click="DeleteSymbol(item.ticker)">mdi-close-box-outline</v-icon>
+                  </template>
+                </v-data-table>
+
+<!--                 
                 <v-data-table
                   :headers="symbol_headers"
                   :items="symbols"
@@ -26,8 +36,6 @@
                   disable-pagination
                   hide-default-footer
                   dense
-                  :loading="loadingSymbols"
-                  loading-text="Loading... Please wait"
                 >
                   <template v-slot:body="{ items }">
                     <tbody>
@@ -35,7 +43,6 @@
                         v-for="item in items"
                         :key="item.ticker"
                         @click="selectSymbol(item)"
-                        :class="{'selectedRow': item.ticker === symbolSelected.ticker}"
                       >
                         <td>{{ item.ticker }}</td>
                         <td>{{ item.bid }}</td>
@@ -47,6 +54,7 @@
                     </tbody>
                   </template>
                 </v-data-table>
+ -->
               </v-container>
             </v-card>
           </v-col>
@@ -221,6 +229,18 @@ stockInit(Highcharts);
 export default (Vue as VueConstructor<any>).extend({
   data() {
     return {
+
+      // Symbols table
+      symbolsHeaders: [
+        {text: 'Ticker', value: 'ticker'},
+        {text: 'Bid', value: 'bid'},
+        {text: 'Ask', value: 'ask'},
+        {text: 'Action', value: 'action'},
+      ],
+
+      selectedSymbols: [],
+
+
       chart: null,
       instance: Highcharts,
       selectedSymbolItem: {},
@@ -238,7 +258,7 @@ export default (Vue as VueConstructor<any>).extend({
       side: '',
       validOrder: false,
       series: [],
-      symbol_headers: symbolHeaders,
+      // symbol_headers: symbolHeaders,
       order_headers: orderHeaders,
       position_headers: positionHeaders,
       trades_headers: tradesHeaders,
@@ -310,9 +330,9 @@ export default (Vue as VueConstructor<any>).extend({
     // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
     $route: {
       handler: function() {
-        this.getSymbols();
-        this.getOrders(this.getCurrentAccount.Id);
-        this.getTrades(this.getCurrentAccount.Id);
+        // this.getSymbols();
+        // this.getOrders(this.getCurrentAccount.Id);
+        // this.getTrades(this.getCurrentAccount.Id);
       },
       immediate: true,
     },
@@ -361,7 +381,8 @@ export default (Vue as VueConstructor<any>).extend({
   },
   computed: {
     ...mapGetters({
-      symbols: 'terminal/SYMBOLS',
+      // symbols: 'terminal/SYMBOLS',
+      symbols: 'symbols',
       tickers: 'terminal/TICKERS',
       positions: 'terminal/POSITIONS',
       orders: 'terminal/ORDERS',
@@ -403,8 +424,6 @@ export default (Vue as VueConstructor<any>).extend({
       getSymbols: 'terminal/symbols',
       getOrders: 'terminal/orders',
       getTrades: 'terminal/trades',
-      createSymbol: 'terminal/createSymbol',
-      deleteSymbol: 'terminal/deleteSymbol',
       setOhlc: 'terminal/ohlc',
       setSymbolSelected: 'terminal/setSymbolSelected',
       setOhlcNavigator: 'terminal/ohlcNavigator',
@@ -412,10 +431,21 @@ export default (Vue as VueConstructor<any>).extend({
       sendOrder: 'terminal/sendOrder',
       cancelOrder: 'terminal/cancelOrder',
     }),
-    CreateSymbol(ticker: any) {
-      this.createSymbol(ticker);
+    TestSelect(item: any) {
+      // console.log(item);
+      this.selectedSymbols = [];
+      this.selectedSymbols.push(item);
+    },
+
+    CreateSymbol(ticker: string) {
+      this.$store.dispatch('CreateSymbol', ticker);
       this.ticker = '';
     },
+
+    DeleteSymbol(ticker: string) {
+      this.$store.dispatch('DeleteSymbol', ticker);
+    },
+
     setExtremes(params: any) {
       Vue.$log.debug(params);
       this.chart = this.instance.charts[0];
@@ -491,8 +521,10 @@ export default (Vue as VueConstructor<any>).extend({
     // },
   },
   created() {
-    this.getSymbols();
-    this.getOrders(this.getCurrentAccount.Id);
+    this.$store.dispatch('GetSymbols');
+    this.$store.dispatch('SubscribeSymbols');
+    // this.getSymbols();
+    // this.getOrders(this.getCurrentAccount.Id);
   },
   beforeDestroy() {
     if (this.instance.charts[0] !== undefined) {

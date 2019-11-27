@@ -14,7 +14,7 @@ export interface IMainState {
   // Modules
   app: AppState;
   auth: IAuthState;
-  terminal: TerminalState;
+  // terminal: TerminalState;
 }
 
 // Login action payload

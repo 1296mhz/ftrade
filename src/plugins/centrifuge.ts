@@ -44,6 +44,12 @@ const centrifugePlugin = {
     return resp.data;
   },
 
+  // Subscribe to channel
+  Subscribe(channel: string, handler: (...args: any[]) => void): centrifuge.Subscription {
+    return this.cf.subscribe(channel, handler);
+  },
+
+
 };
 
 // Use in vue
