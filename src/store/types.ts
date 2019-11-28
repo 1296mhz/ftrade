@@ -44,4 +44,7 @@ export interface ISymbol {
   exchange: string;
   minIncrement: number;
   minIncrementAmount: number;
+
+  bid: number;
+  ask: number;
 }

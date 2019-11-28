@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import centrifuge from 'centrifuge';
+import Centrifuge from 'centrifuge';
 import store from '../store';
 import { IOhlcParams } from '../store/terminal/types';
 import { eventBus } from '../main';
@@ -9,9 +9,13 @@ import TradesSubsTerminal from './centrifuge/TradesSubsTerminal';
 
 // Define centrifuge plugin
 const centrifugePlugin = {
+
+  cf: Centrifuge,
+  subscriptions: new Map<string, Centrifuge.Subscription>(),
+
   // Plugin install
   install(vue: typeof Vue) {
-    this.cf = new centrifuge(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : ''}/connection/websocket`);
+    this.cf = new Centrifuge(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : ''}/connection/websocket`);
     vue.$cf = this;
   },
 
@@ -38,17 +42,31 @@ const centrifugePlugin = {
   // Remote procedure call
   async RPC(data: any) {
     const resp = await this.cf.rpc(data);
-    if (!resp.data) {
+    // If error message
+    if (resp.message) {
       throw resp.message;
     }
     return resp.data;
   },
 
   // Subscribe to channel
-  Subscribe(channel: string, handler: (...args: any[]) => void): centrifuge.Subscription {
-    return this.cf.subscribe(channel, handler);
+  // ignore if subscription exist
+  Subscribe(channel: string, handler: (...args: any[]) => void) {
+    if (!this.subscriptions.has(channel)) {
+      const sub: Centrifuge.Subscription = this.cf.subscribe(channel, handler);
+      this.subscriptions.set(channel, sub);
+    }
   },
 
+  // Unsubscribe from channel
+  // ignore if subscription not exist
+  Unsubscribe(channel: string) {
+    const sub: Centrifuge.Subscription = this.subscriptions.get(channel);
+    if (sub) {
+      sub.unsubscribe();
+      this.subscriptions.delete(channel);
+    }
+  },
 
 };
 
@@ -82,7 +100,7 @@ class CentrifugeManager {
   private id: string = '';
   constructor(url) {
     store.dispatch('app/centrifugeConnectedFlag', false);
-    this.instance = new centrifuge(url, {
+    this.instance = new Centrifuge(url, {
       minRetry: 1000,
       maxRetry: 10000,
       onTransportClose: (ctx: any) => {

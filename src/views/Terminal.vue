@@ -520,13 +520,14 @@ export default (Vue as VueConstructor<any>).extend({
     //   Vue.$log.debug(`Cancel order: ${orderId}`)
     // },
   },
-  created() {
-    this.$store.dispatch('GetSymbols');
-    this.$store.dispatch('SubscribeSymbols');
+  async created() {
+    await this.$store.dispatch('GetSymbols');
+    await this.$store.dispatch('SubscribeSymbols');
     // this.getSymbols();
     // this.getOrders(this.getCurrentAccount.Id);
   },
   beforeDestroy() {
+    this.$store.dispatch('UnsubscribeSymbols');
     if (this.instance.charts[0] !== undefined) {
       this.instance.charts[0].destroy();
       this.instance.charts.splice(0, 1);
