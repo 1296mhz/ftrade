@@ -31,9 +31,11 @@ export interface IAccount {
 
 // Terminal state interface
 export interface ITerminalState {
-  account: string;
-
   symbols: ISymbol[];
+
+  account: string;
+  orders: IOrder[];
+  trades: ITrade[];
 }
 
 // Symbol
@@ -47,4 +49,30 @@ export interface ISymbol {
 
   bid: number;
   ask: number;
+}
+
+// Order
+export interface IOrder {
+  id: string;
+  ticker: string;
+  account: string;
+  side: string;
+  price: number;
+  volume: number;
+  leaves: number;
+  state: string;
+  time: number;
+}
+
+// Trade
+export interface ITrade {
+  id: string;
+  ticker: string;
+  account: string;
+  order: string;
+  side: string;
+  price: number;
+  volume: number;
+  time: number;
+  fee: number;
 }

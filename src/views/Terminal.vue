@@ -107,7 +107,6 @@
                         label="Volume"
                         :rules="volumeRules"
                         required
-                        :disabled="disableField"
                         type="number"
                       ></v-text-field>
                     </v-col>
@@ -118,7 +117,6 @@
                         label="Price"
                         :rules="priceRules"
                         required
-                        :disabled="disableField"
                         type="number"
                       ></v-text-field>
                     </v-col>
@@ -130,8 +128,7 @@
                         small
                         block
                         color="success"
-                        :disabled="disableField || !validOrder"
-                        @click="newOrder('buy')"
+                        @click="SendOrder('buy')"
                       >Buy</v-btn>
                     </v-col>
                     <v-col class="ma-1">
@@ -139,8 +136,7 @@
                         small
                         block
                         color="error"
-                        :disabled="disableField || !validOrder"
-                        @click="newOrder('sell')"
+                        @click="SendOrder('sell')"
                       >Sell</v-btn>
                     </v-col>
                   </v-row>
@@ -171,8 +167,17 @@
                     ></v-data-table>
                   </v-tab-item>
                   <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table dense :headers="order_headers" :items="orders" item-key="id">
+                    
+                    <v-data-table dense :headers="ordersHeaders" :items="orders" item-key="id">
                       <template v-slot:item.state="{ item }">
+                        <v-chip :color="item.stateColor" dark label x-small>{{ item.state }}</v-chip>
+                      </template>
+                      <template v-slot:item.side="{ item }">
+                        <v-chip :color="item.sideColor" label x-small>{{ item.side }}</v-chip>
+                      </template>
+
+
+<!--                       <template v-slot:item.state="{ item }">
                         <v-chip
                           :color="getStateOrderColor(item.state)"
                           dark
@@ -180,6 +185,7 @@
                           x-small
                         >{{ item.state }}</v-chip>
                       </template>
+
                       <template v-slot:item.side="{ item }">
                         <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
                       </template>
@@ -191,15 +197,18 @@
                           @click="cancelOrder({ account: getCurrentAccount.Id, order: item.id })"
                         >cancel</v-icon>
                       </template>
+ -->                      
                     </v-data-table>
+
                   </v-tab-item>
                   <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table dense :headers="trades_headers" :items="trades" item-key="id">
+
+                    <v-data-table dense :headers="tradesHeaders" :items="trades" item-key="id">
                       <template v-slot:item.side="{ item }">
-                        <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
+                        <v-chip :color="item.sideColor" label x-small>{{ item.side }}</v-chip>
                       </template>
-                      <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
                     </v-data-table>
+
                   </v-tab-item>
                 </v-tabs>
               </v-container>
@@ -217,7 +226,7 @@ import Vue, { VueConstructor } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
-import { ISendOrder } from '../store/terminal/types';
+import { ISendOrder, IOrder, ITrade } from '../store/terminal/types';
 import {
   symbolHeaders,
   orderHeaders,
@@ -239,6 +248,27 @@ export default (Vue as VueConstructor<any>).extend({
       ],
 
       selectedSymbols: [],
+
+      // Orders table
+      ordersHeaders: [
+        {text: 'State', value: 'state'},
+        {text: 'Ticker', value: 'ticker'},
+        {text: 'Type', value: 'type'},
+        {text: 'Side', value: 'side'},
+        {text: 'Price', value: 'price'},
+        {text: 'Quantity', value: 'quantity'},
+        {text: 'Time', value: 'time'},
+      ],
+
+      // Trades table
+      tradesHeaders: [
+        {text: 'Time', value: 'time'},
+        {text: 'Ticker', value: 'ticker'},
+        {text: 'Side', value: 'side'},
+        {text: 'Price', value: 'price'},
+        {text: 'Quantity', value: 'quantity'},
+      ],
+
 
 
       chart: null,
@@ -381,11 +411,10 @@ export default (Vue as VueConstructor<any>).extend({
   },
   computed: {
     ...mapGetters({
-      // symbols: 'terminal/SYMBOLS',
       symbols: 'symbols',
+
       tickers: 'terminal/TICKERS',
       positions: 'terminal/POSITIONS',
-      orders: 'terminal/ORDERS',
       trades: 'terminal/TRADES',
       ohlc: 'terminal/OHLC',
       getSymbolSelected: 'terminal/SYMBOL_SELECTED',
@@ -397,6 +426,47 @@ export default (Vue as VueConstructor<any>).extend({
       getAccounts: 'app/ACCOUNTS',
       getCurrentAccount: 'app/CURRENT_ACCOUNT',
     }),
+
+    // Orders table
+    orders() {
+      return this.$store.state.terminal.orders.map((order: IOrder) => {
+        let stateColor = 'amber';
+        switch (order.state) {
+          case 'open':  stateColor = 'green'; break;
+          case 'partially filled': stateColor = 'green'; break;
+          case 'filled':  stateColor = 'blue'; break;
+          case 'rejected':  stateColor = 'red'; break;
+          case 'canceled':  stateColor = 'grey'; break;
+        }
+
+        return {
+          id: order.id,
+          state: order.state,
+          stateColor: stateColor,
+          ticker: order.symbol,
+          type: 'limit',  // TODO
+          side: order.side,
+          sideColor: (order.side === 'buy' ? 'green lighten-4' : 'red lighten-4'),
+          price: order.price.toLocaleString(),
+          quantity: order.volume,
+          time: new Date(order.time).toLocaleString() };
+        });
+    },
+
+    // Trades table
+    trades() {
+      return this.$store.state.terminal.trades.map((trade: ITrade) => {
+        return {
+          id: trade.id,
+          ticker: trade.symbol,
+          side: trade.side,
+          sideColor: (trade.side === 'buy' ? 'green lighten-4' : 'red lighten-4'),
+          price: trade.price.toLocaleString(),
+          quantity: trade.volume,
+          time: new Date(trade.time).toLocaleString() };
+        });
+    },
+
     symbolSelected: {
       get: function() {
         return this.getSymbolSelected;
@@ -444,6 +514,19 @@ export default (Vue as VueConstructor<any>).extend({
 
     DeleteSymbol(ticker: string) {
       this.$store.dispatch('DeleteSymbol', ticker);
+    },
+
+
+    SendOrder(side: string) {
+      const order = {
+        account: this.$store.state.terminal.account,
+        side: side,
+        price: 100,
+        volume: 10,
+        leaves: 10,
+        ticker: 'AMZN.NASDAQ',
+      };
+      this.$store.dispatch('SendOrder', order);
     },
 
     setExtremes(params: any) {
