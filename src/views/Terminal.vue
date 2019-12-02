@@ -24,37 +24,6 @@
                   </template>
                 </v-data-table>
 
-<!--                 
-                <v-data-table
-                  :headers="symbol_headers"
-                  :items="symbols"
-                  :items-per-page="5"
-                  class="elevation-0"
-                  item-key="ticker"
-                  height="300"
-                  fixed-header
-                  disable-pagination
-                  hide-default-footer
-                  dense
-                >
-                  <template v-slot:body="{ items }">
-                    <tbody>
-                      <tr
-                        v-for="item in items"
-                        :key="item.ticker"
-                        @click="selectSymbol(item)"
-                      >
-                        <td>{{ item.ticker }}</td>
-                        <td>{{ item.bid }}</td>
-                        <td>{{ item.ask }}</td>
-                        <td>
-                          <v-icon small @click="deleteSymbol(item.ticker)">delete</v-icon>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </template>
-                </v-data-table>
- -->
               </v-container>
             </v-card>
           </v-col>
@@ -72,78 +41,51 @@
             </v-card>
           </v-col>
 
+          <!-- New order form -->
           <v-col xs="12" sm="12" md="4" lg="2" xl="2">
             <v-card height="100%">
               <v-container fluid>
-                <v-form ref="form" v-model="validOrder" lazy-validation>
+                <v-form ref="form" v-model="newOrder.valid" lazy-validation>
                   <v-row dense>
                     <v-col>
-                      <v-text-field dense disabled label="Bid" outline />
+                      <v-text-field dense readonly label="Bid" outline />
                     </v-col>
                     <v-col>
-                      <v-text-field dense disabled label="Ask" outline />
+                      <v-text-field dense readonly label="Ask" outline />
                     </v-col>
                   </v-row>
 
                   <v-row dense>
                     <v-col>
-                      <v-select
-                        dense
-                        :items="['Limit','Market']"
-                        value="Limit"
-                        :disabled="disableField"
-                      ></v-select>
+                      <v-select :items="['Limit', 'Market']" v-model="newOrder.type" dense></v-select>
                     </v-col>
                     <v-col>
-                      <v-select dense :items="['Day','GTC']" value="Day" :disabled="disableField"></v-select>
+                      <v-select :items="['Day','GTC']" v-model="newOrder.expiration" dense></v-select>
                     </v-col>
                   </v-row>
 
                   <v-row dense>
-                    <v-col>
-                      <v-text-field
-                        dense
-                        v-model="volume"
-                        label="Volume"
-                        :rules="volumeRules"
-                        required
-                        type="number"
-                      ></v-text-field>
+                    <v-col> 
+                      <v-text-field dense v-model.number="newOrder.price" label="Price" :rules="newOrder.priceRules"></v-text-field>
                     </v-col>
                     <v-col>
-                      <v-text-field
-                        dense
-                        v-model="price"
-                        label="Price"
-                        :rules="priceRules"
-                        required
-                        type="number"
-                      ></v-text-field>
+                      <v-text-field dense v-model.number="newOrder.volume" label="Volume" :rules="newOrder.volumeRules"></v-text-field>
                     </v-col>
                   </v-row>
 
                   <v-row no-gutters>
                     <v-col class="ma-1">
-                      <v-btn
-                        small
-                        block
-                        color="success"
-                        @click="SendOrder('buy')"
-                      >Buy</v-btn>
+                      <v-btn small block :disabled="!newOrder.valid || !IsAccountSelected()" color="success" @click="SendOrder('buy')">Buy</v-btn>
                     </v-col>
                     <v-col class="ma-1">
-                      <v-btn
-                        small
-                        block
-                        color="error"
-                        @click="SendOrder('sell')"
-                      >Sell</v-btn>
+                      <v-btn small block :disabled="!newOrder.valid || !IsAccountSelected()" color="error" @click="SendOrder('sell')">Sell</v-btn>
                     </v-col>
                   </v-row>
                 </v-form>
               </v-container>
             </v-card>
           </v-col>
+
         </v-row>
         <v-row>
           <v-col>
@@ -154,62 +96,35 @@
                   <v-tab>Orders</v-tab>
                   <v-tab>Trades</v-tab>
 
+                  <!-- Positions -->
                   <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table
-                      dense
-                      height="300"
-                      :headers="position_headers"
-                      :items="positions"
-                      item-key="id"
-                      fixed-header
-                      disable-pagination
-                      hide-default-footer
-                    ></v-data-table>
+                    <v-data-table :headers="positionsHeaders" :items="positions" item-key="id" dense height="300" fixed-header disable-pagination hide-default-footer></v-data-table>
                   </v-tab-item>
-                  <v-tab-item transition="none" reverse-transition="none">
-                    
-                    <v-data-table dense :headers="ordersHeaders" :items="orders" item-key="id">
-                      <template v-slot:item.state="{ item }">
-                        <v-chip :color="item.stateColor" dark label x-small>{{ item.state }}</v-chip>
+
+                  <!-- Orders -->
+                  <v-tab-item transition="none" reverse-transition="none">  
+                    <v-data-table :headers="ordersHeaders" :items="orders" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
+                      <template v-slot:item.state="{item: {state}}">
+                        <v-chip :color="GetStateColor(state)" dark label x-small>{{state}}</v-chip>
                       </template>
-                      <template v-slot:item.side="{ item }">
-                        <v-chip :color="item.sideColor" label x-small>{{ item.side }}</v-chip>
+                      <template v-slot:item.side="{item: {side}}">
+                        <v-chip :color="GetSideColor(side)" label x-small outlined>{{side}}</v-chip>
                       </template>
-
-
-<!--                       <template v-slot:item.state="{ item }">
-                        <v-chip
-                          :color="getStateOrderColor(item.state)"
-                          dark
-                          label
-                          x-small
-                        >{{ item.state }}</v-chip>
-                      </template>
-
-                      <template v-slot:item.side="{ item }">
-                        <v-chip :color="getSideColor(item.side)" dark label x-small>{{ item.side }}</v-chip>
-                      </template>
-                      <template v-slot:item.time="{ item }">{{ getTimeOrderFormat(item.time) }}</template>
-
-                      <template v-slot:item.actions="{ item }">
-                        <v-icon
-                          small
-                          @click="cancelOrder({ account: getCurrentAccount.Id, order: item.id })"
-                        >cancel</v-icon>
-                      </template>
- -->                      
-                    </v-data-table>
-
-                  </v-tab-item>
-                  <v-tab-item transition="none" reverse-transition="none">
-
-                    <v-data-table dense :headers="tradesHeaders" :items="trades" item-key="id">
-                      <template v-slot:item.side="{ item }">
-                        <v-chip :color="item.sideColor" label x-small>{{ item.side }}</v-chip>
+                      <template v-slot:item.action="{item: {id, state}}">
+                        <v-icon v-if="IsCancelable(state)" small @click="cancelOrder({ account: getCurrentAccount.Id, order: item.id })">cancel</v-icon>
                       </template>
                     </v-data-table>
-
                   </v-tab-item>
+
+                  <!-- Trades -->
+                  <v-tab-item transition="none" reverse-transition="none">
+                    <v-data-table :headers="tradesHeaders" :items="orders" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
+                      <template v-slot:item.side="{item: {side}}">
+                        <v-chip :color="GetSideColor(side)" label x-small outlined>{{side}}</v-chip>
+                      </template>
+                    </v-data-table>
+                  </v-tab-item>
+
                 </v-tabs>
               </v-container>
             </v-card>
@@ -227,12 +142,7 @@ import { mapGetters, mapActions } from 'vuex';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
 import { ISendOrder, IOrder, ITrade } from '../store/terminal/types';
-import {
-  symbolHeaders,
-  orderHeaders,
-  positionHeaders,
-  tradesHeaders,
-} from './constants';
+
 stockInit(Highcharts);
 
 export default (Vue as VueConstructor<any>).extend({
@@ -249,15 +159,25 @@ export default (Vue as VueConstructor<any>).extend({
 
       selectedSymbols: [],
 
+      // Positions table
+      positionsHeaders: [
+        {text: 'Ticker', value: 'ticker'},
+        {text: 'Position', value: 'position'},
+        {text: 'Avg.Price', value: 'avgprice'},
+        {text: 'Price', value: 'price'},
+        {text: 'P&L', value: 'pnl'},
+      ],
+
       // Orders table
       ordersHeaders: [
+        {text: 'Time', value: 'time'},
         {text: 'State', value: 'state'},
-        {text: 'Ticker', value: 'ticker'},
         {text: 'Type', value: 'type'},
+        {text: 'Ticker', value: 'ticker'},
         {text: 'Side', value: 'side'},
         {text: 'Price', value: 'price'},
         {text: 'Quantity', value: 'quantity'},
-        {text: 'Time', value: 'time'},
+        {text: 'Action', value: 'action'},
       ],
 
       // Trades table
@@ -269,6 +189,17 @@ export default (Vue as VueConstructor<any>).extend({
         {text: 'Quantity', value: 'quantity'},
       ],
 
+      newOrder: {
+        type: 'Limit',
+        expiration: 'GTC',
+        price: 0,
+        volume: 1,
+
+        valid: false,
+
+        priceRules: [(v) => !!v || 'Price is required'],
+        volumeRules: [(v) => !!v || 'Volume is required'],
+      },
 
 
       chart: null,
@@ -288,10 +219,6 @@ export default (Vue as VueConstructor<any>).extend({
       side: '',
       validOrder: false,
       series: [],
-      // symbol_headers: symbolHeaders,
-      order_headers: orderHeaders,
-      position_headers: positionHeaders,
-      trades_headers: tradesHeaders,
       stockOptions: {
         chart: {
           type: 'candlestick',
@@ -358,14 +285,14 @@ export default (Vue as VueConstructor<any>).extend({
   },
   watch: {
     // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
-    $route: {
+    /*$route: {
       handler: function() {
-        // this.getSymbols();
-        // this.getOrders(this.getCurrentAccount.Id);
-        // this.getTrades(this.getCurrentAccount.Id);
+        this.getSymbols();
+        this.getOrders(this.getCurrentAccount.Id);
+        this.getTrades(this.getCurrentAccount.Id);
       },
       immediate: true,
-    },
+    },*/
     // We follow the object loadingSymbols its value will change false and
     // then we will begin to update the values of the components
     loadingSymbols(newVal: boolean) {
@@ -430,23 +357,13 @@ export default (Vue as VueConstructor<any>).extend({
     // Orders table
     orders() {
       return this.$store.state.terminal.orders.map((order: IOrder) => {
-        let stateColor = 'amber';
-        switch (order.state) {
-          case 'open':  stateColor = 'green'; break;
-          case 'partially filled': stateColor = 'green'; break;
-          case 'filled':  stateColor = 'blue'; break;
-          case 'rejected':  stateColor = 'red'; break;
-          case 'canceled':  stateColor = 'grey'; break;
-        }
-
         return {
           id: order.id,
           state: order.state,
-          stateColor: stateColor,
           ticker: order.symbol,
           type: 'limit',  // TODO
           side: order.side,
-          sideColor: (order.side === 'buy' ? 'green lighten-4' : 'red lighten-4'),
+          sideColor: (order.side === 'buy' ? 'green' : 'red'),
           price: order.price.toLocaleString(),
           quantity: order.volume,
           time: new Date(order.time).toLocaleString() };
@@ -460,7 +377,7 @@ export default (Vue as VueConstructor<any>).extend({
           id: trade.id,
           ticker: trade.symbol,
           side: trade.side,
-          sideColor: (trade.side === 'buy' ? 'green lighten-4' : 'red lighten-4'),
+          sideColor: (trade.side === 'buy' ? 'green' : 'red'),
           price: trade.price.toLocaleString(),
           quantity: trade.volume,
           time: new Date(trade.time).toLocaleString() };
@@ -482,11 +399,6 @@ export default (Vue as VueConstructor<any>).extend({
       set: () => {
         // this.setAccounts;
       },
-    },
-    disableField: function() {
-      if (this.accounts.length < 1) {
-        return true;
-      }
     },
   },
   methods: {
@@ -517,16 +429,44 @@ export default (Vue as VueConstructor<any>).extend({
     },
 
 
+    // Send order to router with selected account
     SendOrder(side: string) {
       const order = {
         account: this.$store.state.terminal.account,
         side: side,
-        price: 100,
-        volume: 10,
-        leaves: 10,
+        price: this.newOrder.price,
+        volume: this.newOrder.volume,
         ticker: 'AMZN.NASDAQ',
       };
       this.$store.dispatch('SendOrder', order);
+    },
+
+    // Test is order cancelable
+    IsCancelable(state: string): boolean {
+      return state === 'open' || state === 'partially filled';
+    },
+
+    // Order state color
+    GetStateColor(state: string) {
+        let сolor = 'amber';
+        switch (state) {
+          case 'open':  сolor = 'green'; break;
+          case 'partially filled': сolor = 'green'; break;
+          case 'filled':  сolor = 'blue'; break;
+          case 'rejected':  сolor = 'red'; break;
+          case 'canceled':  сolor = 'grey'; break;
+        }
+        return сolor;
+    },
+
+    // Side color
+    GetSideColor(side: string) {
+      return side === 'buy' ? 'green' : 'red';
+    },
+
+    // Test current account
+    IsAccountSelected() {
+        return this.$store.state.terminal.account !== '';
     },
 
     setExtremes(params: any) {
@@ -546,54 +486,6 @@ export default (Vue as VueConstructor<any>).extend({
     },
     selectSymbol(item) {
       this.setSymbolSelected(item);
-    },
-    getSideColor(side) {
-      if (side === 'buy') {
-        return 'green';
-      }
-      if (side === 'sell') {
-        return 'red';
-      }
-      return 'lime darken-4';
-    },
-    getStateOrderColor(state) {
-      if (state === 'filled') {
-        return 'blue lighten-1';
-      }
-      if (state === 'canceled') {
-        return 'grey darken-1';
-      }
-      if (state === 'green') {
-        return 'grey darken-1';
-      }
-      return 'lime darken-4';
-    },
-    getTimeOrderFormat(time) {
-      const d = new Date(time);
-      return (
-        d.getFullYear() +
-        '-' +
-        ('0' + (d.getMonth() + 1)).slice(-2) +
-        '-' +
-        ('0' + d.getDate()).slice(-2) +
-        ' ' +
-        d.getHours() +
-        ':' +
-        ('0' + d.getMinutes()).slice(-2) +
-        ':' +
-        d.getSeconds()
-      );
-    },
-    newOrder(side: string) {
-      const newOrder: ISendOrder = {
-        account: this.getCurrentAccount.Id,
-        side: side,
-        price: parseFloat(this.price),
-        volume: parseFloat(this.volume),
-        ticker: this.currentSymbol.ticker,
-      };
-      this.sendOrder(newOrder);
-      Vue.$log.info(newOrder);
     },
     // cancelOrder(orderId) {
     //   const cOrder = {
@@ -618,24 +510,3 @@ export default (Vue as VueConstructor<any>).extend({
   },
 });
 </script>
-
-<style scoped lang="css">
-.back {
-  background-color: white;
-  display: inline-block;
-  position: relative;
-  height: 100%;
-}
-.selectedRow {
-  background-color: #b3d4fc;
-  font-weight: bold;
-}
-.selectedRow:hover {
-  background-color: #b3d4fc !important;
-  font-weight: bold;
-}
-.selectedRow:focus {
-  background-color: #b3d4fc !important;
-  font-weight: bold;
-}
-</style>
