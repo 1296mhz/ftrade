@@ -64,6 +64,7 @@ const centrifugePlugin = {
     const sub: Centrifuge.Subscription = this.subscriptions.get(channel);
     if (sub) {
       sub.unsubscribe();
+      sub.removeAllListeners();
       this.subscriptions.delete(channel);
     }
   },

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Module } from 'vuex';
-import { IMainState, ITerminalState, ISymbol, IOrder, ITrade } from './types';
+import { IMainState, ITerminalState, ISymbol, IOrder, ITrade, ICancelPayload } from './types';
 
 const terminal: Module<ITerminalState, IMainState> = {
 
@@ -11,19 +11,6 @@ const terminal: Module<ITerminalState, IMainState> = {
     account: '',
     orders: [],
     trades: [],
-  },
-
-  // Getters
-  getters: {
-    // TODO just return symbols???
-    symbols: (state) => {
-      return state.symbols.map((symbol) => {
-        return {
-          ticker: symbol.ticker,
-          bid: symbol.bid,
-          ask: symbol.ask };
-      });
-    },
   },
 
   // Mutations
@@ -233,10 +220,21 @@ const terminal: Module<ITerminalState, IMainState> = {
       Vue.$cf.Unsubscribe(`trades:${state.account}#${rootState.userId}`);
     },
 
+
     // Send new order
     async SendOrder({commit}, order: IOrder) {
       try {
         const data = await Vue.$cf.RPC({ method: 'SendOrder', params: order });
+      } catch (error) {
+        commit('SetError', error);
+        throw error;
+      }
+    },
+
+    // Send new order
+    async CancelOrder({commit}, payload: ICancelPayload) {
+      try {
+        const data = await Vue.$cf.RPC({ method: 'CancelOrder', params: payload });
       } catch (error) {
         commit('SetError', error);
         throw error;

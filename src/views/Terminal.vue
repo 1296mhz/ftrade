@@ -20,13 +20,15 @@
                 <v-data-table dense height="300" :headers="symbolsHeaders" :items="symbols" item-key="ticker" v-model="selectedSymbols"
                   single-select disable-sort fixed-header disable-pagination hide-default-footer @click:row="TestSelect">
                   <template v-slot:item.action="{ item }">
-                    <v-icon small @click="DeleteSymbol(item.ticker)">mdi-close-box-outline</v-icon>
+                    <v-icon small @click="DeleteSymbol(item.ticker)">cancel</v-icon>
                   </template>
                 </v-data-table>
 
               </v-container>
             </v-card>
           </v-col>
+
+          <!-- Chart -->
           <v-col xs="12" sm="12" md="8" lg="5" xl="5">
             <v-card height="100%">
               <v-container>
@@ -47,20 +49,24 @@
               <v-container fluid>
                 <v-form ref="form" v-model="newOrder.valid" lazy-validation>
                   <v-row dense>
+                    <v-text-field label="Symbol" :value="selectedSymbol.ticker" dense readonly outline/>
+                  </v-row>
+
+                  <v-row dense>
                     <v-col>
-                      <v-text-field dense readonly label="Bid" outline />
+                      <v-text-field label="Bid" :value="selectedSymbol.bid" dense readonly outline/>
                     </v-col>
                     <v-col>
-                      <v-text-field dense readonly label="Ask" outline />
+                      <v-text-field label="Ask" :value="selectedSymbol.ask" dense readonly outline/>
                     </v-col>
                   </v-row>
 
                   <v-row dense>
                     <v-col>
-                      <v-select :items="['Limit', 'Market']" v-model="newOrder.type" dense></v-select>
+                      <v-select label="Type" :items="['Limit', 'Market']" v-model="newOrder.type" dense></v-select>
                     </v-col>
                     <v-col>
-                      <v-select :items="['Day','GTC']" v-model="newOrder.expiration" dense></v-select>
+                      <v-select label="Expiration" :items="['Day','GTC']" v-model="newOrder.expiration" dense></v-select>
                     </v-col>
                   </v-row>
 
@@ -75,10 +81,10 @@
 
                   <v-row no-gutters>
                     <v-col class="ma-1">
-                      <v-btn small block :disabled="!newOrder.valid || !IsAccountSelected()" color="success" @click="SendOrder('buy')">Buy</v-btn>
+                      <v-btn small block :disabled="!IsSendAvailable()" color="success" @click="SendOrder('buy')">Buy</v-btn>
                     </v-col>
                     <v-col class="ma-1">
-                      <v-btn small block :disabled="!newOrder.valid || !IsAccountSelected()" color="error" @click="SendOrder('sell')">Sell</v-btn>
+                      <v-btn small block :disabled="!IsSendAvailable()" color="error" @click="SendOrder('sell')">Sell</v-btn>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -111,7 +117,7 @@
                         <v-chip :color="GetSideColor(side)" label x-small outlined>{{side}}</v-chip>
                       </template>
                       <template v-slot:item.action="{item: {id, state}}">
-                        <v-icon v-if="IsCancelable(state)" small @click="cancelOrder({ account: getCurrentAccount.Id, order: item.id })">cancel</v-icon>
+                        <v-icon v-if="IsCancelable(state)" small @click="CancelOrder(id)">cancel</v-icon>
                       </template>
                     </v-data-table>
                   </v-tab-item>
@@ -206,18 +212,7 @@ export default (Vue as VueConstructor<any>).extend({
       instance: Highcharts,
       selectedSymbolItem: {},
       ticker: '',
-      volume: 1,
-      volumeRules: [
-        (v) => !!v || 'Volume is required',
-        (v) => (v && v >= 1) || 'Volume cannot be less than one',
-      ],
-      price: 1,
-      priceRules: [
-        (v) => !!v || 'Price is required',
-        (v) => (v && v >= 1) || 'Price cannot be less than one',
-      ],
-      side: '',
-      validOrder: false,
+
       series: [],
       stockOptions: {
         chart: {
@@ -336,23 +331,21 @@ export default (Vue as VueConstructor<any>).extend({
       // this.setSymbolSelected(newVal.Id);
     },
   },
+
   computed: {
     ...mapGetters({
-      symbols: 'symbols',
-
-      tickers: 'terminal/TICKERS',
-      positions: 'terminal/POSITIONS',
-      trades: 'terminal/TRADES',
-      ohlc: 'terminal/OHLC',
-      getSymbolSelected: 'terminal/SYMBOL_SELECTED',
-      loadingSymbols: 'terminal/LOADING_SYMBOLS',
-      errorSymbols: 'terminal/ERROR_SYMBOLS',
-      loadingText: 'terminal/LOADING_TEXT',
       getOhlcNavigator: 'terminal/OHLC_NAVIGATOR',
-      currentSymbol: 'terminal/CURRENT_SYMBOL',
-      getAccounts: 'app/ACCOUNTS',
-      getCurrentAccount: 'app/CURRENT_ACCOUNT',
     }),
+
+    // Symbols table
+    symbols() {
+      return this.$store.state.terminal.symbols;
+    },
+
+    // Positions table
+    positions() {
+      return [];  // TODO
+    },
 
     // Orders table
     orders() {
@@ -363,7 +356,6 @@ export default (Vue as VueConstructor<any>).extend({
           ticker: order.symbol,
           type: 'limit',  // TODO
           side: order.side,
-          sideColor: (order.side === 'buy' ? 'green' : 'red'),
           price: order.price.toLocaleString(),
           quantity: order.volume,
           time: new Date(order.time).toLocaleString() };
@@ -377,42 +369,25 @@ export default (Vue as VueConstructor<any>).extend({
           id: trade.id,
           ticker: trade.symbol,
           side: trade.side,
-          sideColor: (trade.side === 'buy' ? 'green' : 'red'),
           price: trade.price.toLocaleString(),
           quantity: trade.volume,
           time: new Date(trade.time).toLocaleString() };
         });
     },
 
-    symbolSelected: {
-      get: function() {
-        return this.getSymbolSelected;
-      },
-      set: function(newValue) {
-        this.setSymbolSelected(newValue);
-      },
-    },
-    accounts: {
-      get: function() {
-        return this.getAccounts;
-      },
-      set: () => {
-        // this.setAccounts;
-      },
+    // Selected symbol
+    selectedSymbol() {
+      return this.selectedSymbols.length > 0 ? this.selectedSymbols[0] : {};
     },
   },
+
   methods: {
     ...mapActions({
-      getSymbols: 'terminal/symbols',
-      getOrders: 'terminal/orders',
-      getTrades: 'terminal/trades',
       setOhlc: 'terminal/ohlc',
       setSymbolSelected: 'terminal/setSymbolSelected',
       setOhlcNavigator: 'terminal/ohlcNavigator',
-      setAccounts: 'app/accounts',
-      sendOrder: 'terminal/sendOrder',
-      cancelOrder: 'terminal/cancelOrder',
     }),
+
     TestSelect(item: any) {
       // console.log(item);
       this.selectedSymbols = [];
@@ -428,6 +403,10 @@ export default (Vue as VueConstructor<any>).extend({
       this.$store.dispatch('DeleteSymbol', ticker);
     },
 
+    // Can send order?
+    IsSendAvailable(): boolean {
+      return this.newOrder.valid && this.$store.state.terminal.account !== '' && this.selectedSymbols.length > 0;
+    },
 
     // Send order to router with selected account
     SendOrder(side: string) {
@@ -436,7 +415,7 @@ export default (Vue as VueConstructor<any>).extend({
         side: side,
         price: this.newOrder.price,
         volume: this.newOrder.volume,
-        ticker: 'AMZN.NASDAQ',
+        ticker: this.newOrder.ticker,
       };
       this.$store.dispatch('SendOrder', order);
     },
@@ -444,6 +423,15 @@ export default (Vue as VueConstructor<any>).extend({
     // Test is order cancelable
     IsCancelable(state: string): boolean {
       return state === 'open' || state === 'partially filled';
+    },
+
+    // Cancel order
+    CancelOrder(order: string) {
+      const payload = {
+        account: this.$store.state.terminal.account,
+        order: order,
+      };
+      this.$store.dispatch('CancelOrder', payload);
     },
 
     // Order state color
@@ -487,20 +475,14 @@ export default (Vue as VueConstructor<any>).extend({
     selectSymbol(item) {
       this.setSymbolSelected(item);
     },
-    // cancelOrder(orderId) {
-    //   const cOrder = {
-    //     account: this.getCurrentAccount.Id,
-    //     order: orderId,
-    //   }
-    //   Vue.$log.debug(`Cancel order: ${orderId}`)
-    // },
+
   },
+
   async created() {
     await this.$store.dispatch('GetSymbols');
     await this.$store.dispatch('SubscribeSymbols');
-    // this.getSymbols();
-    // this.getOrders(this.getCurrentAccount.Id);
   },
+
   beforeDestroy() {
     this.$store.dispatch('UnsubscribeSymbols');
     if (this.instance.charts[0] !== undefined) {
@@ -508,5 +490,6 @@ export default (Vue as VueConstructor<any>).extend({
       this.instance.charts.splice(0, 1);
     }
   },
+
 });
 </script>

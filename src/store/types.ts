@@ -76,3 +76,9 @@ export interface ITrade {
   time: number;
   fee: number;
 }
+
+// Cancel order action payload
+export interface ICancelPayload {
+  account: string;
+  order: string;
+}
