@@ -214,42 +214,17 @@ export default Vue.extend({
           animation: false,
         },
         navigator: {
-          id: 'navigator',
-          enabled: true,
           adaptToUpdatedData: false,
-          series: {
-            data: [],
-            type: 'areaspline',
-            color: '#4572A7',
-            fillOpacity: 0.05,
-            dataGrouping: {
-              smoothed: false,
-            },
-            lineWidth: 1,
-            // marker: {
-              // enabled: false,
-            // },
-          },
-          // baseSeries: 0,
-          // xAxis: {},
+          series: {},
         },
         scrollbar: {
-          liveRedraw: false,
           enabled: false,
         },
         title: {
           text: 'Symbol not selected',
         },
-        reflow: true,
         rangeSelector: {
           enabled: false,
-          selected: 1,
-          buttonTheme: {
-            visibility: 'hidden',
-          },
-          labelStyle: {
-            visibility: 'hidden',
-          },
         },
         xAxis: {
           events: {
@@ -259,18 +234,17 @@ export default Vue.extend({
           minRange: 60 * 1000,
         },
         yAxis: {
-          floor: 0,
+          // floor: 0,
         },
-        series: [
-          {
-            data: [10, 20, 10, 23, 65, 121, 44, 66, 98, 30, 32, 56, 25, 12, 53],
-            // pointStart: Date.UTC(2018, 1, 1),
-            // pointInterval: 1000 * 3600 * 24,
+        series: [{
             dataGrouping: {
               enabled: false,
             },
           },
         ],
+        credits: {
+          enabled: false,
+        },
       },
     };
   },
