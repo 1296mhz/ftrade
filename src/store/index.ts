@@ -1,9 +1,6 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import { IMainState, ILoginPayload, IAccount } from './types';
-import AppModule, { state as AppState, state } from './app';
-import AuthModule, { state as AuthState } from './auth';
-// import TerminalModule, { state as TerminalState } from './terminal/index';
 import terminal from './terminal';
 import jwt_decode from 'jwt-decode';
 
@@ -20,10 +17,6 @@ const options: StoreOptions<IMainState> = {
 
     // Accounts
     accounts: [],
-
-    app: AppState,
-    auth: AuthState,
-    // terminal: TerminalState,
   },
 
   // Getters
@@ -113,8 +106,6 @@ const options: StoreOptions<IMainState> = {
 
 
   modules: {
-    app: AppModule,
-    auth: AuthModule,
     terminal: terminal,
   },
 };

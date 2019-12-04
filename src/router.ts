@@ -4,7 +4,6 @@ import Root from './views/Root.vue';
 import Terminal from './views/Terminal.vue';
 import Dashboard from './views/Dashboard.vue';
 import Login from './views/Login.vue';
-import store from './store';
 
 Vue.use(Router);
 const router = new Router({
@@ -54,8 +53,6 @@ router.beforeEach((to, from, next) => {
     return next('/');
   }
   */
-
-  store.dispatch('app/currentView', to.name);
   next();
 });
 

@@ -1,7 +1,3 @@
-import { AppState} from './app/types';
-import { IAuthState} from './auth/types';
-import { TerminalState } from './terminal/types';
-
 // Main state interface
 export interface IMainState {
   connected: boolean;
@@ -10,11 +6,6 @@ export interface IMainState {
 
   // Accounts
   accounts: IAccount[];
-
-  // Modules
-  app: AppState;
-  auth: IAuthState;
-  // terminal: TerminalState;
 }
 
 // Login action payload

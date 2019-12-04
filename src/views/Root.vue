@@ -55,8 +55,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-// import { mapActions, mapGetters } from 'vuex';
-// import { eventBus } from '../main';
 
 export default Vue.extend({
   data() {
@@ -76,55 +74,5 @@ export default Vue.extend({
     },
   },
 
-
-/*
-    ...mapGetters({
-      currentView: 'app/CURRENT_VIEW',
-      getCentrifugeConnectedFlag: 'app/CENTRIFUGE_CONNECTED_FLAG',
-      getAccounts: 'app/ACCOUNTS',
-      getCurrentAccount: 'app/CURRENT_ACCOUNT_COMBOBOX',
-    }),
-    currentViewText: function() {
-      return this.currentView[0].toUpperCase() + this.currentView.slice(1);
-    },
-    centrifugeConnectedFlag: {
-      get: function() {
-        return this.getCentrifugeConnectedFlag;
-      },
-      set: function(value) {
-        this.setCentrifugeConnectedFlag(value);
-      },
-    },
-    accounts: {
-      get: function() {
-      return this.getAccounts;
-      },
-      set: () => {
-        // this.setAccounts;
-      },
-    },
-    currentAccount: {
-      get: function() {
-        return this.getCurrentAccount;
-      },
-      set: function(account) {
-        this.setCurrentAccount(account);
-      },
-    },
-  },
-
-  methods: {
-    ...mapActions({
-      logout: 'auth/exit',
-      setAccounts: 'app/accounts',
-      setCurrentAccount: 'app/currentAccountCombobox',
-      setCentrifugeConnectedFlag: 'app/centrifugeConnectedFlag',
-    }),
-    async exit() {
-      await this.logout();
-      this.$router.push('/login');
-    },
-  },
-  */
 });
 </script>

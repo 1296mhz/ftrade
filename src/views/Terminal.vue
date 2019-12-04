@@ -142,7 +142,7 @@ import Vue from 'vue';
 import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
-import { ISendOrder, IOrder, ITrade } from '../store/terminal/types';
+import { IOrder, ITrade} from '@/store/types';
 
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
@@ -292,7 +292,7 @@ export default Vue.extend({
         return {
           id: order.id,
           state: order.state,
-          ticker: order.symbol,
+          ticker: order.ticker,
           type: 'limit',  // TODO
           side: order.side,
           price: order.price.toLocaleString(),
@@ -306,7 +306,7 @@ export default Vue.extend({
       return this.$store.state.terminal.trades.map((trade: ITrade) => {
         return {
           id: trade.id,
-          ticker: trade.symbol,
+          ticker: trade.ticker,
           side: trade.side,
           price: trade.price.toLocaleString(),
           quantity: trade.volume,
