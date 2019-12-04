@@ -82,3 +82,11 @@ export interface ICancelPayload {
   account: string;
   order: string;
 }
+
+// Get ohlc data action payload
+export interface IOhlcPayload {
+  ticker: string;
+  interval: string;
+  begin: number;
+  end: number;
+}

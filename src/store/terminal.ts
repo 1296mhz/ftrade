@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Module } from 'vuex';
-import { IMainState, ITerminalState, ISymbol, IOrder, ITrade, ICancelPayload } from './types';
+import { IMainState, ITerminalState, ISymbol, IOrder, ITrade, ICancelPayload, IOhlcPayload } from './types';
 
 const terminal: Module<ITerminalState, IMainState> = {
 
@@ -224,7 +224,7 @@ const terminal: Module<ITerminalState, IMainState> = {
     // Send new order
     async SendOrder({commit}, order: IOrder) {
       try {
-        const data = await Vue.$cf.RPC({ method: 'SendOrder', params: order });
+        await Vue.$cf.RPC({ method: 'SendOrder', params: order });
       } catch (error) {
         commit('SetError', error);
         throw error;
@@ -234,12 +234,24 @@ const terminal: Module<ITerminalState, IMainState> = {
     // Send new order
     async CancelOrder({commit}, payload: ICancelPayload) {
       try {
-        const data = await Vue.$cf.RPC({ method: 'CancelOrder', params: payload });
+        await Vue.$cf.RPC({ method: 'CancelOrder', params: payload });
       } catch (error) {
         commit('SetError', error);
         throw error;
       }
     },
+
+    // Get OHLC data
+    async GetOhlc({commit}, payload: IOhlcPayload) {
+      try {
+        const data = await Vue.$cf.RPC({ method: 'GetOhlc', params: payload });
+        return data;
+      } catch (error) {
+        commit('SetError', error);
+        return [];
+      }
+    },
+
 
 
 

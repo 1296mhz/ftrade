@@ -6,6 +6,8 @@
           <v-col xs="12" sm="12" md="12" lg="5" xl="5">
             <v-card height="100%">
               <v-container fluid>
+
+                <!-- Symbols -->
                 <v-row align="center" justify="start">
                   <v-card-actions>
                     <v-spacer></v-spacer>
@@ -16,9 +18,8 @@
                   </v-card-actions>
                 </v-row>
 
-
                 <v-data-table dense height="300" :headers="symbolsHeaders" :items="symbols" item-key="ticker" v-model="selectedSymbols"
-                  single-select disable-sort fixed-header disable-pagination hide-default-footer @click:row="TestSelect">
+                  single-select disable-sort fixed-header disable-pagination hide-default-footer @click:row="SelectSymbol">
                   <template v-slot:item.action="{ item }">
                     <v-icon small @click="DeleteSymbol(item.ticker)">cancel</v-icon>
                   </template>
@@ -32,13 +33,7 @@
           <v-col xs="12" sm="12" md="8" lg="5" xl="5">
             <v-card height="100%">
               <v-container>
-                <highcharts
-                  class="stock"
-                  :constructor-type="'stockChart'"
-                  :options="stockOptions"
-                  :callback="startCharts"
-                  :highcharts="instance"
-                ></highcharts>
+                <highcharts ref="OhlcChart" class="stock" :constructor-type="'stockChart'" :options="chartOptions"></highcharts>
               </v-container>
             </v-card>
           </v-col>
@@ -143,17 +138,20 @@
 
 
 <script lang="ts">
-import Vue, { VueConstructor } from 'vue';
-import { mapGetters, mapActions } from 'vuex';
+import Vue from 'vue';
+import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
 import { ISendOrder, IOrder, ITrade } from '../store/terminal/types';
 
 stockInit(Highcharts);
+Vue.use(HighchartsVue);
 
-export default (Vue as VueConstructor<any>).extend({
+export default Vue.extend({
   data() {
     return {
+
+      ticker: '', // ???? Remove
 
       // Symbols table
       symbolsHeaders: [
@@ -195,6 +193,7 @@ export default (Vue as VueConstructor<any>).extend({
         {text: 'Quantity', value: 'quantity'},
       ],
 
+      // New order data
       newOrder: {
         type: 'Limit',
         expiration: 'GTC',
@@ -207,17 +206,12 @@ export default (Vue as VueConstructor<any>).extend({
         volumeRules: [(v) => !!v || 'Volume is required'],
       },
 
-
-      chart: null,
-      instance: Highcharts,
-      selectedSymbolItem: {},
-      ticker: '',
-
-      series: [],
-      stockOptions: {
+      // OHLC chart options
+      chartOptions: {
         chart: {
           type: 'candlestick',
           zoomType: 'x',
+          animation: false,
         },
         navigator: {
           id: 'navigator',
@@ -232,12 +226,12 @@ export default (Vue as VueConstructor<any>).extend({
               smoothed: false,
             },
             lineWidth: 1,
-            marker: {
-              enabled: false,
-            },
+            // marker: {
+              // enabled: false,
+            // },
           },
-          baseSeries: 0,
-          xAxis: {},
+          // baseSeries: 0,
+          // xAxis: {},
         },
         scrollbar: {
           liveRedraw: false,
@@ -259,8 +253,8 @@ export default (Vue as VueConstructor<any>).extend({
         },
         xAxis: {
           events: {
-            setExtremes: this.setExtremes,
-            afterSetExtremes: this.afterSetExtremes,
+            // setExtremes: this.setExtremes,
+            // afterSetExtremes: this.afterSetExtremes,
           },
           minRange: 60 * 1000,
         },
@@ -269,7 +263,9 @@ export default (Vue as VueConstructor<any>).extend({
         },
         series: [
           {
-            data: [],
+            data: [10, 20, 10, 23, 65, 121, 44, 66, 98, 30, 32, 56, 25, 12, 53],
+            // pointStart: Date.UTC(2018, 1, 1),
+            // pointInterval: 1000 * 3600 * 24,
             dataGrouping: {
               enabled: false,
             },
@@ -278,65 +274,8 @@ export default (Vue as VueConstructor<any>).extend({
       },
     };
   },
-  watch: {
-    // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
-    /*$route: {
-      handler: function() {
-        this.getSymbols();
-        this.getOrders(this.getCurrentAccount.Id);
-        this.getTrades(this.getCurrentAccount.Id);
-      },
-      immediate: true,
-    },*/
-    // We follow the object loadingSymbols its value will change false and
-    // then we will begin to update the values of the components
-    loadingSymbols(newVal: boolean) {
-      if (!newVal) {
-        Vue.$log.debug('Load symbols');
-        if (this.symbols) {
-          this.setSymbolSelected(this.symbols[0]);
-        }
-      }
-    },
-    // This is where the component updates when data changes.
-    ohlc(newVal: any, oldVal: any) {
-      this.chart = this.instance.charts[0];
-      this.stockOptions.series[0].data = [null];
-      this.stockOptions.series[0].data = newVal;
-      this.chart.hideLoading();
-    },
-    // This is where the component updates when data changes.
-    getOhlcNavigator(newVal: any, oldVal: any) {
-      this.chart = this.instance.charts[0];
-      this.stockOptions.navigator.series.data = [null];
-      this.stockOptions.navigator.series.data = newVal;
-      this.chart.xAxis[0].setExtremes();
-    },
-    // This is where the component updates when data changes.
-    symbolSelected(newVal: any) {
-      this.chart = this.instance.charts[0];
-      this.stockOptions.navigator.series.data = [null];
-      this.stockOptions.title.text = this.symbolSelected.ticker;
-      Vue.$log.debug(`SymbolSelct ${this.symbolSelected.ticker}`);
-      const ohlcParams = {
-        ticker: this.symbolSelected.ticker,
-        begin: 0,
-        end: Vue.$constants.END_DATE_OHLC(),
-      };
-      this.setOhlcNavigator(ohlcParams);
-      this.chart.showLoading('Loading data from server...');
-    },
-    getCurrentAccount(newVal: any) {
-      Vue.$log.debug(`${newVal.Id}`);
-      // this.setSymbolSelected(newVal.Id);
-    },
-  },
 
   computed: {
-    ...mapGetters({
-      getOhlcNavigator: 'terminal/OHLC_NAVIGATOR',
-    }),
-
     // Symbols table
     symbols() {
       return this.$store.state.terminal.symbols;
@@ -382,23 +321,33 @@ export default (Vue as VueConstructor<any>).extend({
   },
 
   methods: {
-    ...mapActions({
-      setOhlc: 'terminal/ohlc',
-      setSymbolSelected: 'terminal/setSymbolSelected',
-      setOhlcNavigator: 'terminal/ohlcNavigator',
-    }),
-
-    TestSelect(item: any) {
-      // console.log(item);
+    // Select current symbol
+    async SelectSymbol(symbol: any) {
       this.selectedSymbols = [];
-      this.selectedSymbols.push(item);
+      this.selectedSymbols.push(symbol);
+
+      // Update chart
+      const data = await this.$store.dispatch('GetOhlc', {
+        ticker: symbol.ticker,
+        interval: 86400,
+        begin: 0,
+        end: 5000000000000});
+
+      this.chartOptions.navigator.series.data = data;
+      this.chartOptions.series[0].data = data;
+      this.chartOptions.title.text = symbol.ticker;
+
+      const chart = this.$refs.OhlcChart.chart;
+      chart.xAxis[0].setExtremes();
     },
 
+    // Create symbol in symbol table
     CreateSymbol(ticker: string) {
       this.$store.dispatch('CreateSymbol', ticker);
       this.ticker = '';
     },
 
+    // Delete symbol from symbol table
     DeleteSymbol(ticker: string) {
       this.$store.dispatch('DeleteSymbol', ticker);
     },
@@ -456,28 +405,9 @@ export default (Vue as VueConstructor<any>).extend({
     IsAccountSelected() {
         return this.$store.state.terminal.account !== '';
     },
-
-    setExtremes(params: any) {
-      Vue.$log.debug(params);
-      this.chart = this.instance.charts[0];
-      this.chart.showLoading('Loading data from server...');
-      const ohlcParams = {
-        ticker: this.symbolSelected.ticker,
-        begin: params.min,
-        end: params.max,
-      };
-
-      this.setOhlc(ohlcParams);
-    },
-    startCharts() {
-      Vue.$log.debug(`Start chart!`);
-    },
-    selectSymbol(item) {
-      this.setSymbolSelected(item);
-    },
-
   },
 
+  // Hooks
   async created() {
     await this.$store.dispatch('GetSymbols');
     await this.$store.dispatch('SubscribeSymbols');
@@ -485,10 +415,6 @@ export default (Vue as VueConstructor<any>).extend({
 
   beforeDestroy() {
     this.$store.dispatch('UnsubscribeSymbols');
-    if (this.instance.charts[0] !== undefined) {
-      this.instance.charts[0].destroy();
-      this.instance.charts.splice(0, 1);
-    }
   },
 
 });
