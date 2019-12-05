@@ -54,14 +54,34 @@ const options: StoreOptions<IMainState> = {
 
     // Login to server action
     //   get auth token
-    //   connect to centrifuge server
-    //   get initial user data
+    //   and put it in local storage
     async Login({commit}, payload: ILoginPayload) {
-
       try {
         // Request token
         const resp = await Vue.$axios.get(`/auth?user=${payload.username}&pass=${payload.password}`);
         const token = resp.data;
+
+        // Save token
+        localStorage.setItem('authToken', token);
+
+      } catch (err) {
+        commit('SetError', err.message);
+        throw err;
+      }
+    },
+
+    // Connect to server action
+    //   get auth token from local storage
+    //   connect to centrifuge server
+    //   get initial user data
+    async Connect({commit}) {
+
+      try {
+        // Try get token
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          throw Error('Auth token not found');
+        }
 
         // Parse
         const data: any = jwt_decode(token);
@@ -95,12 +115,13 @@ const options: StoreOptions<IMainState> = {
     },
 
     // Request user virtual accounts
-    GetAccounts({commit}) {
-      return Vue.$cf.RPC({ method: 'GetAccounts' }).then((data) => {
+    async GetAccounts({commit}) {
+      try {
+        const data = await Vue.$cf.RPC({ method: 'GetAccounts' });
         commit('SetAccounts', data);
-      }).catch((error) => {
+      } catch (error) {
         commit('SetError', error);
-      });
+      }
     },
   },
 

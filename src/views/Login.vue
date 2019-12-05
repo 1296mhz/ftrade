@@ -43,12 +43,14 @@ export default Vue.extend({
   },
 
   methods: {
+    // Login
     async submit() {
       try {
         await this.$store.dispatch('Login', {
           password: this.password,
           username: this.username,
         });
+        await this.$store.dispatch('Connect');
         await this.$store.dispatch('GetAccounts');
 
         this.$router.push('/terminal');

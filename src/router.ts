@@ -4,6 +4,7 @@ import Root from './views/Root.vue';
 import Terminal from './views/Terminal.vue';
 import Dashboard from './views/Dashboard.vue';
 import Login from './views/Login.vue';
+import store from './store';
 
 Vue.use(Router);
 const router = new Router({
@@ -35,24 +36,25 @@ const router = new Router({
   mode: 'history',
 });
 
-// check auth
-router.beforeEach((to, from, next) => {
-  /*
-  const loggedIn = store.state.auth.token;
-  const connected = store.state.app.centrifugeConnectedFlag;
+// Router handler
+router.beforeEach( async (to, from, next) => {
 
-  if (loggedIn && !connected) {
-    store.dispatch('auth/loginToken');
-  }
-  // Not logged in
-  if (!loggedIn && to.path !== '/login') {
-    return next('/login');
-  }
-  // Logged in
-  if (loggedIn && to.path === '/login') {
+  if (store.state.connected && to.path === '/login') {
     return next('/');
   }
-  */
+
+  // Check connection state
+  if (!store.state.connected && to.path !== '/login') {
+    // Try connect
+    try {
+      await store.dispatch('Connect');
+      await store.dispatch('GetAccounts');
+    } catch (err) {
+      // Goto login page
+      return next('/login');
+    }
+  }
+
   next();
 });
 
