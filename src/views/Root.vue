@@ -49,23 +49,41 @@
       <router-view></router-view>
       </div>
     </v-content>
+
+    <!-- Snackbar -->
+    <v-snackbar v-model="errorBar" color="error">
+      {{ lastError }}
+      <v-btn @click="errorBar = false" dark text>Close</v-btn>
+    </v-snackbar>
+
   </v-app>
 </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
 
 export default Vue.extend({
   data() {
     return {
-      opacity: 0.46,
+      errorBar: false,
       currentViewText: 'Terminal',
     };
   },
 
   computed: {
-    accounts() { return this.$store.getters.accounts; },
+    ...mapGetters([
+      'accounts',
+      'lastError',
+      'errorsCount',
+    ]),
+  },
+
+  watch: {
+    errorsCount: function() {
+      this.errorBar = true;
+    },
   },
 
   methods: {

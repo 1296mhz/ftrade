@@ -1,7 +1,7 @@
 // Main state interface
 export interface IMainState {
   connected: boolean;
-  error: string;
+  errors: string[];
   userId: string;
 
   // Accounts

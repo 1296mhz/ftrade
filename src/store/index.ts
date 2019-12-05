@@ -12,7 +12,7 @@ const options: StoreOptions<IMainState> = {
   state: {
     // Connection
     connected: false,
-    error: '',
+    errors: [],
     userId: '',
 
     // Accounts
@@ -28,6 +28,14 @@ const options: StoreOptions<IMainState> = {
           text: acc.name };
       });
     },
+
+    lastError: (state) => {
+      return state.errors.length > 0 ? state.errors[state.errors.length - 1] : '';
+    },
+
+    errorsCount: (state) => {
+      return state.errors.length;
+    },
   },
 
   // Mutations
@@ -41,7 +49,7 @@ const options: StoreOptions<IMainState> = {
     },
 
     SetError(state, error: string) {
-      state.error = error;
+      state.errors.push(error);
     },
 
     SetAccounts(state, accounts: IAccount[]) {
