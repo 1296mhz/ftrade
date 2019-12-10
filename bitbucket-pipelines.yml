@@ -1,22 +1,66 @@
-# This is a sample build configuration for Docker.
-# Check our guides at https://confluence.atlassian.com/x/O1toN for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
-image: atlassian/default-image:2
-
+image: node:10.15
 pipelines:
-  default:
-    - step:
-        services:
-          - docker
-        script: # Modify the commands below to build your repository.
-          # Set $DOCKER_HUB_USERNAME and $DOCKER_HUB_PASSWORD as environment variables in repository settings
-          - export IMAGE_NAME=your-Dockerhub-account/your-docker-image-name:$BITBUCKET_COMMIT
+  branches:
+    develop:
+      - step:
+          services:
+            - docker
+          script:
+            - mkdir -p dist
+            - npm install
+            - npm run build
+            - echo ${BITBUCKET_COMMIT} > build.txt
+            - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD https://$DOCKER_HUB_URI
+            - docker build -t $DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:$BITBUCKET_BRANCH .
+            - docker build -t $DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:${BITBUCKET_COMMIT} .
+            - docker push $DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:$BITBUCKET_BRANCH
+            - docker push $DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:${BITBUCKET_COMMIT}
+      - step:
+          name: Deploy to Kubernetes
+          deployment: stage-develop
+          image: cshlovjah/kubernetes-bitbucket-pipeline
+          script:
+            - echo "$K8S_SERVER_IP $K8S_SERVER_URL" >> /etc/hosts
+            - echo $K8S_CA | tr ' ' '\n' | base64 -d > $(pwd)/ca.crt
+            - kubectl config set-cluster kubernetes --certificate-authority=./ca.crt --server=https://$K8S_SERVER_URL:$K8S_SERVER_PORT
+            - kubectl config set-credentials $K8S_USERNAME --token=$K8S_USER_TOKEN
+            - kubectl config set-context kubernetes --cluster=kubernetes --namespace=$K8S_NAMESPACE --user=$K8S_USERNAME
+            - kubectl config use-context kubernetes --user=$K8S_USERNAME
+            - kubectl get deployments
+            - kubectl set image deployment/$K8S_DEPLOYMENT_NAME $K8S_DEPLOYMENT_NAME=$DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:${BITBUCKET_COMMIT} -n $K8S_NAMESPACE --record=true
+    master:
+      - step:
+          services:
+            - docker
+          script:
+            - mkdir -p dist
+            - npm install
+            - npm run build
+            - echo ${BITBUCKET_COMMIT} > build.txt
+            - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD https://$DOCKER_HUB_URI
+            - docker build -t $DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:$BITBUCKET_BRANCH .
+            - docker build -t $DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:${BITBUCKET_COMMIT} .
+            - docker push $DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:$BITBUCKET_BRANCH
+            - docker push $DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:${BITBUCKET_COMMIT}
+      - step:
+          name: Deploy to Kubernetes
+          deployment: stage-master
+          image: cshlovjah/kubernetes-bitbucket-pipeline
+          script:
+            - echo "$K8S_SERVER_IP $K8S_SERVER_URL" >> /etc/hosts
+            - echo $K8S_CA | tr ' ' '\n' | base64 -d > $(pwd)/ca.crt
+            - kubectl config set-cluster kubernetes --certificate-authority=./ca.crt --server=https://$K8S_SERVER_URL:$K8S_SERVER_PORT
+            - kubectl config set-credentials $K8S_USERNAME --token=$K8S_USER_TOKEN
+            - kubectl config set-context kubernetes --cluster=kubernetes --namespace=$K8S_NAMESPACE --user=$K8S_USERNAME
+            - kubectl config use-context kubernetes --user=$K8S_USERNAME
+            - kubectl get deployments
+            - kubectl set image deployment/$K8S_DEPLOYMENT_NAME $K8S_DEPLOYMENT_NAME=$DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:${BITBUCKET_COMMIT} -n $K8S_NAMESPACE --record=true            
 
-          # build the Docker image (this will use the Dockerfile in the root of the repo)
-          - docker build -t $IMAGE_NAME .
-          # authenticate with the Docker Hub registry
-          - docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
-          # push the new Docker image to the Docker registry
-          - docker push $IMAGE_NAME
+options:
+  docker: true
+  size: 2x
+
+definitions:
+  services:
+    docker:
+      memory: 4096
