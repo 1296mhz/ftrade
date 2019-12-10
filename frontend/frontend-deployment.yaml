@@ -1,32 +1,4 @@
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: frontend-configmap
-  namespace: script-develop-stage-local-com
-data:
-  VUE_APP_BACKEND_API_URI: 'http://backend-svc:8090'
-  VUE_APP_BACKEND_SOCKET_URI: 'ws://backend-svc:8090'
-  VUE_APP_END_DATE_OHLC: '1572619897000'
-  VUE_APP_TITLE: 'Gimaym'
-  VUE_APP_DEV_MODE: 'false'
-  default.conf: |
-    server {
-    listen       80;
-    server_name  localhost;
-
-          location / {
-              root   /usr/share/nginx/html;
-              try_files $uri /index.html;
-          }
-
-
-          error_page   500 502 503 504  /50x.html;
-          location = /50x.html {
-              root   /usr/share/nginx/html;
-          }
-    }
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,7 +19,7 @@ spec:
         branch: develop
     spec:
       containers:
-      - image: registry.local.tld/frontend:develop
+      - image: registry.gimaym.com/frontend:develop
         name: frontend
         restartPolicy: 
         imagePullPolicy: Always
@@ -59,24 +31,36 @@ spec:
             cpu: "0.010"
             memory: "200Mi"
         env:
-         - name: VUE_APP_BACKEND_API_URI
+         - name: VUE_APP_API_URI
            valueFrom:
              configMapKeyRef:
                name: frontend-configmap
-               key: VUE_APP_BACKEND_API_URI
-         - name: VUE_APP_BACKEND_SOCKET_URI
+               key: VUE_APP_API_URI
+         - name: VUE_APP_SOCKET_URI
            valueFrom:
              configMapKeyRef:
                name: frontend-configmap
-               key: VUE_APP_BACKEND_SOCKET_URI
-         - name: VUE_APP_END_DATE_OHLC
+               key: VUE_APP_SOCKET_URI
+         - name: VUE_APP_PRODUCTION_MODE
            valueFrom:
              configMapKeyRef:
                name: frontend-configmap
-               key: VUE_APP_END_DATE_OHLC
+               key: VUE_APP_PRODUCTION_MODE
         ports:
         - containerPort: 80
           name: frontend
+        readinessProbe:
+          httpGet:
+            path: /
+            port: frontend
+          initialDelaySeconds: 160
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /
+            port: frontend
+          initialDelaySeconds: 160
+          periodSeconds: 60
         volumeMounts:
           - name: etcdcerts-configmap
             mountPath: /certs
@@ -95,21 +79,5 @@ spec:
           - key: default.conf
             path: default.conf
       imagePullSecrets:
-      - name: registrylocaltld
----
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: script-develop-stage-local-com
-  name: frontend-svc
-spec:
-  type: ClusterIP
-  sessionAffinity: ClientIP
-  ports:
-  - name: frontend
-    protocol: TCP
-    port: 4000
-    targetPort: 80
-  selector:
-    app: frontend
-    branch: frontend
+      - name: registrygimaymcom
+

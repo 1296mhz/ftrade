@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-configmap
+  namespace: script-develop-stage-local-com
+data:
+  VUE_APP_API_URI: https://script.develop.stage.local.com/api/v1
+  VUE_APP_SOCKET_URI: https://script.develop.stage.local.com
+  VUE_APP_PRODUCTION_MODE: 'false'
+  default.conf: |
+    server {
+    listen       80;
+    server_name  localhost;
+
+          location / {
+              root   /usr/share/nginx/html;
+              try_files $uri /index.html;
+          }
+
+
+          error_page   500 502 503 504  /50x.html;
+          location = /50x.html {
+              root   /usr/share/nginx/html;
+          }
+    }
