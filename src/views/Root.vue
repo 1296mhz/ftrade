@@ -90,6 +90,10 @@ export default Vue.extend({
     SelectAccount(account: string) {
       this.$store.dispatch('SetAccount', account);
     },
+    exit() {
+       this.$store.dispatch('Logout');
+       this.$router.push('/login');
+    },
   },
 
 });

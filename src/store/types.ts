@@ -3,8 +3,6 @@ export interface IMainState {
   connected: boolean;
   errors: string[];
   userId: string;
-
-  // Accounts
   accounts: IAccount[];
 }
 
@@ -23,7 +21,6 @@ export interface IAccount {
 // Terminal state interface
 export interface ITerminalState {
   symbols: ISymbol[];
-
   account: string;
   orders: IOrder[];
   trades: ITrade[];
@@ -37,7 +34,6 @@ export interface ISymbol {
   exchange: string;
   minIncrement: number;
   minIncrementAmount: number;
-
   bid: number;
   ask: number;
 }

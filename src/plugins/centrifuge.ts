@@ -33,6 +33,10 @@ const centrifugePlugin = {
     this.cf.connect();
   },
 
+  Disconnect(): void {
+    this.cf.disconnect();
+  },
+
   // Remote procedure call
   async RPC(data: any) {
     const resp = await this.cf.rpc(data);

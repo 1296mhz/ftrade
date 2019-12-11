@@ -14,7 +14,6 @@ const options: StoreOptions<IMainState> = {
     connected: false,
     errors: [],
     userId: '',
-
     // Accounts
     accounts: [],
   },
@@ -122,6 +121,11 @@ const options: StoreOptions<IMainState> = {
       }
     },
 
+    Logout({commit}) {
+      localStorage.removeItem('authToken');
+      commit('SetConnected', false);
+      Vue.$cf.Disconnect();
+    },
     // Request user virtual accounts
     async GetAccounts({commit}) {
       try {
@@ -132,7 +136,6 @@ const options: StoreOptions<IMainState> = {
       }
     },
   },
-
 
   modules: {
     terminal: terminal,

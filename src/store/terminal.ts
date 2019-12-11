@@ -7,7 +7,6 @@ const terminal: Module<ITerminalState, IMainState> = {
   // State
   state: {
     symbols: [],
-
     account: '',
     orders: [],
     trades: [],
