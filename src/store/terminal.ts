@@ -251,14 +251,7 @@ const terminal: Module<ITerminalState, IMainState> = {
         return [];
       }
     },
-
-
-
-
   },
-
-
-
 };
 
 export default terminal;

@@ -6,7 +6,7 @@ metadata:
   namespace: script-develop-stage-local-com
 data:
   VUE_APP_BACKEND_API_URI: 'http://backend-svc:8090'
-  VUE_APP_BACKEND_SOCKET_URI: 'ws://backend-svc:8090'
+  VUE_APP_BACKEND_SOCKET_URI: 'wss://backend-svc:8090'
   VUE_APP_END_DATE_OHLC: '1572619897000'
   VUE_APP_TITLE: 'Gimaym'
   VUE_APP_DEV_MODE: 'false'
