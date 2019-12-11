@@ -9,8 +9,7 @@ const centrifugePlugin = {
 
   // Plugin install
   install(vue: typeof Vue) {
-    //this.cf = new Centrifuge(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : 'wss://script.develop.stage.gimaym.com'}/connection/websocket`);
-    this.cf = new Centrifuge(`wss://script.develop.stage.gimaym.com/connection/websocket`);
+    this.cf = new Centrifuge(`${process.env.VUE_APP_BACKEND_SOCKET_URI ? process.env.VUE_APP_BACKEND_SOCKET_URI : `wss://${location.hostname}`}/connection/websocket`);
     vue.$cf = this;
   },
 
