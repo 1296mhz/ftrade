@@ -1,32 +1,35 @@
 <template>
-  <v-row no-gutters style="height: 100%">
-    <v-navigation-drawer v-model="drawer" permanent absolute>
-      <v-list-item>
-        <v-list-item-avatar>
-          <v-icon>extension</v-icon>
-        </v-list-item-avatar>
-        <v-list-item-title>Templates</v-list-item-title>
-        <v-btn icon>
-          <v-icon>add</v-icon>
-        </v-btn>
-      </v-list-item>
-
-      <v-divider></v-divider>
-      <v-list dense>
-        <v-list-item v-for="item in items" :key="item.title" link>
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
+  <div>
+      <v-navigation-drawer v-model="drawer" permanent absolute>
+        <v-list-item>
+          <v-list-item-avatar>
+            <v-icon>extension</v-icon>
+          </v-list-item-avatar>
+          <v-list-item-title>Templates</v-list-item-title>
+          <v-btn icon>
+            <v-icon>add</v-icon>
+          </v-btn>
         </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-content>
-      <v-card absolute>
-        <v-text-field v-model="currentTemplate.script"></v-text-field>
-      </v-card>
-    </v-content>
-  
-  </v-row>
+
+        <v-divider></v-divider>
+        <v-list dense>
+          <v-list-item v-for="item in items" :key="item.title" link>
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+
+   
+
+      <v-container fluid fill-height>
+        <v-card>
+          <v-text-field v-model="currentTemplate.script"></v-text-field>
+        </v-card>
+      </v-container>
+
+ </div>
 </template>
 
 <script lang="ts">
