@@ -119,7 +119,7 @@
 
                   <!-- Trades -->
                   <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table :headers="tradesHeaders" :items="orders" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
+                    <v-data-table :headers="tradesHeaders" :items="trades" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
                       <template v-slot:item.side="{item: {side}}">
                         <v-chip :color="GetSideColor(side)" label x-small outlined>{{side}}</v-chip>
                       </template>
@@ -338,7 +338,7 @@ export default Vue.extend({
         side: side,
         price: this.newOrder.price,
         volume: this.newOrder.volume,
-        ticker: this.newOrder.ticker,
+        ticker: this.selectedSymbol.ticker,
       };
       this.$store.dispatch('SendOrder', order);
     },
