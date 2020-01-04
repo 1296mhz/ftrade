@@ -42,42 +42,37 @@
       </v-navigation-drawer>
  -->    
       <v-col>
-        <v-card>
-          <v-treeview
-            v-model="tree"
-            :open="open"
-            :items="items"
-            activatable
-            item-key="name"
-            transition="true"
-            dense
-          >
+        <!-- Scripts tree -->
+        <v-card width="250">
+          <v-toolbar dense flat>
+            <v-toolbar-title>Scripts</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon small>
+              <v-icon>mdi-file-plus-outline</v-icon>
+            </v-btn>
+            <v-btn icon small>
+              <v-icon>mdi-folder-plus-outline</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-divider></v-divider>
 
-            <template v-slot:prepend="{ item, open }">
-              <v-icon v-if="!item.file">
-                {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-              </v-icon>
-              <v-icon v-else>
-                {{ files[item.file] }}
-              </v-icon>
-            </template>
+          <v-sheet class="overflow-y-auto" height="300">
+            <v-treeview :items="items" item-key="name" transition="true" activatable dense>
 
-            <template v-slot:label="{ item }">
-              <v-hover v-slot:default="{ hover }">
-                <div>
-              {{ item.name }}
-                <v-icon v-if="hover" small>cancel</v-icon>
-                </div>
-              </v-hover>
-            </template>
+              <template v-slot:prepend="{ item, open }">
+                <v-icon v-if="!item.file">
+                  {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                </v-icon>
+                <v-icon v-else>
+                  {{ files[item.file] }}
+                </v-icon>
+              </template>
 
-            <template v-slot:append="{ active }">
-                <v-icon v-if="active" small>cancel</v-icon>
-            </template>
-
-
-
-          </v-treeview>
+              <template v-slot:append="{ active }">
+                  <v-icon v-if="active" small>cancel</v-icon>
+              </template>
+            </v-treeview>
+          </v-sheet>
         </v-card>
       </v-col>
 
@@ -119,7 +114,7 @@ export default Vue.extend({
             {
               name: 'static',
               children: [{
-                name: 'logo.png',
+                name: 'logosssssssssssssssssssssssssssssssss.png',
                 file: 'png',
               }],
             },
