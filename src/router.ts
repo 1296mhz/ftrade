@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Root from './views/Root.vue';
 import Terminal from './views/Terminal.vue';
-import Templates from './views/Templates.vue';
+import Scripts from './views/Scripts.vue';
 import Dashboard from './views/Dashboard.vue';
 import Login from './views/Login.vue';
 import store from './store';
@@ -31,9 +31,9 @@ const router = new Router({
           component: Terminal,
         },
         {
-          path: '/templates',
-          name: 'templates',
-          component: Templates,
+          path: '/scripts',
+          name: 'scripts',
+          component: Scripts,
         },
       ],
     },
