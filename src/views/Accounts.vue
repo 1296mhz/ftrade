@@ -8,7 +8,7 @@
               <v-container fluid>
                 <v-data-table
                   :headers="account_header"
-                  :items="accounts"
+                  :items="vaccounts"
                   :items-per-page="5"
                   item-key="Id"
                   class="elevation-0"
@@ -48,7 +48,7 @@
                     ></v-select>
                     <v-select
                       v-model="newAccount.RealAccount"
-                      :items="RealAccounts"
+                      :items="accounts"
                       label="Real Account"
                       required
                       class="mx-2"
@@ -89,8 +89,8 @@ export default (Vue as VueConstructor<any>).extend({
   data() {
     return {
       ExecutorsIds: ['Dummy', 'Exante', 'BCS'],
-      RealAccounts: ['myFirstRealAccount', 'mySecondRealAccount'],
       validateAccount: false,
+      vaccounts: [],
       newAccount: {
         Name: '',
         ExecutorId: '',
@@ -138,15 +138,9 @@ export default (Vue as VueConstructor<any>).extend({
     },
   },
   computed: {
-    ...mapGetters({
-      getAccounts: 'accounts/ACCOUNTS',
-    }),
-    accounts: {
-      get: function() {
-        return this.getAccounts;
-      },
-      set: function(account) {},
-    },
+    ...mapGetters([
+      'accounts',
+    ]),
     validName: function() {
       return (
         (this.newAccount.Name && this.newAccount.Name.length <= 15) || false
