@@ -38,6 +38,14 @@
             <v-list-item-title>Scripts</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item to="/accounts">
+          <v-list-item-action>
+            <v-icon>account_balance_wallet</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Accounts</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
