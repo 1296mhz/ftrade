@@ -17,7 +17,7 @@
               </template>
 
               <v-list>
-                <v-list-item @click="">
+                <v-list-item @click="CreateScript">
                   <v-list-item-title>Script</v-list-item-title>
                 </v-list-item>
                 <v-list-item @click="">
@@ -33,7 +33,7 @@
           <v-divider></v-divider>
 
           <v-sheet class="overflow-y-auto" height="300">
-            <v-treeview :items="categories" item-children="scripts" item-key="name" transition activatable dense>
+            <v-treeview :items="categories" item-children="scripts" @update:active="SelectScript" transition activatable dense>
               <template v-slot:prepend="{item, open}">
                 <v-icon v-if="item.scripts">{{open ? 'mdi-folder-open' : 'mdi-folder'}}</v-icon>
                 <v-icon v-else>mdi-file-document-outline</v-icon>
@@ -50,14 +50,14 @@
             <v-form>
               <v-row dense>
                 <v-col cols="6">
-                  <v-text-field label="Name" dense></v-text-field>
+                  <v-text-field v-model="scriptName" label="Name" dense></v-text-field>
                 </v-col>
                 <v-col cols="6">
-                  <v-select :items="categories" item-text="name" item-value="id" label="Category" dense></v-select>
+                  <v-select :items="categories" v-model="scriptCategory" item-text="name" item-value="id" label="Category" dense></v-select>
                 </v-col>
               </v-row>
               <v-row dense>
-                <v-textarea rows="35" no-resize dense solo flat></v-textarea>
+                <v-textarea rows="35" v-model="scriptSource" no-resize dense solo flat></v-textarea>
               </v-row>
               <v-row justify="end" dense>
                 <v-btn color="success" @click="" small>Save</v-btn>
@@ -91,12 +91,13 @@ Vue.use(HighchartsVue);
 export default Vue.extend({
   data() {
     return {
-      /*categories: [
-        { id: 'cid1', name: 'Category 1', scripts: [] },
-        { id: 'cid2', name: 'Category 2', scripts: [{ id: 'sid1', name: 'Script 1' }, { id: 'sid2', name: 'Script 2'}]},
-        { id: 'cid3', name: 'Category 3', scripts: [{ id: 'sid3', name: 'Script 3' }, { id: 'sid4', name: 'Script 4'}]},
-      ],*/
-
+      // Script data
+      script: {
+        id: '',
+        name: '',
+        category: '',
+        source: '',
+      },
     };
   },
 
@@ -105,6 +106,40 @@ export default Vue.extend({
     categories() {
       return this.$store.state.scripts.categories;
     },
+
+    // Script data
+    scriptName: {
+      get() { return this.$store.state.scripts.script.name; },
+      set(value) { this.$store.commit('SetScriptName', value); },
+    },
+    scriptCategory: {
+      get() { return this.$store.state.scripts.script.category; },
+      set(value) { this.$store.commit('SetScriptCategory', value); },
+    },
+    scriptSource: {
+      get() { return this.$store.state.scripts.script.source; },
+      set(value) { this.$store.commit('SetScriptSource', value); },
+    },
+  },
+
+
+  methods: {
+    // Select current script
+    async SelectScript(selected: string[]) {
+      if (selected.length > 0) {
+        const id = selected[0];
+        const cat = this.categories.find((cat) => cat.id === id);
+        if (!cat) {
+          const data = await this.$store.dispatch('GetScript', id);
+        }
+      }
+    },
+
+    // Create new script
+    CreateScript() {
+      this.$store.dispatch('CreateScript', 'Category 2');
+    },
+
   },
 
   // Hooks
