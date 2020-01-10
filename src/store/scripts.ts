@@ -46,6 +46,18 @@ const scripts: Module<IScriptsState, IMainState> = {
     SetCategories(state, categories: ICategory[]) {
       state.categories = categories;
     },
+    CreateScript(state, script: IScript) {
+      let cat: ICategory =  state.categories.find((cat) => cat.name === script.category);
+      if (!cat) {
+        cat = {
+          id: script.category,
+          name: script.category,
+          scripts: [],
+        };
+        state.categories.push(cat);
+      }
+      cat.scripts.push(script);
+    },
 
     // Set current script data
     SetScript(state, script: IScript) {
@@ -120,24 +132,20 @@ const scripts: Module<IScriptsState, IMainState> = {
 
     // Subscribe to scripts updates
     SubscribeScripts({state, commit, rootState}) {
-      // Subscribe scripts tree update
       Vue.$cf.Subscribe(`scripts#${rootState.userId}`, ({data}) => {
-        let categories = state.categories;
+        console.log(data);
         if (data.command === 'create') {
-          // symbols.push(data.params);
-          // commit('SetScripts', categories);
+          commit('CreateScript', data.params);
         } else
         if (data.command === 'delete') {
-          // symbols = symbols.filter((symbol) => symbol.ticker !== data.params);
-          // commit('SetSymbols', symbols);
+          // commit('CreateScript', data);
         }
       });
     },
 
     // Unsubscribe from scripts updates
     UnsubscribeScripts({state, rootState}) {
-      // Unsubscribe from symbols list updates
-      Vue.$cf.Unsubscribe(`symbols#${rootState.userId}`);
+      Vue.$cf.Unsubscribe(`scripts#${rootState.userId}`);
     },
 
 

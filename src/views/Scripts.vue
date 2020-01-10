@@ -145,11 +145,11 @@ export default Vue.extend({
   // Hooks
   async created() {
     await this.$store.dispatch('GetScripts');
-    // await this.$store.dispatch('SubscribeSymbols');
+    await this.$store.dispatch('SubscribeScripts');
   },
 
   beforeDestroy() {
-    // this.$store.dispatch('UnsubscribeSymbols');
+    this.$store.dispatch('UnsubscribeScripts');
   },
 });
 </script>
