@@ -4,6 +4,7 @@ import Root from './views/Root.vue';
 import Terminal from './views/Terminal.vue';
 import Scripts from './views/Scripts.vue';
 import Dashboard from './views/Dashboard.vue';
+import Accounts from './views/Accounts.vue';
 import Login from './views/Login.vue';
 import store from './store';
 
@@ -34,6 +35,11 @@ const router = new Router({
           path: '/scripts',
           name: 'scripts',
           component: Scripts,
+        },
+        {
+          path: '/accounts',
+          name: 'accounts',
+          component: Accounts,
         },
       ],
     },
