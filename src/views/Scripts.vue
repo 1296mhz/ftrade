@@ -20,13 +20,13 @@
                 <v-list-item @click="CreateScript">
                   <v-list-item-title>Script</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="">
+                <v-list-item @click="CreateCategory">
                   <v-list-item-title>Category</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
 
-            <v-btn icon small>
+            <v-btn @click="DeleteCategoryOrScript" icon small>
               <v-icon>delete</v-icon>
             </v-btn>
           </v-toolbar>
@@ -43,9 +43,9 @@
         </v-card>
       </v-col>
 
-      <!-- Script parameters -->
       <v-col>
-        <v-card>
+        <!-- Script parameters -->
+        <v-card v-if="scriptId">
           <v-container>
             <v-form>
               <v-row dense>
@@ -60,7 +60,7 @@
                 <v-textarea rows="35" v-model="scriptSource" no-resize dense solo flat></v-textarea>
               </v-row>
               <v-row justify="end" dense>
-                <v-btn color="success" @click="" small>Save</v-btn>
+                <v-btn color="success" @click="UpdateScript" small>Save</v-btn>
               </v-row>
             </v-form>
           </v-container>
@@ -91,23 +91,19 @@ Vue.use(HighchartsVue);
 export default Vue.extend({
   data() {
     return {
-      // Script data
-      script: {
-        id: '',
-        name: '',
-        category: '',
-        source: '',
-      },
     };
   },
 
   computed: {
-    // Symbols table
+    // Scripts tree
     categories() {
       return this.$store.state.scripts.categories;
     },
 
     // Script data
+    scriptId() {
+      return this.$store.state.scripts.script.id;
+    },
     scriptName: {
       get() { return this.$store.state.scripts.script.name; },
       set(value) { this.$store.commit('SetScriptName', value); },
@@ -120,25 +116,52 @@ export default Vue.extend({
       get() { return this.$store.state.scripts.script.source; },
       set(value) { this.$store.commit('SetScriptSource', value); },
     },
+
+    // Category data
+    categoryId() {
+      return this.$store.state.scripts.category.id;
+    },
   },
 
 
   methods: {
     // Select current script
     async SelectScript(selected: string[]) {
+      console.log(selected);
       if (selected.length > 0) {
         const id = selected[0];
         const cat = this.categories.find((cat) => cat.id === id);
-        if (!cat) {
-          const data = await this.$store.dispatch('GetScript', id);
+        if (cat) {
+          this.$store.commit('SetCategory', {id: cat.id, name: cat.name});
+        } else {
+          await this.$store.dispatch('GetScript', id);
         }
       }
     },
 
     // Create new script
     CreateScript() {
-      this.$store.dispatch('CreateScript', 'Category 2');
+      this.$store.dispatch('CreateScript');
     },
+
+    UpdateScript() {
+      this.$store.dispatch('UpdateScript');
+    },
+
+    // Create new category
+    CreateCategory() {
+      this.$store.dispatch('CreateCategory');
+    },
+
+    // Delete script or category
+    DeleteCategoryOrScript() {
+      if (this.categoryId) {
+        this.$store.dispatch('DeleteCategory');
+      } else {
+        this.$store.dispatch('DeleteScript');
+      }
+    },
+
 
   },
 

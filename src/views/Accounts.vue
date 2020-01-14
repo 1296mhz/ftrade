@@ -128,11 +128,6 @@ export default (Vue as VueConstructor<any>).extend({
     };
   },
   watch: {
-    // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
-    $route: {
-      handler: function() {},
-      immediate: true,
-    },
     getCurrentAccount(newVal: any) {
       Vue.$log.debug(`${newVal.Id}`);
     },
@@ -167,7 +162,7 @@ export default (Vue as VueConstructor<any>).extend({
     deleteVirtualAccount: (accountId) => {
       Vue.$log.debug(`Delete account: ${accountId}`);
     },
-    createVirtualAccount: () => {},
+    createVirtualAccount: () => {/**/},
   },
   mounted() {
     this.setAccounts();
