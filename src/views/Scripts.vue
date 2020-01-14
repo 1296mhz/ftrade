@@ -70,6 +70,8 @@
       <!-- Test result -->
       <v-col>
         <v-card>
+            <v-container>
+            </v-container>
         </v-card>
       </v-col>
 
