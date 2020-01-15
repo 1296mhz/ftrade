@@ -3,14 +3,13 @@ import { Module } from 'vuex';
 import { IMainState } from './types';
 
 export interface IAccountsState {
-  categories: ICategory[];
+
 }
 
 const accounts: Module<IAccountsState, IMainState> = {
 
   // State
   state: {
-    categories: [],
   },
 
   // Mutations
@@ -19,10 +18,5 @@ const accounts: Module<IAccountsState, IMainState> = {
   // Actions
   actions: {},
   }
-
-
-
-
-
 
 export default accounts;

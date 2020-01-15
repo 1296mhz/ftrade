@@ -1,9 +1,9 @@
 <template>
   <v-container fluid class="pt-0 pb-0">
     <v-row>
-      <v-col xs="12" sm="12" md="10" lg="12" xl="12">
+      <v-col xs="12" sm="12" md="12" lg="12" xl="12">
         <v-row>
-          <v-col xs="12" sm="12" md="12" lg="10" xl="10">
+          <v-col xs="12" sm="12" md="10" lg="10" xl="10">
             <v-card height="100%">
               <v-container fluid>
                 <v-data-table
@@ -19,8 +19,8 @@
                   dense
                   loading-text="Loading... Please wait"
                 >
-                  <template v-slot:item.actions="{ item }">
-                    <v-icon small @click="deleteVirtualAccount(item.Id)">cancel</v-icon>
+                  <template v-slot:item.actions="{ index }">
+                    <v-icon small @click="vaccounts.splice(index, 1)">cancel</v-icon>
                   </template>
                 </v-data-table>
               </v-container>
@@ -79,7 +79,7 @@
         <v-row>
           <v-col xs="12" sm="12" md="3" lg="3" xl="3">
             <v-card height="100%">
-              <v-container >
+              <v-container>
                 <v-card-title>
                   <v-row>
                     <v-col cols="12" sm="6" md="6">
@@ -154,11 +154,7 @@
                 <span class="title font-weight-light">Report</span>
               </v-card-title>
               <v-card-text>
-                  <highcharts
-                    class="stock"
-                    :constructor-type="'stockChart'"
-                    :options="chartOptions"
-                  ></highcharts>
+                <highcharts class="stock" :constructor-type="'stockChart'" :options="chartOptions"></highcharts>
               </v-card-text>
             </v-card>
           </v-col>
@@ -190,7 +186,6 @@
               </v-card-text>
             </v-card>
           </v-col>
-
         </v-row>
       </v-col>
     </v-row>
@@ -203,6 +198,7 @@ import { mapGetters, mapActions } from 'vuex';
 import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
+import { ITrade } from '@/store/types';
 
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
@@ -216,6 +212,16 @@ export default (Vue as VueConstructor<any>).extend({
       reports: [
         { title: 'Profile', value: '10' },
         { title: 'Tax', value: '1' },
+      ],
+      trades: [
+        {
+          id: 1,
+          ticker: 'RTS',
+          side: 'buy',
+          price: 1,
+          quantity: 1,
+          time: new Date().toLocaleString(),
+        },
       ],
       ExecutorsIds: ['Dummy', 'Exante', 'BCS'],
       validateAccount: false,
@@ -297,7 +303,7 @@ export default (Vue as VueConstructor<any>).extend({
             },
           },
           accessibility: {
-            rangeDescription: 'Range: 1940 to 2017.',
+            rangeDescription: '',
           },
         },
         yAxis: {
@@ -420,7 +426,7 @@ export default (Vue as VueConstructor<any>).extend({
   watch: {
     // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
     $route: {
-      handler: function() {},
+      handler() {},
       immediate: true,
     },
     getCurrentAccount(newVal: any) {
@@ -429,20 +435,20 @@ export default (Vue as VueConstructor<any>).extend({
   },
   computed: {
     ...mapGetters(['accounts']),
-    validName: function() {
+    validName() {
       return (
         (this.newAccount.Name && this.newAccount.Name.length <= 15) || false
       );
     },
-    validExecutor: function() {
+    validExecutor() {
       return this.newAccount.ExecutorId && this.validName;
     },
-    validRealAccount: function() {
+    validRealAccount() {
       return (
         this.validExecutor && this.validName && this.newAccount.RealAccount
       );
     },
-    validBalance: function() {
+    validBalance() {
       return (
         this.validExecutor &&
         this.validName &&
@@ -453,13 +459,21 @@ export default (Vue as VueConstructor<any>).extend({
     },
   },
   methods: {
-    deleteVirtualAccount: (accountId) => {
+    deleteVirtualAccount(accountId) {
       Vue.$log.debug(`Delete account: ${accountId}`);
     },
-    createVirtualAccount: () => {},
+    createVirtualAccount() {
+      var today = new Date();
+      var milliseconds = today.getMilliseconds();
+      this.newAccount.Id = milliseconds;
+      this.vaccounts.push(Object.assign({}, this.newAccount));
+    },
+    GetSideColor(side: string) {
+      return side === 'buy' ? 'green' : 'red';
+    },
   },
   mounted() {
-    this.setAccounts();
+    //this.setAccounts();
   },
 });
 </script>
