@@ -3,6 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { IMainState, ILoginPayload, IAccount } from './types';
 import terminal from './terminal';
 import scripts from './scripts';
+import accounts from './accounts';
 import jwt_decode from 'jwt-decode';
 
 Vue.use(Vuex);
@@ -16,18 +17,18 @@ const options: StoreOptions<IMainState> = {
     errors: [],
     userId: '',
     // Accounts
-    accounts: [],
+    vaccounts: [],
   },
 
   // Getters
   getters: {
-    accounts: (state) => {
-      return state.accounts.map((acc) => {
-        return {
-          value: acc.id,
-          text: acc.name };
-      });
-    },
+    // vaccounts: (state) => {
+    //   return state.vaccounts.map((acc) => {
+    //     return {
+    //       value: acc.id,
+    //       text: acc.name };
+    //   });
+    // },
 
     lastError: (state) => {
       return state.errors.length > 0 ? state.errors[state.errors.length - 1] : '';
@@ -52,9 +53,9 @@ const options: StoreOptions<IMainState> = {
       state.errors.push(error);
     },
 
-    SetAccounts(state, accounts: IAccount[]) {
-      state.accounts = accounts;
-    },
+    // SetAccounts(state, vaccounts: IAccount[]) {
+    //   state.vaccounts = vaccounts;
+    // },
   },
 
   // Actions
@@ -128,19 +129,20 @@ const options: StoreOptions<IMainState> = {
       Vue.$cf.Disconnect();
     },
     // Request user virtual accounts
-    async GetAccounts({commit}) {
-      try {
-        const data = await Vue.$cf.RPC({ method: 'GetAccounts' });
-        commit('SetAccounts', data);
-      } catch (error) {
-        commit('SetError', error);
-      }
-    },
+    // async GetAccounts({commit}) {
+    //   try {
+    //     const vaccounts = await Vue.$cf.RPC({ method: 'GetVAccounts' });
+    //     commit('SetAccounts', vaccounts);
+    //   } catch (error) {
+    //     commit('SetError', error);
+    //   }
+    // },
   },
 
   modules: {
     terminal: terminal,
     scripts:  scripts,
+    accounts: accounts,
   },
 };
 
