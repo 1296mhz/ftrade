@@ -70,6 +70,69 @@
       <!-- Test result -->
       <v-col>
         <v-card>
+          <v-container>
+
+            <!-- Instruments -->
+<!--            
+            <v-row dense>Instruments</v-row>
+            <v-divider></v-divider>
+            <v-row dense>
+              <v-col cols="7">
+              <v-data-table :headers="instrumentsHeaders" :items="instruments" item-key="ticker" dense height="150" fixed-header disable-pagination hide-default-footer hide-default-header>
+                  <template v-slot:item.action="{ item }">
+                  <v-icon small @click="">cancel</v-icon>
+                </template>
+              </v-data-table>
+              </v-col>
+
+              <v-col cols="5">
+                <v-text-field v-model="scriptName" label="Ticker" dense></v-text-field>
+                <v-text-field v-model="scriptName" label="Account" dense></v-text-field>
+                <v-btn color="success" @click="" small>Add Instrument</v-btn>
+              </v-col>
+            </v-row>
+            <v-divider></v-divider>
+-->
+
+
+
+            <v-form>
+              <v-row dense>
+                <v-combobox v-model="select" :items="items" label="Instruments" multiple deletable-chips small-chips></v-combobox>              
+              </v-row>
+
+              <v-row dense>
+                <v-col cols="4">
+                  <v-menu v-model="beginMenu" close-on-content-click="false" min-width="290px" offset-y>
+                    <template v-slot:activator="{ on }">
+                      <v-text-field v-model="begin" label="Begin" readonly v-on="on" dense></v-text-field>
+                    </template>
+                    <v-date-picker v-model="begin" @input="beginMenu = false"></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="4">
+                  <v-menu v-model="endMenu" close-on-content-click="false" min-width="290px" offset-y>
+                    <template v-slot:activator="{ on }">
+                      <v-text-field v-model="end" label="End" readonly v-on="on" dense></v-text-field>
+                    </template>
+                    <v-date-picker v-model="end" @input="endMenu = false"></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="4">
+                  <v-select :items="intervals" v-model="interval" label="Interval" dense></v-select>
+                </v-col>
+              </v-row>
+
+
+
+              <v-row justify="end" dense>
+                <v-btn color="success" @click="UpdateScript" small>Run Test</v-btn>
+              </v-row>
+            </v-form>
+
+
+
+          </v-container>
         </v-card>
       </v-col>
 
@@ -91,6 +154,30 @@ Vue.use(HighchartsVue);
 export default Vue.extend({
   data() {
     return {
+      begin: new Date().toISOString().substr(0, 10),
+      end:   new Date().toISOString().substr(0, 10),
+      beginMenu: false,
+      endMenu:   false,
+      intervals: [{text: 'Minute', value: 60}, {text: 'Hour', value: 3600}, {text: 'Day', value: 86400}],
+      interval: 60,
+
+      instrumentsHeaders: [
+        {text: 'Ticker', value: 'ticker'},
+        {text: 'Account', value: 'account'},
+        {text: 'Action', value: 'action'},
+      ],
+
+      instruments: [
+        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+      ],
+
     };
   },
 
