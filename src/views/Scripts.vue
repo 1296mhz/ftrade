@@ -98,7 +98,7 @@
 
             <v-form>
               <v-row dense>
-                <v-combobox v-model="select" :items="items" label="Instruments" multiple deletable-chips small-chips></v-combobox>              
+                <v-combobox v-model="select" :items="instruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>              
               </v-row>
 
               <v-row dense>
@@ -129,6 +129,27 @@
                 <v-btn color="success" @click="UpdateScript" small>Run Test</v-btn>
               </v-row>
             </v-form>
+
+              <v-row dense>
+                <v-tabs height="45">
+                  <v-tab>Logs</v-tab>
+                  <v-tab>Trades</v-tab>
+
+                  <!-- Logs -->
+                  <v-tab-item transition="none" reverse-transition="none">
+                  </v-tab-item>
+
+                  <!-- Trades -->
+                  <v-tab-item transition="none" reverse-transition="none">
+                    <v-data-table :headers="tradesHeaders" :items="trades" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
+                      <template v-slot:item.side="{item: {side}}">
+                        <v-chip :color="GetSideColor(side)" label x-small outlined>{{side}}</v-chip>
+                      </template>
+                    </v-data-table>
+                  </v-tab-item>
+
+                </v-tabs>
+              </v-row>
 
 
 
@@ -167,15 +188,15 @@ export default Vue.extend({
         {text: 'Action', value: 'action'},
       ],
 
-      instruments: [
-        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
-        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
-        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
-        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
-        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
-        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
-        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
-        {ticker: 'RTS.FORTS.H2020', account: 'Virtual Account 1'},
+      instruments: ['RTS.FORTS.H2020', 'MXI.FORTS.H2020', 'Si.FORTS.H2020'],
+
+      // Trades table
+      tradesHeaders: [
+        {text: 'Time', value: 'time'},
+        {text: 'Ticker', value: 'ticker'},
+        {text: 'Side', value: 'side'},
+        {text: 'Price', value: 'price'},
+        {text: 'Quantity', value: 'quantity'},
       ],
 
     };
