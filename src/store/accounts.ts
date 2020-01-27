@@ -75,8 +75,25 @@ const accounts: Module<IAccountsState, IMainState> = {
         throw error;
       }
     },
-    CreateVAccount() {},
-    DeleteVAccount() {},
+    async CreateVAccount({commit, dispatch}, newVAccount: any) {
+      console.log(newVAccount)
+      try {
+        await Vue.$cf.RPC({ method: 'CreateVAccount', params: newVAccount });
+        await dispatch('GetVAccounts');
+      } catch (error) {
+        commit('SetError', error);
+        throw error;
+      }
+    },
+    async DeleteVAccount({commit, dispatch}, accountId: string) {
+      try {
+        await Vue.$cf.RPC({ method: 'DeleteVAccount', params: { id: accountId } });
+        await dispatch('GetVAccounts');
+      } catch (error) {
+        commit('SetError', error);
+        throw error;
+      }
+    },
     async GetVAccountOrders({commit}) {
       try {
         const orders = await Vue.$cf.RPC({ method: 'GetVAccountOrders' });

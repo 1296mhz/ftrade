@@ -23,8 +23,8 @@
                   single-select
                   disable-sort
                 >
-                  <template v-slot:item.actions="{ index }">
-                    <v-icon small @click="vaccounts.splice(index, 1)">cancel</v-icon>
+                  <template v-slot:item.actions="{ item }">
+                    <v-icon small @click="DeleteVirtualAccount(item.id)">cancel</v-icon>
                   </template>
                 </v-data-table>
               </v-container>
@@ -58,21 +58,21 @@
                       class="mx-2"
                       :disabled="!validExecutor"
                     ></v-select>
-                    <v-text-field
+                    <!-- <v-text-field
                       v-model="newAccount.Balance"
                       label="Balance"
                       required
                       class="mx-2"
                       :disabled="!validRealAccount"
-                    ></v-text-field>
+                    ></v-text-field>-->
                   </v-row>
                   <v-row align="center" justify="space-between">
                     <v-btn
                       class="ma-2"
                       small
                       color="success"
-                      :disabled="!validBalance"
-                      @click="createVirtualAccount()"
+                      :disabled="!validRealAccount"
+                      @click="CreateVirtualAccount()"
                     >Create</v-btn>
                   </v-row>
                 </v-form>
@@ -204,6 +204,7 @@ import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
 import { ITrade, IRAccount, IVAccount } from '@/store/accounts';
+import uuid from 'uuid/v4';
 
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
@@ -220,7 +221,6 @@ export default (Vue as VueConstructor<any>).extend({
         { title: 'Profile', value: '10' },
         { title: 'Tax', value: '1' },
       ],
-      //ExecutorsIds: ['Dummy', 'Exante', 'BCS'],
       validateAccount: false,
       filteredRaccounts: [],
       newAccount: {
@@ -228,7 +228,7 @@ export default (Vue as VueConstructor<any>).extend({
         ExecutorId: '',
         RealAccount: '',
         RealAccountId: '',
-        Balance: 0,
+        //Balance: 0,
       },
       reports_header: [
         {
@@ -391,11 +391,9 @@ export default (Vue as VueConstructor<any>).extend({
     },
     validBalance() {
       return (
-        this.validExecutor &&
-        this.validName &&
-        this.validRealAccount &&
-        this.newAccount.Balance &&
-        this.newAccount.Balance >= 1
+        this.validExecutor && this.validName && this.validRealAccount
+        // this.newAccount.Balance &&
+        // this.newAccount.Balance >= 1
       );
     },
     vaccounts() {
@@ -419,7 +417,7 @@ export default (Vue as VueConstructor<any>).extend({
         return trade;
       });
     },
-        // Selected symbol
+    // Selected symbol
     selectedVAccounts() {
       return this.selectedVaccounts.length > 0 ? this.selectedVaccounts[0] : {};
     },
@@ -428,17 +426,24 @@ export default (Vue as VueConstructor<any>).extend({
     async SelectVAccount(vaccount: any) {
       this.selectedVaccounts = [];
       this.selectedVaccounts.push(vaccount);
-      //this.$store.dispatch('SetVAccountId', 'id0001');
-      await this.$store.dispatch('GetVAccountTrades', vaccount.id);
+      this.chartOptions.title.text = this.selectedVAccounts.name;
+      await this.$store.dispatch(
+        'GetVAccountTrades',
+        this.selectedVAccounts.id
+      );
     },
-    deleteVirtualAccount(accountId) {
+    async DeleteVirtualAccount(accountId: string) {
       Vue.$log.debug(`Delete account: ${accountId}`);
+      await this.$store.dispatch('DeleteVAccount', accountId);
     },
-    createVirtualAccount() {
-      var today = new Date();
-      var milliseconds = today.getMilliseconds();
-      this.newAccount.Id = milliseconds;
-      // this.vaccounts.push(Object.assign({}, this.newAccount));
+    async CreateVirtualAccount() {
+      const acc: IVAccount = {
+        id: uuid(),
+        name: this.newAccount.Name,
+        executor: this.newAccount.ExecutorId,
+        raccount: this.newAccount.RealAccountId,
+      };
+      await this.$store.dispatch('CreateVAccount', acc);
     },
     GetSideColor(side: string) {
       return side === 'buy' ? 'green' : 'red';
@@ -464,8 +469,6 @@ export default (Vue as VueConstructor<any>).extend({
   async created() {
     await this.$store.dispatch('GetVAccounts');
     await this.$store.dispatch('GetRAccounts');
-    //await this.$store.dispatch('GetVAccountTrades', 'id0001');
-    //await this.$store.dispatch('GetVAccountOrders');
   },
 });
 </script>
