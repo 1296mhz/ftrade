@@ -5,7 +5,7 @@ import { IMainState } from './types';
 export interface IAccountsState {
   vaccounts: IVAccount[];
   raccounts: IRAccount[];
-  trades: ITrades[];
+  trades: ITrade[];
   vaccountId: string;
 }
 
