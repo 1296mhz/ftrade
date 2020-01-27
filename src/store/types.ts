@@ -4,6 +4,7 @@ export interface IMainState {
   errors: string[];
   userId: string;
   // accounts: IAccount[];
+  vaccounts: any[];
 }
 
 // Login action payload

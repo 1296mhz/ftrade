@@ -16,7 +16,7 @@ const options: StoreOptions<IMainState> = {
     connected: false,
     errors: [],
     userId: '',
-    // Accounts
+    // Virtual Accounts
     vaccounts: [],
   },
 
