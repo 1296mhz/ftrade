@@ -8,9 +8,10 @@
               <v-container fluid>
                 <v-data-table
                   :headers="account_header"
+                  v-model="selectedVaccounts"
                   :items="vaccounts"
                   :items-per-page="5"
-                  item-key="Id"
+                  item-key="id"
                   class="elevation-0"
                   height="300"
                   fixed-header
@@ -18,7 +19,9 @@
                   hide-default-footer
                   dense
                   loading-text="Loading... Please wait"
-                  @click:row="selectVAccount"
+                  @click:row="SelectVAccount"
+                  single-select
+                  disable-sort
                 >
                   <template v-slot:item.actions="{ index }">
                     <v-icon small @click="vaccounts.splice(index, 1)">cancel</v-icon>
@@ -212,6 +215,7 @@ export default (Vue as VueConstructor<any>).extend({
       endDate: new Date().toISOString().substr(0, 10),
       beginDateMenu: false,
       endDateMenu: false,
+      selectedVaccounts: [],
       reports: [
         { title: 'Profile', value: '10' },
         { title: 'Tax', value: '1' },
@@ -415,10 +419,15 @@ export default (Vue as VueConstructor<any>).extend({
         return trade;
       });
     },
+        // Selected symbol
+    selectedVAccounts() {
+      return this.selectedVaccounts.length > 0 ? this.selectedVaccounts[0] : {};
+    },
   },
   methods: {
-    async selectVAccount(vaccount: any) {
-      console.log(vaccount);
+    async SelectVAccount(vaccount: any) {
+      this.selectedVaccounts = [];
+      this.selectedVaccounts.push(vaccount);
       //this.$store.dispatch('SetVAccountId', 'id0001');
       await this.$store.dispatch('GetVAccountTrades', vaccount.id);
     },
