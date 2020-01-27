@@ -45,6 +45,30 @@ const scripts: Module<IScriptsState, IMainState> = {
     categories: [],
   },
 
+  // Getters
+  getters: {
+    // Find unique category name
+    newCategoryName: (state) => {
+      let name: string;
+      let idx = 0;
+      do {
+        ++idx;
+        name = 'Category ' + idx.toString();
+      } while (state.categories.some((cat) => cat.name === name));
+      return name;
+    },
+    // Find unique script name
+    newScriptName: (state) => {
+      let name: string;
+      let idx = 0;
+      do {
+        ++idx;
+        name = 'Script ' + idx.toString();
+      } while (state.categories.some((cat) => cat.scripts.some((s) => s.name === name)));
+      return name;
+    },
+  },
+
   // Mutations
   mutations:  {
 
@@ -138,8 +162,9 @@ const scripts: Module<IScriptsState, IMainState> = {
     },
 
     // Create user script
-    async CreateScript({state, commit}) {
+    async CreateScript({state, commit}, script: IScript) {
       try {
+        /*
         const categoryId = state.category.id ? state.category.id : state.script.category;
         const cat =  state.categories.find((cat) => cat.id === categoryId);
         if (!cat) { return; }
@@ -153,13 +178,9 @@ const scripts: Module<IScriptsState, IMainState> = {
             name = 'Script ' + idx.toString();
           }
         });
+        */
 
-        await Vue.$cf.RPC({ method: 'CreateScript', params: {
-          id: uuid(),
-          name: name,
-          category: categoryId,
-          source: '',
-        }});
+        await Vue.$cf.RPC({ method: 'CreateScript', params: script });
       } catch (error) {
         commit('SetError', error);
         throw error;

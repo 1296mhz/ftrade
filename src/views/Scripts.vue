@@ -98,20 +98,20 @@
 
             <v-form>
               <v-row dense>
-                <v-combobox v-model="select" :items="instruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>              
+                <v-combobox v-model="selectedInstruments" :items="instruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>              
               </v-row>
 
               <v-row dense>
                 <v-col cols="4">
-                  <v-menu v-model="beginMenu" close-on-content-click="false" min-width="290px" offset-y>
+                  <v-menu v-model="beginMenu" :close-on-content-click="true" min-width="290px" offset-y>
                     <template v-slot:activator="{ on }">
-                      <v-text-field v-model="begin" label="Begin" readonly v-on="on" dense></v-text-field>
+                      <v-text-field v-model="testBegin" label="Begin" readonly v-on="on" dense></v-text-field>
                     </template>
-                    <v-date-picker v-model="begin" @input="beginMenu = false"></v-date-picker>
+                    <v-date-picker v-model="testBegin" @input="beginMenu = false"></v-date-picker>
                   </v-menu>
                 </v-col>
                 <v-col cols="4">
-                  <v-menu v-model="endMenu" close-on-content-click="false" min-width="290px" offset-y>
+                  <v-menu v-model="endMenu" :close-on-content-click="true" min-width="290px" offset-y>
                     <template v-slot:activator="{ on }">
                       <v-text-field v-model="end" label="End" readonly v-on="on" dense></v-text-field>
                     </template>
@@ -168,6 +168,7 @@ import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
 import { IOrder, ITrade } from '@/store/types';
+import uuid from 'uuid/v4';
 
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
@@ -190,6 +191,8 @@ export default Vue.extend({
 
       instruments: ['RTS.FORTS.H2020', 'MXI.FORTS.H2020', 'Si.FORTS.H2020'],
 
+      selectedInstruments: [],
+
       // Trades table
       tradesHeaders: [
         {text: 'Time', value: 'time'},
@@ -198,6 +201,7 @@ export default Vue.extend({
         {text: 'Price', value: 'price'},
         {text: 'Quantity', value: 'quantity'},
       ],
+      trades: [],
 
     };
   },
@@ -229,13 +233,21 @@ export default Vue.extend({
     categoryId() {
       return this.$store.state.scripts.category.id;
     },
+
+    // Test data
+    testBegin: {
+      get() { console.log(this.$store.state.tests.test);
+        return new Date(this.$store.state.tests.test.begin).toISOString().substr(0, 10); },
+      // set(value) { this.$store.commit('SetScriptName', value); },
+    },
+
   },
 
 
   methods: {
     // Select current script
     async SelectScript(selected: string[]) {
-      console.log(selected);
+      // console.log(selected);
       if (selected.length > 0) {
         const id = selected[0];
         const cat = this.categories.find((cat) => cat.id === id);
@@ -243,13 +255,36 @@ export default Vue.extend({
           this.$store.commit('SetCategory', {id: cat.id, name: cat.name});
         } else {
           await this.$store.dispatch('GetScript', id);
+          await this.$store.dispatch('GetTest', id);
         }
       }
     },
 
     // Create new script
-    CreateScript() {
-      this.$store.dispatch('CreateScript');
+    async CreateScript() {
+      // Script
+      const script = {
+        id: uuid(),
+        name: this.$store.getters.newScriptName,
+        category: this.categoryId ? this.categoryId : this.scriptCategory,
+        source: '',
+      };
+      await this.$store.dispatch('CreateScript', script);
+      // Test
+      const test = {
+        id: script.id,
+        name: script.name,
+        parent: script.id,
+        begin: 1,
+        end: 1,
+        interval: 60,
+        strategies: [{
+          id: uuid(),
+          name: script.name,
+          source: '',
+        }],
+      };
+      await this.$store.dispatch('CreateTest', test);
     },
 
     UpdateScript() {

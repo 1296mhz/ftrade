@@ -3,6 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { IMainState, ILoginPayload, IAccount } from './types';
 import terminal from './terminal';
 import scripts from './scripts';
+import tests from './tests';
 import jwt_decode from 'jwt-decode';
 
 Vue.use(Vuex);
@@ -141,6 +142,7 @@ const options: StoreOptions<IMainState> = {
   modules: {
     terminal: terminal,
     scripts:  scripts,
+    tests:    tests,
   },
 };
 
