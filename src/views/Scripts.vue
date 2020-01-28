@@ -113,13 +113,13 @@
                 <v-col cols="4">
                   <v-menu v-model="endMenu" :close-on-content-click="true" min-width="290px" offset-y>
                     <template v-slot:activator="{ on }">
-                      <v-text-field v-model="end" label="End" readonly v-on="on" dense></v-text-field>
+                      <v-text-field v-model="testEnd" label="End" readonly v-on="on" dense></v-text-field>
                     </template>
-                    <v-date-picker v-model="end" @input="endMenu = false"></v-date-picker>
+                    <v-date-picker v-model="testEnd" @input="endMenu = false"></v-date-picker>
                   </v-menu>
                 </v-col>
                 <v-col cols="4">
-                  <v-select :items="intervals" v-model="interval" label="Interval" dense></v-select>
+                  <v-select :items="intervals" v-model="testInterval" label="Interval" dense></v-select>
                 </v-col>
               </v-row>
 
@@ -176,12 +176,10 @@ Vue.use(HighchartsVue);
 export default Vue.extend({
   data() {
     return {
-      begin: new Date().toISOString().substr(0, 10),
-      end:   new Date().toISOString().substr(0, 10),
       beginMenu: false,
       endMenu:   false,
+
       intervals: [{text: 'Minute', value: 60}, {text: 'Hour', value: 3600}, {text: 'Day', value: 86400}],
-      interval: 60,
 
       instrumentsHeaders: [
         {text: 'Ticker', value: 'ticker'},
@@ -236,11 +234,26 @@ export default Vue.extend({
 
     // Test data
     testBegin: {
-      get() { console.log(this.$store.state.tests.test);
-        return new Date(this.$store.state.tests.test.begin).toISOString().substr(0, 10); },
-      // set(value) { this.$store.commit('SetScriptName', value); },
+      get() { return new Date(this.$store.state.tests.test.begin).toISOString().substr(0, 10); },
+      set(value: string) {
+        this.$store.commit('SetTestBegin', new Date(value).getTime());
+        this.$store.dispatch('UpdateTest');
+      },
     },
-
+    testEnd: {
+      get() { return new Date(this.$store.state.tests.test.end).toISOString().substr(0, 10); },
+      set(value: string) {
+        this.$store.commit('SetTestEnd', new Date(value).getTime());
+        this.$store.dispatch('UpdateTest');
+      },
+    },
+    testInterval: {
+      get() { return this.$store.state.tests.test.interval; },
+      set(value) {
+        this.$store.commit('SetTestInterval', value);
+        this.$store.dispatch('UpdateTest');
+      },
+    },
   },
 
 
@@ -275,8 +288,8 @@ export default Vue.extend({
         id: script.id,
         name: script.name,
         parent: script.id,
-        begin: 1,
-        end: 1,
+        begin: Date.now() - 2592000000, // 1 Month
+        end: Date.now(),
         interval: 60,
         strategies: [{
           id: uuid(),

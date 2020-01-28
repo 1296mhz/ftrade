@@ -54,6 +54,11 @@ const tests: Module<ITestsState, IMainState> = {
       state.test = test;
     },
 
+    SetTestBegin(state, begin: number)        { state.test.begin = begin; },
+    SetTestEnd(state, end: number)            { state.test.end = end; },
+    SetTestInterval(state, interval: number)  { state.test.interval = interval; },
+
+
   },
 
   // Actions
@@ -82,16 +87,12 @@ const tests: Module<ITestsState, IMainState> = {
 
     // Update user script
     async UpdateTest({state, commit}) {
-      /*
       try {
-        if (state.script.id) {
-          await Vue.$cf.RPC({method: 'UpdateScript', params: state.script});
-        }
+        await Vue.$cf.RPC({method: 'UpdateTest', params: state.test});
       } catch (error) {
         commit('SetError', error);
         throw error;
       }
-      */
     },
 
 
