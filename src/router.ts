@@ -60,7 +60,7 @@ router.beforeEach( async (to, from, next) => {
     // Try connect
     try {
       await store.dispatch('Connect');
-      await store.dispatch('GetAccounts');
+      await store.dispatch('GetVAccounts');
     } catch (err) {
       // Goto login page
       return next('/login');

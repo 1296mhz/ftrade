@@ -3,7 +3,8 @@ export interface IMainState {
   connected: boolean;
   errors: string[];
   userId: string;
-  accounts: IAccount[];
+  // accounts: IAccount[];
+  // vaccounts: any[];
 }
 
 // Login action payload

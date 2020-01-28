@@ -71,7 +71,6 @@ const scripts: Module<IScriptsState, IMainState> = {
 
   // Mutations
   mutations:  {
-
     // Update categories tree
     SetCategories(state, categories: ICategory[]) {
       state.categories = categories;

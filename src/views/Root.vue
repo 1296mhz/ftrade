@@ -53,7 +53,7 @@
       <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-col cols="5" xs="6" sm="6" md="3" lg="2" xl="2">
-        <v-select :items="accounts" label="Select Account" dense single-line @change="SelectAccount"></v-select>
+        <v-select :items="vaccounts" label="Select Account" dense single-line @change="SelectAccount"></v-select>
       </v-col>
       <v-btn icon @click="exit()">
         <v-icon>exit_to_app</v-icon>
@@ -94,6 +94,15 @@ export default Vue.extend({
       'lastError',
       'errorsCount',
     ]),
+
+    // Virtual accounts
+    vaccounts() {
+      return this.$store.state.accounts.vaccounts.map((acc) => {
+        return {
+          value: acc.id,
+          text: acc.name };
+      });
+    },
   },
 
   watch: {

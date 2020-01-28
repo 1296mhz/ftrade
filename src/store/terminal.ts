@@ -166,7 +166,7 @@ const terminal: Module<ITerminalState, IMainState> = {
     // Request account orders
     async GetAccountOrders({commit}, account: string) {
       try {
-        const data = await Vue.$cf.RPC({ method: 'GetAccountOrders', params: { account: account } });
+        const data = await Vue.$cf.RPC({ method: 'GetVAccountOrders', params: { account: account } });
         commit('SetAccountOrders', data);
       } catch (error) {
         commit('SetError', error);
@@ -194,7 +194,7 @@ const terminal: Module<ITerminalState, IMainState> = {
     // Request account trades
     async GetAccountTrades({commit}, account: string) {
       try {
-        const data = await Vue.$cf.RPC({ method: 'GetAccountTrades', params: { account: account } });
+        const data = await Vue.$cf.RPC({ method: 'GetVAccountTrades', params: { account: account } });
         commit('SetAccountTrades', data);
       } catch (error) {
         commit('SetError', error);

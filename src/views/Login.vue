@@ -51,7 +51,7 @@ export default Vue.extend({
           username: this.username,
         });
         await this.$store.dispatch('Connect');
-        await this.$store.dispatch('GetAccounts');
+        await this.$store.dispatch('GetVAccounts');
 
         this.$router.push('/terminal');
       } catch {/**/}
