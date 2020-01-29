@@ -1,27 +1,12 @@
 import Vue from 'vue';
 import { Module } from 'vuex';
-import { IMainState, ITrade } from './types';
+import { IMainState, ITrade, IVAccount, IRAccount } from './types';
 
 export interface IAccountsState {
   vaccounts: IVAccount[];
   raccounts: IRAccount[];
   trades: ITrade[];
   vaccountId: string;
-}
-
-// Virtual account
-export interface IVAccount {
-  id: string;
-  name: string;
-  executor: string;
-  raccount: string;
-}
-
-// Real account
-export interface IRAccount {
-  id: string;
-  name: string;
-  executor: string;
 }
 
 const accounts: Module<IAccountsState, IMainState> = {

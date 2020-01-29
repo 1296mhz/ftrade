@@ -3,8 +3,6 @@ export interface IMainState {
   connected: boolean;
   errors: string[];
   userId: string;
-  // accounts: IAccount[];
-  // vaccounts: any[];
 }
 
 // Login action payload
@@ -13,18 +11,19 @@ export interface ILoginPayload {
   password: string;
 }
 
-// User account
-export interface IAccount {
+// Virtual account
+export interface IVAccount {
   id: string;
   name: string;
+  executor: string;
+  raccount: string;
 }
 
-// Terminal state interface
-export interface ITerminalState {
-  symbols: ISymbol[];
-  account: string;
-  orders: IOrder[];
-  trades: ITrade[];
+// Real account
+export interface IRAccount {
+  id: string;
+  name: string;
+  executor: string;
 }
 
 // Symbol

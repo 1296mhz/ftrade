@@ -90,14 +90,13 @@ export default Vue.extend({
 
   computed: {
     ...mapGetters([
-      'accounts',
       'lastError',
       'errorsCount',
     ]),
 
     // Virtual accounts
     vaccounts() {
-      return this.$store.state.accounts.vaccounts.map((acc) => {
+      return this.$store.state.terminal.vaccounts.map((acc) => {
         return {
           value: acc.id,
           text: acc.name };
@@ -113,7 +112,7 @@ export default Vue.extend({
 
   methods: {
     SelectAccount(account: string) {
-      this.$store.dispatch('SetAccount', account);
+      this.$store.dispatch('terminal/SetVAccount', account);
     },
     exit() {
        this.$store.dispatch('Logout');

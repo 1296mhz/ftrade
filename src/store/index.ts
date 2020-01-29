@@ -17,20 +17,10 @@ const options: StoreOptions<IMainState> = {
     connected: false,
     errors: [],
     userId: '',
-    // Accounts
-    // accounts: [],
   },
 
   // Getters
   getters: {
-    /*accounts: (state) => {
-      return state.accounts.map((acc) => {
-        return {
-          value: acc.id,
-          text: acc.name };
-      });
-    },*/
-
     lastError: (state) => {
       return state.errors.length > 0 ? state.errors[state.errors.length - 1] : '';
     },
@@ -53,10 +43,6 @@ const options: StoreOptions<IMainState> = {
     SetError(state, error: string) {
       state.errors.push(error);
     },
-
-    /*SetAccounts(state, accounts: IAccount[]) {
-      state.accounts = accounts;
-    },*/
   },
 
   // Actions
@@ -129,15 +115,6 @@ const options: StoreOptions<IMainState> = {
       commit('SetConnected', false);
       Vue.$cf.Disconnect();
     },
-    // Request user virtual accounts
-    /*async GetAccounts({commit}) {
-      try {
-        const data = await Vue.$cf.RPC({ method: 'GetAccounts' });
-        commit('SetAccounts', data);
-      } catch (error) {
-        commit('SetError', error);
-      }
-    },*/
   },
 
   modules: {

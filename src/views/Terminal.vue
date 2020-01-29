@@ -301,7 +301,7 @@ export default Vue.extend({
       this.selectedSymbols.push(symbol);
 
       // Update chart
-      const data = await this.$store.dispatch('GetOhlc', {
+      const data = await this.$store.dispatch('terminal/GetOhlc', {
         ticker: symbol.ticker,
         interval: 86400,
         begin: 0,
@@ -317,30 +317,30 @@ export default Vue.extend({
 
     // Create symbol in symbol table
     CreateSymbol(ticker: string) {
-      this.$store.dispatch('CreateSymbol', ticker);
+      this.$store.dispatch('terminal/CreateSymbol', ticker);
       this.ticker = '';
     },
 
     // Delete symbol from symbol table
     DeleteSymbol(ticker: string) {
-      this.$store.dispatch('DeleteSymbol', ticker);
+      this.$store.dispatch('terminal/DeleteSymbol', ticker);
     },
 
     // Can send order?
     IsSendAvailable(): boolean {
-      return this.newOrder.valid && this.$store.state.terminal.account !== '' && this.selectedSymbols.length > 0;
+      return this.newOrder.valid && this.$store.state.terminal.vaccount !== '' && this.selectedSymbols.length > 0;
     },
 
     // Send order to router with selected account
     SendOrder(side: string) {
       const order = {
-        account: this.$store.state.terminal.account,
+        account: this.$store.state.terminal.vaccount,
         side: side,
         price: this.newOrder.price,
         volume: this.newOrder.volume,
         ticker: this.selectedSymbol.ticker,
       };
-      this.$store.dispatch('SendOrder', order);
+      this.$store.dispatch('terminal/SendOrder', order);
     },
 
     // Test is order cancelable
@@ -351,10 +351,10 @@ export default Vue.extend({
     // Cancel order
     CancelOrder(order: string) {
       const payload = {
-        account: this.$store.state.terminal.account,
+        account: this.$store.state.terminal.vaccount,
         order: order,
       };
-      this.$store.dispatch('CancelOrder', payload);
+      this.$store.dispatch('terminal/CancelOrder', payload);
     },
 
     // Order state color
@@ -377,18 +377,19 @@ export default Vue.extend({
 
     // Test current account
     IsAccountSelected() {
-        return this.$store.state.terminal.account !== '';
+        return this.$store.state.terminal.vaccount !== '';
     },
   },
 
   // Hooks
   async created() {
-    await this.$store.dispatch('GetSymbols');
-    await this.$store.dispatch('SubscribeSymbols');
+    await this.$store.dispatch('terminal/GetVAccounts');
+    await this.$store.dispatch('terminal/GetSymbols');
+    await this.$store.dispatch('terminal/SubscribeSymbols');
   },
 
   beforeDestroy() {
-    this.$store.dispatch('UnsubscribeSymbols');
+    this.$store.dispatch('terminal/UnsubscribeSymbols');
   },
 
 });

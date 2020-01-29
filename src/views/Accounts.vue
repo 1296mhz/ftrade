@@ -203,8 +203,7 @@ import { mapGetters, mapActions } from 'vuex';
 import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
-import { IRAccount, IVAccount } from '@/store/accounts';
-import { ITrade } from '@/store/types';
+import { ITrade, IRAccount, IVAccount } from '@/store/types';
 import uuid from 'uuid/v4';
 
 stockInit(Highcharts);

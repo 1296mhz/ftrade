@@ -1,13 +1,26 @@
 import Vue from 'vue';
 import { Module } from 'vuex';
-import { IMainState, ITerminalState, ISymbol, IOrder, ITrade, ICancelPayload, IOhlcPayload } from './types';
+import { IMainState, IVAccount, ISymbol, IOrder, ITrade, ICancelPayload, IOhlcPayload } from './types';
+
+// Terminal state interface
+interface ITerminalState {
+  vaccounts: IVAccount[];
+  vaccount: string;
+  symbols: ISymbol[];
+  orders: IOrder[];
+  trades: ITrade[];
+}
 
 const terminal: Module<ITerminalState, IMainState> = {
 
+  namespaced: true,
+
   // State
   state: {
+    vaccounts: [],
+    vaccount: '',
+
     symbols: [],
-    account: '',
     orders: [],
     trades: [],
   },
@@ -15,9 +28,14 @@ const terminal: Module<ITerminalState, IMainState> = {
   // Mutations
   mutations:  {
 
+    // Set virtual accounts
+    SetVAccounts(state, accounts: IVAccount[]) {
+      state.vaccounts = accounts;
+    },
+
     // Set current account
-    SetAccount(state, account: string) {
-      state.account = account;
+    SetVAccount(state, account: string) {
+      state.vaccount = account;
     },
 
     // Update symbols list
@@ -39,7 +57,7 @@ const terminal: Module<ITerminalState, IMainState> = {
     },
 
     // Update orders list
-    SetAccountOrders(state, orders: IOrder[]) {
+    SetOrders(state, orders: IOrder[]) {
       state.orders = orders;
     },
 
@@ -56,7 +74,7 @@ const terminal: Module<ITerminalState, IMainState> = {
     },
 
     // Update trades list
-    SetAccountTrades(state, trades: ITrade[]) {
+    SetTrades(state, trades: ITrade[]) {
       state.trades = trades;
     },
 
@@ -76,7 +94,7 @@ const terminal: Module<ITerminalState, IMainState> = {
         const data = await Vue.$cf.RPC({ method: 'GetSymbols' });
         commit('SetSymbols', data);
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -91,7 +109,7 @@ const terminal: Module<ITerminalState, IMainState> = {
           commit('SetSymbol', data);
         });
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -103,7 +121,7 @@ const terminal: Module<ITerminalState, IMainState> = {
         // Unsubscribe from updates
         Vue.$cf.Unsubscribe(`symbols:${ticker}`);
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -143,17 +161,27 @@ const terminal: Module<ITerminalState, IMainState> = {
       Vue.$cf.Unsubscribe(`symbols#${rootState.userId}`);
     },
 
+    // Request user virtual accounts
+    async GetVAccounts({commit}) {
+      try {
+        const data = await Vue.$cf.RPC({ method: 'GetVAccounts' });
+        commit('SetVAccounts', data);
+      } catch (error) {
+        commit('SetError', error, {root: true});
+      }
+    },
+
     // Set current account
     // request account orders and trades
     // and subscribe to updates
-    async SetAccount({state, dispatch, commit}, account: string) {
-      if (state.account) {
+    async SetVAccount({state, dispatch, commit}, account: string) {
+      if (state.vaccount) {
         // Unsubscribe from updates
         await dispatch('UnsubscribeAccountOrders');
         await dispatch('UnsubscribeAccountTrades');
       }
 
-      commit('SetAccount', account);
+      commit('SetVAccount', account);
 
       // Orders
       await dispatch('GetAccountOrders', account);
@@ -167,9 +195,9 @@ const terminal: Module<ITerminalState, IMainState> = {
     async GetAccountOrders({commit}, account: string) {
       try {
         const data = await Vue.$cf.RPC({ method: 'GetVAccountOrders', params: { account: account } });
-        commit('SetAccountOrders', data);
+        commit('SetOrders', data);
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -178,7 +206,7 @@ const terminal: Module<ITerminalState, IMainState> = {
     // current account used
     SubscribeAccountOrders({state, commit, rootState}) {
       // Subscribe symbols list update
-      Vue.$cf.Subscribe(`orders:${state.account}#${rootState.userId}`, ({data}) => {
+      Vue.$cf.Subscribe(`orders:${state.vaccount}#${rootState.userId}`, ({data}) => {
         if (data.command === 'update') {
           commit('SetOrder', data.params);
         }
@@ -188,16 +216,16 @@ const terminal: Module<ITerminalState, IMainState> = {
     // Unsubscribe from orders updates
     // current account used
     UnsubscribeAccountOrders({state, rootState}) {
-      Vue.$cf.Unsubscribe(`orders:${state.account}#${rootState.userId}`);
+      Vue.$cf.Unsubscribe(`orders:${state.vaccount}#${rootState.userId}`);
     },
 
     // Request account trades
     async GetAccountTrades({commit}, account: string) {
       try {
         const data = await Vue.$cf.RPC({ method: 'GetVAccountTrades', params: { account: account } });
-        commit('SetAccountTrades', data);
+        commit('SetTrades', data);
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -206,7 +234,7 @@ const terminal: Module<ITerminalState, IMainState> = {
     // current account used
     SubscribeAccountTrades({state, commit, rootState}) {
       // Subscribe symbols list update
-      Vue.$cf.Subscribe(`trades:${state.account}#${rootState.userId}`, ({data}) => {
+      Vue.$cf.Subscribe(`trades:${state.vaccount}#${rootState.userId}`, ({data}) => {
         if (data.command === 'create') {
           commit('CreateTrade', data.params);
         }
@@ -216,7 +244,7 @@ const terminal: Module<ITerminalState, IMainState> = {
     // Unsubscribe from orders updates
     // current account used
     UnsubscribeAccountTrades({state, rootState}) {
-      Vue.$cf.Unsubscribe(`trades:${state.account}#${rootState.userId}`);
+      Vue.$cf.Unsubscribe(`trades:${state.vaccount}#${rootState.userId}`);
     },
 
 
@@ -225,7 +253,7 @@ const terminal: Module<ITerminalState, IMainState> = {
       try {
         await Vue.$cf.RPC({ method: 'SendOrder', params: order });
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -235,7 +263,7 @@ const terminal: Module<ITerminalState, IMainState> = {
       try {
         await Vue.$cf.RPC({ method: 'CancelOrder', params: payload });
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -246,7 +274,7 @@ const terminal: Module<ITerminalState, IMainState> = {
         const data = await Vue.$cf.RPC({ method: 'GetOhlc', params: payload });
         return data;
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         return [];
       }
     },
