@@ -94,7 +94,7 @@ const accounts: Module<IAccountsState, IMainState> = {
       try {
         const raccounts = await Vue.$cf.RPC({ method: 'GetRAccounts' });
         // console.log(raccounts)
-        commit('GetRAccounts', raccounts);
+        commit('SetRAccounts', raccounts);
       } catch (error) {
         commit('SetError', error);
         throw error;
