@@ -473,8 +473,8 @@ export default (Vue as VueConstructor<any>).extend({
     await this.$store.dispatch('accounts/GetRAccounts');
     await this.$store.dispatch('accounts/SubscribeVAccounts');
   },
-  beforeDestroy() {
-    this.$store.dispatch('accounts/UnsubscribeVAccounts');
+  async beforeDestroy() {
+    await this.$store.dispatch('accounts/UnsubscribeVAccounts');
   },
 });
 </script>
