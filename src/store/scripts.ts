@@ -1,13 +1,14 @@
 import Vue from 'vue';
 import uuid from 'uuid/v4';
 import { Module } from 'vuex';
-import { IMainState } from './types';
+import { IMainState, ITest } from './types';
 
 // Scripts state interface
 export interface IScriptsState {
   category: ICategory;
   script: IScript;
   categories: ICategory[];
+  test: ITest;
 }
 
 // Category
@@ -29,20 +30,36 @@ export interface IScript {
 // Scripts storage module
 const scripts: Module<IScriptsState, IMainState> = {
 
+  namespaced: true,
+
   // State
   state: {
+    categories: [],
+
     category: {
       id: '',
       name: '',
       scripts: [],
     },
+
     script: {
       id: '',
       name: '',
       category: '',
       source: '',
     },
-    categories: [],
+
+    test: {
+      id: '',
+      name: '',
+      parent: '',
+      state: '',
+      progress: 0,
+      begin: 0,
+      end: 0,
+      interval: 0,
+      strategies: [],
+    },
   },
 
   // Getters
@@ -122,16 +139,16 @@ const scripts: Module<IScriptsState, IMainState> = {
       state.script = script;
       state.category.id = '';
     },
-    SetScriptName(state, name: string) {
-      state.script.name = name;
-    },
-    SetScriptCategory(state, category: string) {
-      state.script.category = category;
-    },
-    SetScriptSource(state, source: string) {
-      state.script.source = source;
-    },
+    SetScriptName(state, name: string)          { state.script.name = name; },
+    SetScriptCategory(state, category: string)  { state.script.category = category; },
+    SetScriptSource(state, source: string)      { state.script.source = source; },
 
+    // Update current test data
+    SetTest(state, test: ITest)                 { state.test = test; },
+
+    SetTestBegin(state, begin: number)          { state.test.begin = begin; },
+    SetTestEnd(state, end: number)              { state.test.end = end; },
+    SetTestInterval(state, interval: number)    { state.test.interval = interval; },
   },
 
   // Actions
@@ -144,7 +161,7 @@ const scripts: Module<IScriptsState, IMainState> = {
         // data.forEach((cat: ICategory) => cat.id = cat.name);
         commit('SetCategories', data);
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -155,7 +172,7 @@ const scripts: Module<IScriptsState, IMainState> = {
         const data = await Vue.$cf.RPC({method: 'GetScript', params: {id: id}});
         commit('SetScript', data);
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -181,7 +198,7 @@ const scripts: Module<IScriptsState, IMainState> = {
 
         await Vue.$cf.RPC({ method: 'CreateScript', params: script });
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -193,7 +210,7 @@ const scripts: Module<IScriptsState, IMainState> = {
           await Vue.$cf.RPC({ method: 'DeleteScript', params: {id: state.script.id}});
         }
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -205,7 +222,7 @@ const scripts: Module<IScriptsState, IMainState> = {
           await Vue.$cf.RPC({method: 'UpdateScript', params: state.script});
         }
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -213,6 +230,7 @@ const scripts: Module<IScriptsState, IMainState> = {
     // Create script category
     async CreateCategory({state, commit}) {
       try {
+        // TODO use function call
         // Find unique category name
         let name: string;
         let idx = 0;
@@ -226,7 +244,7 @@ const scripts: Module<IScriptsState, IMainState> = {
           name: name,
         }});
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -238,7 +256,7 @@ const scripts: Module<IScriptsState, IMainState> = {
           await Vue.$cf.RPC({ method: 'DeleteCategory', params: {id: state.category.id}});
         }
       } catch (error) {
-        commit('SetError', error);
+        commit('SetError', error, {root: true});
         throw error;
       }
     },
@@ -274,6 +292,36 @@ const scripts: Module<IScriptsState, IMainState> = {
       Vue.$cf.Unsubscribe(`scripts#${rootState.userId}`);
     },
 
+    // Request user test data by id
+    async GetTest({commit}, id: string) {
+      try {
+        const data = await Vue.$cf.RPC({method: 'GetTest', params: {id: id}});
+        commit('SetTest', data);
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Create user test
+    async CreateTest({state, commit}, test: ITest) {
+      try {
+        await Vue.$cf.RPC({ method: 'CreateTest', params: test });
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Update user script
+    async UpdateTest({state, commit}) {
+      try {
+        await Vue.$cf.RPC({method: 'UpdateTest', params: state.test});
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
 
   },
 };

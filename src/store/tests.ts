@@ -1,33 +1,12 @@
 import Vue from 'vue';
 import uuid from 'uuid/v4';
 import { Module } from 'vuex';
-import { IMainState } from './types';
+import { IMainState, ITest } from './types';
 
 // Tests state interface
 export interface ITestsState {
   test: ITest;
 }
-
-// Test
-export interface ITest {
-  id: string;
-  name: string;
-  parent: string;
-  state: string;
-  progress: number;
-  begin: number;
-  end: number;
-  interval: number;
-  strategies: IStrategy[];
-}
-
-// Strategy
-export interface IStrategy {
-  id: string;
-  name: string;
-  source: string;
-}
-
 
 // Tests storage module
 const tests: Module<ITestsState, IMainState> = {

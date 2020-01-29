@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import { IMainState, ILoginPayload } from './types';
+import { IMainState } from './types';
 import terminal from './terminal';
 import scripts from './scripts';
 import tests from './tests';
@@ -8,6 +8,14 @@ import accounts from './accounts';
 import jwt_decode from 'jwt-decode';
 
 Vue.use(Vuex);
+
+// Login action payload
+export interface ILoginPayload {
+  username: string;
+  password: string;
+}
+
+
 
 const options: StoreOptions<IMainState> = {
 

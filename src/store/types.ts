@@ -5,12 +5,6 @@ export interface IMainState {
   userId: string;
 }
 
-// Login action payload
-export interface ILoginPayload {
-  username: string;
-  password: string;
-}
-
 // Virtual account
 export interface IVAccount {
   id: string;
@@ -64,16 +58,22 @@ export interface ITrade {
   fee: number;
 }
 
-// Cancel order action payload
-export interface ICancelPayload {
-  account: string;
-  order: string;
-}
-
-// Get ohlc data action payload
-export interface IOhlcPayload {
-  ticker: string;
-  interval: string;
+// Test
+export interface ITest {
+  id: string;
+  name: string;
+  parent: string;
+  state: string;
+  progress: number;
   begin: number;
   end: number;
+  interval: number;
+  strategies: IStrategy[];
+}
+
+// Strategy
+export interface IStrategy {
+  id: string;
+  name: string;
+  source: string;
 }

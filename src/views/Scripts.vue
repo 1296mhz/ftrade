@@ -216,15 +216,15 @@ export default Vue.extend({
     },
     scriptName: {
       get() { return this.$store.state.scripts.script.name; },
-      set(value) { this.$store.commit('SetScriptName', value); },
+      set(value) { this.$store.commit('scripts/SetScriptName', value); },
     },
     scriptCategory: {
       get() { return this.$store.state.scripts.script.category; },
-      set(value) { this.$store.commit('SetScriptCategory', value); },
+      set(value) { this.$store.commit('scripts/SetScriptCategory', value); },
     },
     scriptSource: {
       get() { return this.$store.state.scripts.script.source; },
-      set(value) { this.$store.commit('SetScriptSource', value); },
+      set(value) { this.$store.commit('scripts/SetScriptSource', value); },
     },
 
     // Category data
@@ -234,24 +234,24 @@ export default Vue.extend({
 
     // Test data
     testBegin: {
-      get() { return new Date(this.$store.state.tests.test.begin).toISOString().substr(0, 10); },
+      get() { return new Date(this.$store.state.scripts.test.begin).toISOString().substr(0, 10); },
       set(value: string) {
-        this.$store.commit('SetTestBegin', new Date(value).getTime());
-        this.$store.dispatch('UpdateTest');
+        this.$store.commit('scripts/SetTestBegin', new Date(value).getTime());
+        this.$store.dispatch('scripts/UpdateTest');
       },
     },
     testEnd: {
-      get() { return new Date(this.$store.state.tests.test.end).toISOString().substr(0, 10); },
+      get() { return new Date(this.$store.state.scripts.test.end).toISOString().substr(0, 10); },
       set(value: string) {
-        this.$store.commit('SetTestEnd', new Date(value).getTime());
-        this.$store.dispatch('UpdateTest');
+        this.$store.commit('scripts/SetTestEnd', new Date(value).getTime());
+        this.$store.dispatch('scripts/UpdateTest');
       },
     },
     testInterval: {
-      get() { return this.$store.state.tests.test.interval; },
+      get() { return this.$store.state.scripts.test.interval; },
       set(value) {
-        this.$store.commit('SetTestInterval', value);
-        this.$store.dispatch('UpdateTest');
+        this.$store.commit('scripts/SetTestInterval', value);
+        this.$store.dispatch('scripts/UpdateTest');
       },
     },
   },
@@ -265,10 +265,10 @@ export default Vue.extend({
         const id = selected[0];
         const cat = this.categories.find((cat) => cat.id === id);
         if (cat) {
-          this.$store.commit('SetCategory', {id: cat.id, name: cat.name});
+          this.$store.commit('scripts/SetCategory', {id: cat.id, name: cat.name});
         } else {
-          await this.$store.dispatch('GetScript', id);
-          await this.$store.dispatch('GetTest', id);
+          await this.$store.dispatch('scripts/GetScript', id);
+          await this.$store.dispatch('scripts/GetTest', id);
         }
       }
     },
@@ -278,11 +278,11 @@ export default Vue.extend({
       // Script
       const script = {
         id: uuid(),
-        name: this.$store.getters.newScriptName,
+        name: this.$store.getters['scripts/newScriptName'],
         category: this.categoryId ? this.categoryId : this.scriptCategory,
         source: '',
       };
-      await this.$store.dispatch('CreateScript', script);
+      await this.$store.dispatch('scripts/CreateScript', script);
       // Test
       const test = {
         id: script.id,
@@ -297,24 +297,24 @@ export default Vue.extend({
           source: '',
         }],
       };
-      await this.$store.dispatch('CreateTest', test);
+      await this.$store.dispatch('scripts/CreateTest', test);
     },
 
     UpdateScript() {
-      this.$store.dispatch('UpdateScript');
+      this.$store.dispatch('scripts/UpdateScript');
     },
 
     // Create new category
     CreateCategory() {
-      this.$store.dispatch('CreateCategory');
+      this.$store.dispatch('scripts/CreateCategory');
     },
 
     // Delete script or category
     DeleteCategoryOrScript() {
       if (this.categoryId) {
-        this.$store.dispatch('DeleteCategory');
+        this.$store.dispatch('scripts/DeleteCategory');
       } else {
-        this.$store.dispatch('DeleteScript');
+        this.$store.dispatch('scripts/DeleteScript');
       }
     },
 
@@ -323,12 +323,12 @@ export default Vue.extend({
 
   // Hooks
   async created() {
-    await this.$store.dispatch('GetScripts');
-    await this.$store.dispatch('SubscribeScripts');
+    await this.$store.dispatch('scripts/GetScripts');
+    await this.$store.dispatch('scripts/SubscribeScripts');
   },
 
   beforeDestroy() {
-    this.$store.dispatch('UnsubscribeScripts');
+    this.$store.dispatch('scripts/UnsubscribeScripts');
   },
 });
 </script>
