@@ -357,18 +357,23 @@ export default (Vue as VueConstructor<any>).extend({
   watch: {
     // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
     $route: {
-      handler() {/**/},
+      handler() {
+        /**/
+      },
       immediate: true,
     },
     'newAccount.ExecutorId'(newVal: any) {
       const filteredRaccounts = this.raccounts.filter(
-        (raccount) => raccount.executor === newVal);
+        (raccount) => raccount.executor === newVal
+      );
       this.filteredRaccounts = filteredRaccounts.map(
-        (raccount) => raccount.name);
+        (raccount) => raccount.name
+      );
     },
     'newAccount.RealAccount'(newVal: any) {
       const RealAccountId = this.raccounts.filter(
-        (raccount) => raccount.name === newVal);
+        (raccount) => raccount.name === newVal
+      );
       this.newAccount.RealAccountId = RealAccountId[0].id;
     },
   },
@@ -425,13 +430,13 @@ export default (Vue as VueConstructor<any>).extend({
       this.selectedVaccounts.push(vaccount);
       this.chartOptions.title.text = this.selectedVAccounts.name;
       await this.$store.dispatch(
-        'GetVAccountTrades',
-        this.selectedVAccounts.id,
+        'accounts/GetVAccountTrades',
+        this.selectedVAccounts.id
       );
     },
     async DeleteVirtualAccount(accountId: string) {
       Vue.$log.debug(`Delete account: ${accountId}`);
-      await this.$store.dispatch('DeleteVAccount', accountId);
+      await this.$store.dispatch('accounts/DeleteVAccount', accountId);
     },
     async CreateVirtualAccount() {
       const acc: IVAccount = {
@@ -440,7 +445,7 @@ export default (Vue as VueConstructor<any>).extend({
         executor: this.newAccount.ExecutorId,
         raccount: this.newAccount.RealAccountId,
       };
-      await this.$store.dispatch('CreateVAccount', acc);
+      await this.$store.dispatch('accounts/CreateVAccount', acc);
     },
     GetSideColor(side: string) {
       return side === 'buy' ? 'green' : 'red';
@@ -464,8 +469,12 @@ export default (Vue as VueConstructor<any>).extend({
   },
 
   async created() {
-    await this.$store.dispatch('GetVAccounts');
-    await this.$store.dispatch('GetRAccounts');
+    await this.$store.dispatch('accounts/GetVAccounts');
+    await this.$store.dispatch('accounts/GetRAccounts');
+    await this.$store.dispatch('accounts/SubscribeVAccounts');
+  },
+  beforeDestroy() {
+    this.$store.dispatch('accounts/UnsubscribeVAccounts');
   },
 });
 </script>

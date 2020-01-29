@@ -11,6 +11,7 @@ export interface IAccountsState {
 
 const accounts: Module<IAccountsState, IMainState> = {
 
+  namespaced: true,
   // State
   state: {
     vaccounts: [],
@@ -53,7 +54,6 @@ const accounts: Module<IAccountsState, IMainState> = {
     async CreateVAccount({commit, dispatch}, newVAccount: any) {
       try {
         await Vue.$cf.RPC({ method: 'CreateVAccount', params: newVAccount });
-        await dispatch('GetVAccounts');
       } catch (error) {
         commit('SetError', error);
         throw error;
@@ -62,7 +62,6 @@ const accounts: Module<IAccountsState, IMainState> = {
     async DeleteVAccount({commit, dispatch}, accountId: string) {
       try {
         await Vue.$cf.RPC({ method: 'DeleteVAccount', params: { id: accountId } });
-        await dispatch('GetVAccounts');
       } catch (error) {
         commit('SetError', error);
         throw error;
@@ -81,11 +80,30 @@ const accounts: Module<IAccountsState, IMainState> = {
     async GetVAccountTrades({commit}, accountId: string) {
       try {
         const trades = await Vue.$cf.RPC({ method: 'GetVAccountTrades', params: {account: accountId}});
-        commit('GetVAccountTrades', trades);
+        commit('SetVAccountTrades', trades);
       } catch (error) {
         commit('SetError', error);
         throw error;
       }
+    },
+   // Subscribe to vaccounts updates
+   SubscribeVAccounts({state, commit, rootState}) {
+    // Subscribe symbols list update
+    Vue.$cf.Subscribe(`vaccounts#${rootState.userId}`, ({data}) => {
+      let vaccounts = state.vaccounts;
+      if (data.command === 'create') {
+        vaccounts.push(data.params);
+        commit('SetVAccounts', vaccounts);
+      } 
+      if (data.command === 'delete') {
+        vaccounts = vaccounts.filter((vaccount) => vaccount.id !== data.params.id);
+        commit('SetVAccounts', vaccounts);
+      }
+     })
+    },
+    UnsubscribeVAccounts({state, rootState}) {
+      // Unsubscribe from symbols list updates
+      Vue.$cf.Unsubscribe(`vaccounts#${rootState.userId}`);
     },
     DeleteRAccount() {/* */},
     CreateRAccount() {/* */},
