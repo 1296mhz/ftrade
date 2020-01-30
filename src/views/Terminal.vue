@@ -180,7 +180,7 @@ export default Vue.extend({
         {text: 'Ticker', value: 'ticker'},
         {text: 'Side', value: 'side'},
         {text: 'Price', value: 'price'},
-        {text: 'Quantity', value: 'quantity'},
+        {text: 'Quantity', value: 'volume'},
         {text: 'Action', value: 'action'},
       ],
 

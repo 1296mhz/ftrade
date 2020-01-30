@@ -245,7 +245,7 @@ export default (Vue as VueConstructor<any>).extend({
         { text: 'Ticker', value: 'ticker' },
         { text: 'Side', value: 'side' },
         { text: 'Price', value: 'price' },
-        { text: 'Quantity', value: 'quantity' },
+        { text: 'Quantity', value: 'volume' },
       ],
       account_header: [
         {
