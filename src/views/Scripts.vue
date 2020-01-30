@@ -98,7 +98,7 @@
 
             <v-form>
               <v-row dense>
-                <v-combobox v-model="selectedInstruments" :items="instruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>              
+                <v-combobox v-model="strategyInstruments" :items="instruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>              
               </v-row>
 
               <v-row dense>
@@ -126,7 +126,8 @@
 
 
               <v-row justify="end" dense>
-                <v-btn color="success" @click="UpdateScript" small>Run Test</v-btn>
+                <v-btn v-if="testState=='run'" color="warning" @click="StopTest" small>Stop</v-btn>
+                <v-btn v-else color="success" @click="StartTest" small>Start</v-btn>
               </v-row>
             </v-form>
 
@@ -137,6 +138,8 @@
 
                   <!-- Logs -->
                   <v-tab-item transition="none" reverse-transition="none">
+                    <v-data-table :headers="logsHeaders" :items="logs" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
+                    </v-data-table>
                   </v-tab-item>
 
                   <!-- Trades -->
@@ -167,7 +170,7 @@ import Vue from 'vue';
 import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
-import { IOrder, ITrade } from '@/store/types';
+import { IOrder, ITrade, ILogEntry } from '@/store/types';
 import uuid from 'uuid/v4';
 
 stockInit(Highcharts);
@@ -189,8 +192,6 @@ export default Vue.extend({
 
       instruments: ['RTS.FORTS.H2020', 'MXI.FORTS.H2020', 'Si.FORTS.H2020'],
 
-      selectedInstruments: [],
-
       // Trades table
       tradesHeaders: [
         {text: 'Time', value: 'time'},
@@ -200,6 +201,14 @@ export default Vue.extend({
         {text: 'Quantity', value: 'quantity'},
       ],
       trades: [],
+
+      // Logs table
+      logsHeaders: [
+        {text: 'Time', value: 'time', width: 100},
+        {text: 'Level', value: 'level', width: 50},
+        {text: 'Text', value: 'text', width: 300},
+      ],
+
 
     };
   },
@@ -233,6 +242,7 @@ export default Vue.extend({
     },
 
     // Test data
+    testState()  { return this.$store.state.scripts.test.state; },
     testBegin: {
       get() { return new Date(this.$store.state.scripts.test.begin).toISOString().substr(0, 10); },
       set(value: string) {
@@ -254,6 +264,29 @@ export default Vue.extend({
         this.$store.dispatch('scripts/UpdateTest');
       },
     },
+
+    // Strategy data
+    strategyInstruments: {
+      get() { return this.$store.state.scripts.strategy.instruments.map((instrument) => instrument.ticker); },
+      set(value: string[]) {
+        this.$store.commit('scripts/SetStrategyInstruments', value.map((ticker) => {
+          return {ticker: ticker, account: 'test', position: '0'};
+        }));
+        this.$store.dispatch('scripts/UpdateTestStrategy');
+      },
+    },
+
+    // Test logs
+    logs() {
+      return this.$store.state.scripts.logs.map((log: ILogEntry, index: number) => {
+        return {
+          id: index,
+          time: new Date(log.time).toLocaleString(),
+          level: log.level,
+          text: log.text,
+        };
+      });
+    },
   },
 
 
@@ -269,6 +302,9 @@ export default Vue.extend({
         } else {
           await this.$store.dispatch('scripts/GetScript', id);
           await this.$store.dispatch('scripts/GetTest', id);
+          const strategy = this.$store.state.scripts.test.strategies[0];
+          await this.$store.dispatch('scripts/GetTestStrategy', {testId: id, strategyId: strategy.id});
+          await this.$store.dispatch('scripts/GetTestLogs', id);
         }
       }
     },
@@ -320,6 +356,14 @@ export default Vue.extend({
       }
     },
 
+    // Test start or stop
+    StartTest() {
+      this.$store.dispatch('scripts/StartTest', this.$store.state.scripts.test.id);
+    },
+    StopTest() {
+      this.$store.dispatch('scripts/StopTest', this.$store.state.scripts.test.id);
+    },
+
 
   },
 
@@ -327,10 +371,12 @@ export default Vue.extend({
   async created() {
     await this.$store.dispatch('scripts/GetScripts');
     await this.$store.dispatch('scripts/SubscribeScripts');
+    await this.$store.dispatch('scripts/SubscribeTests');
   },
 
   beforeDestroy() {
     this.$store.dispatch('scripts/UnsubscribeScripts');
+    this.$store.dispatch('scripts/UnsubscribeTests');
   },
 });
 </script>

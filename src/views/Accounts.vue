@@ -209,7 +209,7 @@ import uuid from 'uuid/v4';
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
 
-export default Vue.extend({
+export default (Vue as VueConstructor<any>).extend({
   data() {
     return {
       beginDate: new Date().toISOString().substr(0, 10),
@@ -245,7 +245,7 @@ export default Vue.extend({
         { text: 'Ticker', value: 'ticker' },
         { text: 'Side', value: 'side' },
         { text: 'Price', value: 'price' },
-        { text: 'Quantity', value: 'volume' },
+        { text: 'Quantity', value: 'quantity' },
       ],
       account_header: [
         {
@@ -355,18 +355,22 @@ export default Vue.extend({
     };
   },
   watch: {
+    // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
+    $route: {
+      handler() {
+        /**/
+      },
+      immediate: true,
+    },
     'newAccount.ExecutorId'(newVal: any) {
       const filteredRaccounts = this.raccounts.filter(
-        (raccount) => raccount.executor === newVal,
-      );
+        (raccount) => raccount.executor === newVal);
       this.filteredRaccounts = filteredRaccounts.map(
-        (raccount) => raccount.name,
-      );
+        (raccount) => raccount.name);
     },
     'newAccount.RealAccount'(newVal: any) {
       const RealAccountId = this.raccounts.filter(
-        (raccount) => raccount.name === newVal,
-      );
+        (raccount) => raccount.name === newVal);
       this.newAccount.RealAccountId = RealAccountId[0].id;
     },
   },
@@ -422,12 +426,10 @@ export default Vue.extend({
       this.selectedVaccounts = [];
       this.selectedVaccounts.push(vaccount);
       this.chartOptions.title.text = this.selectedVAccounts.name;
-      await this.$store.dispatch('accounts/SetVAccount', vaccount);
       await this.$store.dispatch(
         'accounts/GetVAccountTrades',
         this.selectedVAccounts.id,
       );
-      await this.$store.dispatch('accounts/SubscribeAccountTrades');
     },
     async DeleteVirtualAccount(accountId: string) {
       Vue.$log.debug(`Delete account: ${accountId}`);

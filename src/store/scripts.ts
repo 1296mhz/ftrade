@@ -1,14 +1,17 @@
 import Vue from 'vue';
 import uuid from 'uuid/v4';
 import { Module } from 'vuex';
-import { IMainState, ITest } from './types';
+import { IMainState, ITest, IStrategy, IInstrument, ILogEntry, ITrade } from './types';
 
 // Scripts state interface
 export interface IScriptsState {
+  categories: ICategory[];
   category: ICategory;
   script: IScript;
-  categories: ICategory[];
   test: ITest;
+  strategy: IStrategy;
+  logs: ILogEntry[];
+  trades: ITrade[];
 }
 
 // Category
@@ -26,6 +29,10 @@ export interface IScript {
   source: string;
 }
 
+export interface IGetTestStrategyRequest {
+  testId: string;
+  strategyId: string;
+}
 
 // Scripts storage module
 const scripts: Module<IScriptsState, IMainState> = {
@@ -60,6 +67,16 @@ const scripts: Module<IScriptsState, IMainState> = {
       interval: 0,
       strategies: [],
     },
+
+    strategy: {
+      id: '',
+      name: '',
+      source: '',
+      instruments: [],
+    },
+
+    logs: [],
+    trades: [],
   },
 
   // Getters
@@ -149,6 +166,14 @@ const scripts: Module<IScriptsState, IMainState> = {
     SetTestBegin(state, begin: number)          { state.test.begin = begin; },
     SetTestEnd(state, end: number)              { state.test.end = end; },
     SetTestInterval(state, interval: number)    { state.test.interval = interval; },
+    SetTestState(state, data: any)              { state.test.state = data.state; state.test.progress = data.progress; },
+
+    // Update current strategy data
+    SetStrategy(state, strategy: IStrategy)     { state.strategy = strategy; },
+
+    SetStrategyInstruments(state, instruments: IInstrument[]) { state.strategy.instruments = instruments; },
+
+    SetLogs(state, logs: ILogEntry[])           { state.logs = logs; },
   },
 
   // Actions
@@ -306,6 +331,79 @@ const scripts: Module<IScriptsState, IMainState> = {
         throw error;
       }
     },
+
+    // Request strategy in test
+    async GetTestStrategy({commit}, req: IGetTestStrategyRequest) {
+      try {
+        const data = await Vue.$cf.RPC({method: 'GetTestStrategy', params: req});
+        commit('SetStrategy', data);
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Update strategy in test
+    async UpdateTestStrategy({state, commit}) {
+      try {
+        const data = await Vue.$cf.RPC({method: 'UpdateTestStrategy', params: {
+          testId: state.test.id,
+          strategy: state.strategy,
+        }});
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Request logs from test
+    async GetTestLogs({commit}, id: string) {
+      try {
+        const data = await Vue.$cf.RPC({method: 'GetTestLogs', params: {id: id}});
+        commit('SetLogs', data.logs);
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Start test
+    async StartTest({commit}, id: string) {
+      try {
+        await Vue.$cf.RPC({method: 'StartTest', params: {id: id}});
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Stop test
+    async StopTest({commit}, id: string) {
+      try {
+        await Vue.$cf.RPC({method: 'StopTest', params: {id: id}});
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Subscribe to tests updates
+    SubscribeTests({state, commit, rootState}) {
+      Vue.$cf.Subscribe(`tests#${rootState.userId}`, ({data}) => {
+        if (data.id === state.test.id) {
+          commit('SetTestState', data);
+        }
+      });
+    },
+
+    // Unsubscribe from tests updates
+    // current account used
+    UnsubscribeTests({rootState}) {
+      Vue.$cf.Unsubscribe(`tests#${rootState.userId}`);
+    },
+
+
+
 
   },
 };

@@ -85,3 +85,10 @@ export interface IInstrument {
   account: string;
   position: number;
 }
+
+// LogEntry
+export interface ILogEntry {
+  time: number;
+  level: number;
+  text: TemplateStringsArray;
+}
