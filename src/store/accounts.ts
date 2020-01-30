@@ -6,7 +6,7 @@ export interface IAccountsState {
   vaccounts: IVAccount[];
   raccounts: IRAccount[];
   trades: ITrade[];
-  vaccountId: string;
+  vaccount: any;
 }
 
 const accounts: Module<IAccountsState, IMainState> = {
@@ -17,7 +17,7 @@ const accounts: Module<IAccountsState, IMainState> = {
     vaccounts: [],
     raccounts: [],
     trades: [],
-    vaccountId: '',
+    vaccount: {},
   },
 
   // Mutations
@@ -33,9 +33,12 @@ const accounts: Module<IAccountsState, IMainState> = {
     SetVAccountTrades(state, trades: ITrade[]) {
       Vue.set(state, 'trades', trades);
     },
-    SetVAccountId(state, vaccountId: string) {
-      Vue.set(state, 'vaccountId', vaccountId);
+    SetVAccount(state, vaccount: string) {
+      Vue.set(state, 'vaccount', vaccount);
     },
+    // SetVAccountId(state, vaccountId: string) {
+    //   Vue.set(state, 'vaccountId', vaccountId);
+    // },
   },
 
   // Actions
@@ -94,17 +97,31 @@ const accounts: Module<IAccountsState, IMainState> = {
       if (data.command === 'create') {
         vaccounts.push(data.params);
         commit('SetVAccounts', vaccounts);
-      } 
+      }
       if (data.command === 'delete') {
         vaccounts = vaccounts.filter((vaccount) => vaccount.id !== data.params.id);
         commit('SetVAccounts', vaccounts);
       }
-     })
+     });
     },
     UnsubscribeVAccounts({state, rootState}) {
       // Unsubscribe from symbols list updates
       Vue.$cf.Unsubscribe(`vaccounts#${rootState.userId}`);
     },
+    SubscribeAccountTrades({state, commit, rootState}) {
+      // Subscribe symbols list update
+      Vue.$cf.Subscribe(`trades:${state.vaccount.id}#${rootState.userId}`, ({data}) => {
+        if (data.command === 'create') {
+          commit('CreateTrade', data.params);
+        }
+      });
+    },
+    // Unsubscribe from orders updates
+    // current account used
+    UnsubscribeAccountTrades({state, rootState}) {
+      Vue.$cf.Unsubscribe(`trades:${state.vaccount.id}#${rootState.userId}`);
+    },
+
     DeleteRAccount() {/* */},
     CreateRAccount() {/* */},
 
@@ -118,9 +135,12 @@ const accounts: Module<IAccountsState, IMainState> = {
         throw error;
       }
     },
-    SetVAccountId({commit}, vaccountId) {
-       commit('SetVAccountId', vaccountId);
+    SetVAccount({commit}, vaccount: any) {
+       commit('SetVAccount', vaccount);
     },
+    // SetVAccountId({commit}, vaccountId) {
+    //    commit('SetVAccountId', vaccountId);
+    // },
   },
 };
 
