@@ -17,7 +17,12 @@ const accounts: Module<IAccountsState, IMainState> = {
     vaccounts: [],
     raccounts: [],
     trades: [],
-    vaccount: {},
+    vaccount: {
+      id: '',
+      name: '',
+      executor: '',
+      raccount: '',
+    },
   },
 
   // Mutations
