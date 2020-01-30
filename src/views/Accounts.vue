@@ -209,7 +209,7 @@ import uuid from 'uuid/v4';
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
 
-export default (Vue as VueConstructor<any>).extend({
+export default Vue.extend({
   data() {
     return {
       beginDate: new Date().toISOString().substr(0, 10),
