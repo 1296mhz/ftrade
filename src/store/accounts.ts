@@ -6,7 +6,7 @@ export interface IAccountsState {
   vaccounts: IVAccount[];
   raccounts: IRAccount[];
   trades: ITrade[];
-  vaccount: any;
+  vaccount: IVAccount;
 }
 
 const accounts: Module<IAccountsState, IMainState> = {
@@ -33,12 +33,13 @@ const accounts: Module<IAccountsState, IMainState> = {
     SetVAccountTrades(state, trades: ITrade[]) {
       Vue.set(state, 'trades', trades);
     },
-    SetVAccount(state, vaccount: string) {
+    SetVAccount(state, vaccount: IVAccount) {
       Vue.set(state, 'vaccount', vaccount);
     },
-    // SetVAccountId(state, vaccountId: string) {
-    //   Vue.set(state, 'vaccountId', vaccountId);
-    // },
+    // Add new trade
+    CreateTrade(state, trade: ITrade) {
+      state.trades.push(trade);
+    },
   },
 
   // Actions
@@ -73,7 +74,6 @@ const accounts: Module<IAccountsState, IMainState> = {
     async GetVAccountOrders({commit}) {
       try {
         const orders = await Vue.$cf.RPC({ method: 'GetVAccountOrders' });
-        // commit('GetVAccountOrders', vaccounts)
       } catch (error) {
         commit('SetError', error);
         throw error;
@@ -82,7 +82,7 @@ const accounts: Module<IAccountsState, IMainState> = {
 
     async GetVAccountTrades({commit}, accountId: string) {
       try {
-        const trades = await Vue.$cf.RPC({ method: 'GetVAccountTrades', params: {account: accountId}});
+        const trades = await Vue.$cf.RPC({ method: 'GetVAccountTrades', params: { account: accountId }});
         commit('SetVAccountTrades', trades);
       } catch (error) {
         commit('SetError', error);
@@ -128,7 +128,6 @@ const accounts: Module<IAccountsState, IMainState> = {
     async GetRAccounts({commit}) {
       try {
         const raccounts = await Vue.$cf.RPC({ method: 'GetRAccounts' });
-        // console.log(raccounts)
         commit('SetRAccounts', raccounts);
       } catch (error) {
         commit('SetError', error);
@@ -138,9 +137,6 @@ const accounts: Module<IAccountsState, IMainState> = {
     SetVAccount({commit}, vaccount: any) {
        commit('SetVAccount', vaccount);
     },
-    // SetVAccountId({commit}, vaccountId) {
-    //    commit('SetVAccountId', vaccountId);
-    // },
   },
 };
 
