@@ -280,7 +280,6 @@ const scripts: Module<IScriptsState, IMainState> = {
     async GetTest({commit}, id: string) {
       try {
         const data = await Vue.$cf.RPC({method: 'GetTest', params: {id: id}});
-        console.log(data);
         commit('SetTest', data);
       } catch (error) {
         commit('SetError', error, {root: true});
