@@ -283,6 +283,7 @@ export default Vue.extend({
         source: '',
       };
       await this.$store.dispatch('scripts/CreateScript', script);
+
       // Test
       const test = {
         id: script.id,
@@ -295,6 +296,7 @@ export default Vue.extend({
           id: uuid(),
           name: script.name,
           source: '',
+          instruments: [],
         }],
       };
       await this.$store.dispatch('scripts/CreateTest', test);

@@ -76,4 +76,12 @@ export interface IStrategy {
   id: string;
   name: string;
   source: string;
+  instruments: IInstrument[];
+}
+
+// Instrument
+export interface IInstrument {
+  ticker: string;
+  account: string;
+  position: number;
 }

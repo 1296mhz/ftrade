@@ -180,22 +180,6 @@ const scripts: Module<IScriptsState, IMainState> = {
     // Create user script
     async CreateScript({state, commit}, script: IScript) {
       try {
-        /*
-        const categoryId = state.category.id ? state.category.id : state.script.category;
-        const cat =  state.categories.find((cat) => cat.id === categoryId);
-        if (!cat) { return; }
-
-        // Find unique script name
-        let name = 'Script 1';
-        let idx = 1;
-        cat.scripts.forEach((script) => {
-          if (script.name === name) {
-            ++idx;
-            name = 'Script ' + idx.toString();
-          }
-        });
-        */
-
         await Vue.$cf.RPC({ method: 'CreateScript', params: script });
       } catch (error) {
         commit('SetError', error, {root: true});
@@ -296,6 +280,7 @@ const scripts: Module<IScriptsState, IMainState> = {
     async GetTest({commit}, id: string) {
       try {
         const data = await Vue.$cf.RPC({method: 'GetTest', params: {id: id}});
+        console.log(data);
         commit('SetTest', data);
       } catch (error) {
         commit('SetError', error, {root: true});
