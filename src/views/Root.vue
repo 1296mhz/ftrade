@@ -5,56 +5,27 @@
     </v-overlay>
   <v-app id="inspire">
 
-    <v-navigation-drawer 
-    app 
-    mini-variant
-    permanent 
-    disable-resize-watcher
-    disable-route-watcher
-    position: fixed
->
+    <v-navigation-drawer app mini-variant permanent disable-resize-watcher disable-route-watcher>
       <v-list dense>
-        <v-list-item to="/dashboard">
-          <v-list-item-action>
-            <v-icon>mdi-view-dashboard</v-icon>
-          </v-list-item-action>
+        <v-list-item v-for="item in items" :to="item.to" :key="item.title" link>
+          <v-list-item-icon>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item to="/terminal">
-          <v-list-item-action>
-            <v-icon>mdi-desktop-classic</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Terminal</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item to="/scripts">
-          <v-list-item-action>
-            <v-icon>post_add</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Scripts</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item to="/accounts">
-          <v-list-item-action>
-            <v-icon>account_balance_wallet</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Accounts</v-list-item-title>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
     <v-app-bar app color="indigo" dark>
-      <v-toolbar-title>{{ currentViewText }}</v-toolbar-title>
+      <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-col cols="5" xs="6" sm="6" md="3" lg="2" xl="2">
+
+      <v-col v-if="title==='Terminal'" cols="5" xs="6" sm="6" md="3" lg="2" xl="2">
         <v-select :items="vaccounts" label="Select Account" dense single-line @change="SelectAccount"></v-select>
       </v-col>
+
       <v-btn icon @click="exit()">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
@@ -84,7 +55,12 @@ export default Vue.extend({
   data() {
     return {
       errorBar: false,
-      currentViewText: 'Terminal',
+
+      items: [
+        { title: 'Terminal', icon: 'mdi-desktop-classic', to: '/terminal' },
+        { title: 'Scripts', icon: 'post_add', to: '/scripts' },
+        { title: 'Accounts', icon: 'account_balance_wallet', to: '/accounts'},
+      ],
     };
   },
 
@@ -93,6 +69,11 @@ export default Vue.extend({
       'lastError',
       'errorsCount',
     ]),
+
+    // Current title
+    title() {
+      return this.$route.name;
+    },
 
     // Virtual accounts
     vaccounts() {

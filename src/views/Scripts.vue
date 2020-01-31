@@ -132,6 +132,10 @@
             </v-form>
 
               <v-row dense>
+                <v-progress-linear :value="testProgress" :active="testState=='run'"></v-progress-linear>
+              </v-row>
+
+              <v-row dense>
                 <v-tabs height="45">
                   <v-tab>Logs</v-tab>
                   <v-tab>Trades</v-tab>
@@ -242,7 +246,8 @@ export default Vue.extend({
     },
 
     // Test data
-    testState()  { return this.$store.state.scripts.test.state; },
+    testState()     { return this.$store.state.scripts.test.state; },
+    testProgress()  { return this.$store.state.scripts.test.progress; },
     testBegin: {
       get() { return new Date(this.$store.state.scripts.test.begin).toISOString().substr(0, 10); },
       set(value: string) {

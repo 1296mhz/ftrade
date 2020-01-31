@@ -3,7 +3,6 @@ import Router from 'vue-router';
 import Root from './views/Root.vue';
 import Terminal from './views/Terminal.vue';
 import Scripts from './views/Scripts.vue';
-import Dashboard from './views/Dashboard.vue';
 import Accounts from './views/Accounts.vue';
 import Login from './views/Login.vue';
 import store from './store';
@@ -22,23 +21,18 @@ const router = new Router({
       component: Root,
       children: [
         {
-          path: '/dashboard',
-          name: 'dashboard',
-          component: Dashboard,
-        },
-        {
           path: '/terminal',
-          name: 'terminal',
+          name: 'Terminal',
           component: Terminal,
         },
         {
           path: '/scripts',
-          name: 'scripts',
+          name: 'Scripts',
           component: Scripts,
         },
         {
           path: '/accounts',
-          name: 'accounts',
+          name: 'Accounts',
           component: Accounts,
         },
       ],
