@@ -172,6 +172,7 @@ const scripts: Module<IScriptsState, IMainState> = {
     SetStrategy(state, strategy: IStrategy)     { state.strategy = strategy; },
 
     SetStrategyInstruments(state, instruments: IInstrument[]) { state.strategy.instruments = instruments; },
+    SetStrategySource(state, source: string)    { state.strategy.source = source; },
 
     SetLogs(state, logs: ILogEntry[])           { state.logs = logs; },
   },

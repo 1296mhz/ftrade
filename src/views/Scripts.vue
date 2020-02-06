@@ -361,10 +361,13 @@ export default Vue.extend({
       }
     },
 
-    // Test start or stop
-    StartTest() {
-      this.$store.dispatch('scripts/StartTest', this.$store.state.scripts.test.id);
+    // Test start and stop
+    async StartTest() {
+      this.$store.commit('scripts/SetStrategySource', this.$store.state.scripts.script.source);
+      await this.$store.dispatch('scripts/UpdateTestStrategy');
+      await this.$store.dispatch('scripts/StartTest', this.$store.state.scripts.test.id);
     },
+
     StopTest() {
       this.$store.dispatch('scripts/StopTest', this.$store.state.scripts.test.id);
     },
