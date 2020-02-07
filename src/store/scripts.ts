@@ -297,7 +297,7 @@ const scripts: Module<IScriptsState, IMainState> = {
     },
 
     // Unsubscribe from scripts updates
-    UnsubscribeScripts({state, rootState}) {
+    UnsubscribeScripts({rootState}) {
       Vue.$cf.Unsubscribe(`categories#${rootState.userId}`);
       Vue.$cf.Unsubscribe(`scripts#${rootState.userId}`);
     },
@@ -314,7 +314,7 @@ const scripts: Module<IScriptsState, IMainState> = {
     },
 
     // Create user test
-    async CreateTest({state, commit}, test: ITest) {
+    async CreateTest({commit}, test: ITest) {
       try {
         await Vue.$cf.RPC({ method: 'CreateTest', params: test });
       } catch (error) {
@@ -389,10 +389,13 @@ const scripts: Module<IScriptsState, IMainState> = {
     },
 
     // Subscribe to tests updates
-    SubscribeTests({state, commit, rootState}) {
-      Vue.$cf.Subscribe(`tests#${rootState.userId}`, ({data}) => {
-        if (data.id === state.test.id) {
+    SubscribeTests({state, commit, dispatch, rootState}) {
+      Vue.$cf.Subscribe(`tests#${rootState.userId}`, async ({data}) => {
+       if (data.id === state.test.id) {
           commit('SetTestState', data);
+          if (data.state !== 'run') {
+            await dispatch('GetTestLogs', data.id);
+          }
         }
       });
     },

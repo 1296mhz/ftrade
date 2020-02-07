@@ -355,13 +355,6 @@ export default (Vue as VueConstructor<any>).extend({
     };
   },
   watch: {
-    // When you change the object of the $ router, each time we call to get the symbols (call function getSymbols)
-    $route: {
-      handler() {
-        /**/
-      },
-      immediate: true,
-    },
     'newAccount.ExecutorId'(newVal: any) {
       const filteredRaccounts = this.raccounts.filter(
         (raccount) => raccount.executor === newVal);
