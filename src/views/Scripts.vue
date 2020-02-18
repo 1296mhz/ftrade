@@ -131,32 +131,46 @@
               </v-row>
             </v-form>
 
-              <v-row dense>
-                <v-progress-linear :value="testProgress" :active="testState=='run'"></v-progress-linear>
-              </v-row>
+            <!-- Test progress -->
+            <v-row dense>
+              <v-progress-linear :value="testProgress" :active="testState=='run'"></v-progress-linear>
+            </v-row>
 
-              <v-row dense>
-                <v-tabs height="45">
-                  <v-tab>Logs</v-tab>
-                  <v-tab>Trades</v-tab>
+            <!-- Chart -->
+            <v-row>
+              <v-col>
+                <highcharts ref="ReportChart" class="stock" :constructor-type="'stockChart'" :options="chartOptions"></highcharts>
+              </v-col>
+            </v-row>
 
-                  <!-- Logs -->
-                  <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table :headers="logsHeaders" :items="logs" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
-                    </v-data-table>
-                  </v-tab-item>
+            <v-row dense>
+              <v-tabs height="45">
+                <v-tab>Report</v-tab>
+                <v-tab>Logs</v-tab>
+                <v-tab>Trades</v-tab>
 
-                  <!-- Trades -->
-                  <v-tab-item transition="none" reverse-transition="none">
-                    <v-data-table :headers="tradesHeaders" :items="trades" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
-                      <template v-slot:item.side="{item: {side}}">
-                        <v-chip :color="GetSideColor(side)" label x-small outlined>{{side}}</v-chip>
-                      </template>
-                    </v-data-table>
-                  </v-tab-item>
+                <!-- Report -->
+                <v-tab-item transition="none" reverse-transition="none">
+                  <v-data-table :headers="reportHeaders" :items="report" item-key="name" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer></v-data-table>
+                </v-tab-item>
 
-                </v-tabs>
-              </v-row>
+                <!-- Logs -->
+                <v-tab-item transition="none" reverse-transition="none">
+                  <v-data-table :headers="logsHeaders" :items="logs" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
+                  </v-data-table>
+                </v-tab-item>
+
+                <!-- Trades -->
+                <v-tab-item transition="none" reverse-transition="none">
+                  <v-data-table :headers="tradesHeaders" :items="trades" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
+                    <template v-slot:item.side="{item: {side}}">
+                      <v-chip :color="GetSideColor(side)" label x-small outlined>{{side}}</v-chip>
+                    </template>
+                  </v-data-table>
+                </v-tab-item>
+
+              </v-tabs>
+            </v-row>
 
 
 
@@ -212,6 +226,52 @@ export default Vue.extend({
         {text: 'Level', value: 'level', width: 50},
         {text: 'Text', value: 'text', width: 300},
       ],
+
+      // Report table
+      reportHeaders: [
+        {text: 'Name', value: 'name'},
+        {text: 'Value', value: 'value'},
+      ],
+
+      // Report chart options
+      chartOptions: {
+        chart: {
+          type: 'candlestick',
+          zoomType: 'x',
+          animation: false,
+        },
+        navigator: {
+          adaptToUpdatedData: false,
+          series: {},
+        },
+        scrollbar: {
+          enabled: false,
+        },
+        title: {
+          text: 'Symbol not selected',
+        },
+        rangeSelector: {
+          enabled: false,
+        },
+        xAxis: {
+          events: {
+            // setExtremes: this.setExtremes,
+            // afterSetExtremes: this.afterSetExtremes,
+          },
+          minRange: 60 * 1000,
+        },
+        yAxis: [
+          {height: '60%'},
+          {height: '40%', top: '60%'},
+        ],
+        series: [
+          {yAxis: 0, dataGrouping: {enabled: false}, type: 'candlestick'},
+          {yAxis: 1, dataGrouping: {enabled: false}, type: 'area'},
+        ],
+        credits: {
+          enabled: false,
+        },
+      },
 
 
     };
@@ -292,6 +352,9 @@ export default Vue.extend({
         };
       });
     },
+
+    // Test report
+    report()  { return this.$store.state.scripts.report; },
   },
 
 
@@ -309,7 +372,26 @@ export default Vue.extend({
           await this.$store.dispatch('scripts/GetTest', id);
           const strategy = this.$store.state.scripts.test.strategies[0];
           await this.$store.dispatch('scripts/GetTestStrategy', {testId: id, strategyId: strategy.id});
+          await this.$store.dispatch('scripts/GetTestReport', id);
           await this.$store.dispatch('scripts/GetTestLogs', id);
+
+          // Update chart
+          const ohlc = await this.$store.dispatch('scripts/GetOhlc', {
+            ticker: 'AAPL.NASDAQ',
+            interval: 86400,
+            begin: 0,
+            end: 5000000000000});
+
+          const equity = await this.$store.dispatch('scripts/GetEquity', id);
+
+          this.chartOptions.navigator.series.data = ohlc;
+          this.chartOptions.series[0].data = ohlc;
+          this.chartOptions.series[1].data = equity;
+          this.chartOptions.title.text = 'AAPL.NASDAQ';
+
+          const chart = this.$refs.ReportChart.chart;
+          chart.xAxis[0].setExtremes();
+          chart.xAxis[1].setExtremes();
         }
       }
     },

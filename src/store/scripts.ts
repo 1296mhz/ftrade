@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import uuid from 'uuid/v4';
 import { Module } from 'vuex';
-import { IMainState, ITest, IStrategy, IInstrument, ILogEntry, ITrade } from './types';
+import { IMainState, ITest, IStrategy, IInstrument, ILogEntry, ITrade, IOhlcPayload } from './types';
 
 // Scripts state interface
 export interface IScriptsState {
@@ -10,6 +10,7 @@ export interface IScriptsState {
   script: IScript;
   test: ITest;
   strategy: IStrategy;
+  report: IReportEntry[];
   logs: ILogEntry[];
   trades: ITrade[];
 }
@@ -32,6 +33,12 @@ export interface IScript {
 export interface IGetTestStrategyRequest {
   testId: string;
   strategyId: string;
+}
+
+// ReportEntry
+export interface IReportEntry {
+  name: string;
+  value: string;
 }
 
 // Scripts storage module
@@ -75,6 +82,7 @@ const scripts: Module<IScriptsState, IMainState> = {
       instruments: [],
     },
 
+    report: [],
     logs: [],
     trades: [],
   },
@@ -174,6 +182,8 @@ const scripts: Module<IScriptsState, IMainState> = {
     SetStrategyInstruments(state, instruments: IInstrument[]) { state.strategy.instruments = instruments; },
     SetStrategySource(state, source: string)    { state.strategy.source = source; },
 
+    // Report data
+    SetReport(state, report: IReportEntry[])    { state.report = report; },
     SetLogs(state, logs: ILogEntry[])           { state.logs = logs; },
   },
 
@@ -368,6 +378,17 @@ const scripts: Module<IScriptsState, IMainState> = {
       }
     },
 
+    // Request report for test
+    async GetTestReport({commit}, id: string) {
+      try {
+        const data = await Vue.$cf.RPC({method: 'GetTestReport', params: {id: id}});
+        commit('SetReport', data);
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
     // Start test
     async StartTest({commit}, id: string) {
       try {
@@ -394,6 +415,7 @@ const scripts: Module<IScriptsState, IMainState> = {
        if (data.id === state.test.id) {
           commit('SetTestState', data);
           if (data.state !== 'run') {
+            await dispatch('GetTestReport', data.id);
             await dispatch('GetTestLogs', data.id);
           }
         }
@@ -406,6 +428,27 @@ const scripts: Module<IScriptsState, IMainState> = {
       Vue.$cf.Unsubscribe(`tests#${rootState.userId}`);
     },
 
+    // Get OHLC data
+    async GetOhlc({commit}, payload: IOhlcPayload) {
+      try {
+        const data = await Vue.$cf.RPC({ method: 'GetOhlc', params: payload });
+        return data;
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        return [];
+      }
+    },
+
+    // Get report equity
+    async GetEquity({commit}, id: string) {
+      try {
+        const data = await Vue.$cf.RPC({ method: 'GetTestEquity', params: {id: id} });
+        return data;
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        return [];
+      }
+    },
 
 
 

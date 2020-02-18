@@ -92,3 +92,11 @@ export interface ILogEntry {
   level: number;
   text: TemplateStringsArray;
 }
+
+// Get ohlc data action payload
+export interface IOhlcPayload {
+  ticker: string;
+  interval: string;
+  begin: number;
+  end: number;
+}

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Module } from 'vuex';
-import { IMainState, IVAccount, ISymbol, IOrder, ITrade } from './types';
+import { IMainState, IVAccount, ISymbol, IOrder, ITrade, IOhlcPayload } from './types';
 
 // Terminal state interface
 interface ITerminalState {
@@ -15,14 +15,6 @@ interface ITerminalState {
 export interface ICancelPayload {
   account: string;
   order: string;
-}
-
-// Get ohlc data action payload
-export interface IOhlcPayload {
-  ticker: string;
-  interval: string;
-  begin: number;
-  end: number;
 }
 
 const terminal: Module<ITerminalState, IMainState> = {
