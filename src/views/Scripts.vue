@@ -265,8 +265,8 @@ export default Vue.extend({
           {height: '40%', top: '60%'},
         ],
         series: [
-          {yAxis: 0, dataGrouping: {enabled: false}, type: 'candlestick'},
-          {yAxis: 1, dataGrouping: {enabled: false}, type: 'area'},
+          {yAxis: 0, dataGrouping: {enabled: false}, data: [], type: 'candlestick'},
+          {yAxis: 1, dataGrouping: {enabled: false}, data: [], type: 'area'},
         ],
         credits: {
           enabled: false,
@@ -376,22 +376,26 @@ export default Vue.extend({
           await this.$store.dispatch('scripts/GetTestLogs', id);
 
           // Update chart
-          const ohlc = await this.$store.dispatch('scripts/GetOhlc', {
-            ticker: 'AAPL.NASDAQ',
-            interval: 86400,
-            begin: 0,
-            end: 5000000000000});
+          const tickers = this.strategyInstruments;
+          if (tickers.length > 0) {
+            const ticker = tickers[0];
+            const ohlc = await this.$store.dispatch('scripts/GetOhlc', {
+              ticker: ticker,
+              interval: 86400,
+              begin: 0,
+              end: 5000000000000});
 
-          const equity = await this.$store.dispatch('scripts/GetEquity', id);
+            const equity = await this.$store.dispatch('scripts/GetEquity', id);
 
-          this.chartOptions.navigator.series.data = ohlc;
-          this.chartOptions.series[0].data = ohlc;
-          this.chartOptions.series[1].data = equity;
-          this.chartOptions.title.text = 'AAPL.NASDAQ';
+            this.chartOptions.navigator.series.data = ohlc;
+            this.chartOptions.series[0].data = ohlc;
+            this.chartOptions.series[1].data = equity;
+            this.chartOptions.title.text = ticker;
 
-          const chart = this.$refs.ReportChart.chart;
-          chart.xAxis[0].setExtremes();
-          chart.xAxis[1].setExtremes();
+            const chart = this.$refs.ReportChart.chart;
+            chart.xAxis[0].setExtremes();
+            // chart.xAxis[1].setExtremes();
+          }
         }
       }
     },
