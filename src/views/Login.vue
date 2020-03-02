@@ -17,7 +17,7 @@
                     <v-spacer></v-spacer>
                     <v-btn color="primary" :loading="loading" :disabled="loading" type="submit">Login</v-btn>
                   </v-card-actions>
-                  <v-alert :value="error != ''" type="error" transition="scale-transition">{{error}}</v-alert>
+                  <v-alert :value="error !== ''" type="error" transition="scale-transition">{{error}}</v-alert>
                 </v-form>
               </v-card-text>
             </v-card>

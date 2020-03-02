@@ -3,6 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { IMainState } from './types';
 import terminal from './terminal';
 import scripts from './scripts';
+import strategies from './strategies';
 import tests from './tests';
 import accounts from './accounts';
 import jwt_decode from 'jwt-decode';
@@ -14,8 +15,6 @@ export interface ILoginPayload {
   username: string;
   password: string;
 }
-
-
 
 const options: StoreOptions<IMainState> = {
 
@@ -126,10 +125,11 @@ const options: StoreOptions<IMainState> = {
   },
 
   modules: {
-    terminal: terminal,
-    scripts:  scripts,
-    tests:    tests,
-    accounts: accounts,
+    terminal:   terminal,
+    scripts:    scripts,
+    strategies: strategies,
+    tests:      tests,
+    accounts:   accounts,
   },
 };
 

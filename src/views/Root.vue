@@ -59,6 +59,7 @@ export default Vue.extend({
       items: [
         { title: 'Terminal', icon: 'mdi-desktop-classic', to: '/terminal' },
         { title: 'Scripts', icon: 'post_add', to: '/scripts' },
+        { title: 'Strategies', icon: 'trending_up', to: '/strategies'},
         { title: 'Accounts', icon: 'account_balance_wallet', to: '/accounts'},
       ],
     };

@@ -79,6 +79,11 @@ export interface IStrategy {
   instruments: IInstrument[];
 }
 
+export interface IStrategyParams {
+  key: string;
+  value: string;
+}
+
 // Instrument
 export interface IInstrument {
   ticker: string;

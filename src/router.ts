@@ -4,6 +4,7 @@ import Root from './views/Root.vue';
 import Terminal from './views/Terminal.vue';
 import Scripts from './views/Scripts.vue';
 import Accounts from './views/Accounts.vue';
+import Strategies from './views/Strategies.vue';
 import Login from './views/Login.vue';
 import store from './store';
 
@@ -19,6 +20,7 @@ const router = new Router({
       path: '/',
       name: 'main',
       component: Root,
+      redirect: '/terminal',
       children: [
         {
           path: '/terminal',
@@ -35,6 +37,11 @@ const router = new Router({
           name: 'Accounts',
           component: Accounts,
         },
+        {
+          path: '/strategies',
+          name: 'Strategies',
+          component: Strategies,
+        },
       ],
     },
 
@@ -44,6 +51,7 @@ const router = new Router({
 
 // Router handler
 router.beforeEach( async (to, from, next) => {
+  document.title = to.name;
 
   if (store.state.connected && to.path === '/login') {
     return next('/');
