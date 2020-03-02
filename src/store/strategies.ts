@@ -1,14 +1,22 @@
 import Vue from 'vue';
+import uuid from 'uuid/v4';
 import { Module } from 'vuex';
 import { IMainState, IStrategyParams, IInstrument, ITrade, IOrder} from './types';
-import uuid from 'uuid/v4';
 
-export interface IStrategyState {
+// Strategies state interface
+export interface IStrategiesState {
   portfolios: IPortfolio[];
   portfolio: IPortfolio;
   orders: IOrder[];
   trades: ITrade[];
   strategy: IStrategyLive;
+}
+
+// Portfolio
+export interface IPortfolio {
+  id: string;
+  name: string;
+  strategies: IStrategyLive[];
 }
 
 export interface IStrategyLive {
@@ -19,28 +27,24 @@ export interface IStrategyLive {
   portfolioId: string;
   instruments: IInstrument[];
   params: IStrategyParams[];
-  status: string;
+  state: string;
 }
 
-
-export interface IPortfolio {
-  id: string;
-  name: string;
-  strategies: IStrategyLive[];
-}
-
-
-const strategy: Module<IStrategyState, IMainState> = {
+// Strategies storage module
+const strategies: Module<IStrategiesState, IMainState> = {
 
   namespaced: true,
+
   // State
   state: {
     portfolios: [],
+
     portfolio: {
       id: '',
       name: '',
       strategies: [],
     },
+
     strategy: {
       id: '',
       name: '',
@@ -49,8 +53,9 @@ const strategy: Module<IStrategyState, IMainState> = {
       source: '',
       instruments: [],
       params: [],
-      status: '',
+      state: '',
     },
+
     orders: [],
     trades: [],
   },
@@ -95,7 +100,7 @@ const strategy: Module<IStrategyState, IMainState> = {
         name: 'S-' + uid,
         portfolioId: state.portfolio.id,
         scriptId: scriptId,
-        status: 'stop',
+        state: 'stop',
         params: [
           {
             key: 'foo',
@@ -130,7 +135,7 @@ const strategy: Module<IStrategyState, IMainState> = {
     ChangeStatus({state, commit}) {
         const cportfolio = state.portfolios.filter((portfolio) => portfolio.id === state.portfolio.id);
         const strategies = cportfolio[0].strategies.filter((strategy) => strategy.id === state.strategy.id);
-        strategies[0].status = strategies[0].status === 'stop' || strategies[0].status === 'error' ? 'run' : 'stop';
+        strategies[0].state = strategies[0].state === 'stop' || strategies[0].state === 'error' ? 'run' : 'stop';
         const portfolios = state.portfolios.map(
           (portfolio) => {
             return portfolio.id === state.portfolio.id ? portfolio = cportfolio[0] : portfolio;
@@ -140,4 +145,4 @@ const strategy: Module<IStrategyState, IMainState> = {
   },
 };
 
-export default strategy;
+export default strategies;

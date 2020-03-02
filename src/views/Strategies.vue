@@ -4,49 +4,44 @@
       <v-col xs="12" sm="12" md="12" lg="4" xl="4" class="pt-0 mb-0">
         <v-row class="pt-0 mb-0">
           <v-col xs="12" sm="12" md="12" lg="12" xl="12">
-            <!-- Scripts tree -->
+            
+            <!-- Strategies tree -->
             <v-card height="100%">
               <v-toolbar dense flat>
                 <v-toolbar-title>Strategies</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <div v-if="Portfolio.id && !Strategy.id">
                   <v-menu bottom :close-on-content-click="false">
-                    <template v-slot:activator="{ on }">
+                    <template v-slot:activator="{on}">
                       <v-btn v-on="on" icon small>
                         <v-icon>post_add</v-icon>
                       </v-btn>
                     </template>
-                    <v-list>
-                      <v-list-group
-                        dense
-                        no-action
-                        sub-group
+                    <v-list dense expand>
+                      <v-list-group no-action
                         v-for="(cat, i) in ScriptsCategories"
                         :key="i"
-                        link
                       >
                         <template v-slot:activator>
-                          <v-list-item-content>
-                            <v-list-item-title>{{ cat.name }}</v-list-item-title>
-                          </v-list-item-content>
+                          <v-list-item-title>{{cat.name}}</v-list-item-title>
                         </template>
 
                         <v-list-item
                           v-for="(script, i) in cat.scripts"
                           :key="i"
-                          link
                           @click="CreateStrategy(script.id)"
                         >
-                          <v-list-item-title v-text="script.name"></v-list-item-title>
+                          <v-list-item-title>{{script.name}}</v-list-item-title>
                         </v-list-item>
                       </v-list-group>
+
                     </v-list>
                   </v-menu>
                 </div>
 
                 <div v-if="Strategy.id">
                   <v-btn
-                    v-if="Strategy.status === 'stop'"
+                    v-if="Strategy.state === 'stop'"
                     icon
                     small
                     v-on:click="ChangeStatus"
@@ -55,7 +50,7 @@
                   </v-btn>
 
                   <v-btn
-                    v-else-if="Strategy.status === 'run'"
+                    v-else-if="Strategy.state === 'run'"
                     icon
                     small
                     v-on:click="ChangeStatus"
@@ -64,7 +59,7 @@
                   </v-btn>
 
                   <v-btn
-                    v-else-if="Strategy.status === 'error'"
+                    v-else-if="Strategy.state === 'error'"
                     icon
                     small
                     v-on:click="ChangeStatus"
@@ -83,29 +78,16 @@
               </v-toolbar>
               <v-divider></v-divider>
 
+              <!-- Strategies tree -->
               <v-sheet class="overflow-y-auto" height="424">
-                <v-treeview
-                  :items="Portfolios"
-                  item-children="strategies"
-                  :active.sync="active"
-                  @update:active="Select"
-                  transition
-                  activatable
-                  dense
-                >
+                <v-treeview :items="Portfolios" item-children="strategies" @update:active="Select" transition activatable dense>
                   <template v-slot:prepend="{item, open}">
                     <v-icon v-if="item.strategies">{{open ? 'mdi-folder-open' : 'mdi-folder'}}</v-icon>
                     <v-icon v-else>mdi-file-document-outline</v-icon>
                   </template>
 
-                  <template v-slot:append="{ item }">
-                    <v-chip
-                      v-if="!item.strategies"
-                      :color="GetStrategyStatusColor(item.status)"
-                      dark
-                      label
-                      x-small
-                    >{{item.status}}</v-chip>
+                  <template v-slot:append="{item: {strategies, state}}">
+                    <v-chip v-if="!strategies" :color="GetStateColor(state)" dark label x-small>{{state}}</v-chip>
                   </template>
                 </v-treeview>
               </v-sheet>
@@ -242,7 +224,7 @@ export default Vue.extend({
   data() {
     return {
       snack: false,
-      active: [],
+      // active: [],
       snackColor: '',
       snackText: '',
       max40chars: (v) => v.length <= 40 || 'Input too long!',
@@ -423,21 +405,18 @@ export default Vue.extend({
     DeletePortfolioOrStrategy() {
       this.$store.dispatch('strategies/DeleteStrategy');
     },
-    GetStrategyStatusColor(status: string) {
-      let сolor = 'amber';
-      switch (status) {
-        case 'run':
-          сolor = 'green';
-          break;
-        case 'error':
-          сolor = 'red';
-          break;
-        case 'stop':
-          сolor = 'grey';
-          break;
-      }
-      return сolor;
+
+    // Strategy state color
+    GetStateColor(state: string) {
+        let сolor = 'amber';
+        switch (state) {
+          case 'run':   сolor = 'green'; break;
+          case 'error': сolor = 'red'; break;
+          case 'stop':  сolor = 'grey'; break;
+        }
+        return сolor;
     },
+
     // Side color
     GetSideColor(side: string) {
       return side === 'buy' ? 'green' : 'red';
