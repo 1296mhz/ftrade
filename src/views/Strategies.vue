@@ -10,69 +10,43 @@
               <v-toolbar dense flat>
                 <v-toolbar-title>Strategies</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <div v-if="Portfolio.id && !Strategy.id">
-                  <v-menu bottom :close-on-content-click="false">
-                    <template v-slot:activator="{on}">
-                      <v-btn v-on="on" icon small>
-                        <v-icon>post_add</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list dense expand>
-                      <v-list-group no-action
-                        v-for="(cat, i) in ScriptsCategories"
-                        :key="i"
-                      >
+                <v-btn @click="ChangeStatus" icon small>
+                  <v-icon>play_circle_outline</v-icon>
+                </v-btn>
+                <v-btn @click="ChangeStatus" icon small>
+                  <v-icon>pause_circle_outline</v-icon>
+                </v-btn>
+                <v-btn icon small disabled></v-btn>
+
+                <v-menu bottom left v-model="createMenu" :close-on-content-click="false" min-width=200 max-width=200>
+                  <template v-slot:activator="{on}">
+                    <v-btn v-on="on" icon small>
+                      <v-icon>add</v-icon>
+                    </v-btn>
+                  </template>
+
+                  <v-list dense>
+                    <v-list-item @click="CreatePortfolio">
+                      <v-list-item-title>Portfolio</v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-group>
+                      <template v-slot:activator>
+                        <v-list-item-title>Strategy</v-list-item-title>
+                      </template>                        
+                      <v-list-group v-for="(cat, i) in categories" :key="i" no-action sub-group>
                         <template v-slot:activator>
                           <v-list-item-title>{{cat.name}}</v-list-item-title>
                         </template>
-
-                        <v-list-item
-                          v-for="(script, i) in cat.scripts"
-                          :key="i"
-                          @click="CreateStrategy(script.id)"
-                        >
+                        <v-list-item v-for="(script, i) in cat.scripts" :key="i" @click="CreateStrategy(script.id)">
                           <v-list-item-title>{{script.name}}</v-list-item-title>
                         </v-list-item>
                       </v-list-group>
+                    </v-list-group>
+                  </v-list>
+                </v-menu>
 
-                    </v-list>
-                  </v-menu>
-                </div>
-
-                <div v-if="Strategy.id">
-                  <v-btn
-                    v-if="Strategy.state === 'stop'"
-                    icon
-                    small
-                    v-on:click="ChangeStatus"
-                  >
-                    <v-icon>play_circle_outline</v-icon>
-                  </v-btn>
-
-                  <v-btn
-                    v-else-if="Strategy.state === 'run'"
-                    icon
-                    small
-                    v-on:click="ChangeStatus"
-                  >
-                    <v-icon>pause_circle_outline</v-icon>
-                  </v-btn>
-
-                  <v-btn
-                    v-else-if="Strategy.state === 'error'"
-                    icon
-                    small
-                    v-on:click="ChangeStatus"
-                  >
-                    <v-icon>replay</v-icon>
-                  </v-btn>
-                </div>
-
-                <v-btn @click="CreatePortfolio" icon small>
-                  <v-icon>mdi-folder</v-icon>
-                </v-btn>
-
-                <v-btn @click="DeletePortfolioOrStrategy" icon small>
+                <v-btn @click="DeleteStrategy" icon small>
                   <v-icon>delete</v-icon>
                 </v-btn>
               </v-toolbar>
@@ -80,7 +54,7 @@
 
               <!-- Strategies tree -->
               <v-sheet class="overflow-y-auto" height="424">
-                <v-treeview :items="Portfolios" item-children="strategies" @update:active="Select" transition activatable dense>
+                <v-treeview :items="portfolios" item-children="strategies" @update:active="SelectStrategy" transition activatable dense>
                   <template v-slot:prepend="{item, open}">
                     <v-icon v-if="item.strategies">{{open ? 'mdi-folder-open' : 'mdi-folder'}}</v-icon>
                     <v-icon v-else>mdi-file-document-outline</v-icon>
@@ -96,12 +70,12 @@
 
           <!-- Params -->
           <v-col xs="12" sm="12" md="12" lg="12" xl="12" class="pt-0">
-            <v-card height="100%">
+            <v-card height="370">
               <v-toolbar dense flat>
                 <v-toolbar-title>Params</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
-
+<!--
               <v-data-table :headers="paramsHeader" :items="StrategyParams" height="261">
                 <template v-slot:item.value="props">
                   <v-edit-dialog :return-value.sync="props.item.value" large persistent>
@@ -122,6 +96,7 @@
                   </v-edit-dialog>
                 </template>
               </v-data-table>
+-->              
             </v-card>
           </v-col>
         </v-row>
@@ -131,12 +106,13 @@
         <v-row>
           <v-col xs="12" sm="12" md="12" lg="12" xl="12">
             <!-- Graphics -->
-            <v-card height="100%">
+            <v-card height="470">
               <v-toolbar dense flat>
                 <v-toolbar-title>График</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
               <v-divider></v-divider>
+              <!--
               <v-container>
                 <highcharts
                   ref="OhlcChart"
@@ -145,6 +121,7 @@
                   :options="chartOptions"
                 ></highcharts>
               </v-container>
+              -->
             </v-card>
           </v-col>
 
@@ -215,7 +192,7 @@ import Vue from 'vue';
 import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
-import { IOrder, ITrade } from '@/store/types';
+import { IOrder, ITrade } from '../store/types';
 
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
@@ -223,65 +200,12 @@ Vue.use(HighchartsVue);
 export default Vue.extend({
   data() {
     return {
-      snack: false,
-      // active: [],
-      snackColor: '',
-      snackText: '',
+      createMenu: false,
       max40chars: (v) => v.length <= 40 || 'Input too long!',
       paramsHeader: [
-        {
-          text: 'Param',
-          align: 'left',
-          sortable: false,
-          value: 'key',
-        },
-        {
-          text: 'Value',
-          align: 'left',
-          sortable: false,
-          value: 'value',
-        },
+        { text: 'Param', align: 'left', sortable: false, value: 'key' },
+        { text: 'Value', align: 'left', sortable: false, value: 'value' },
       ],
-      chartOptions: {
-        chart: {
-          type: 'candlestick',
-          zoomType: 'x',
-          animation: false,
-        },
-        navigator: {
-          adaptToUpdatedData: false,
-          series: {},
-        },
-        scrollbar: {
-          enabled: false,
-        },
-        title: {
-          text: 'Symbol not selected',
-        },
-        rangeSelector: {
-          enabled: false,
-        },
-        xAxis: {
-          events: {
-            // setExtremes: this.setExtremes,
-            // afterSetExtremes: this.afterSetExtremes,
-          },
-          minRange: 60 * 1000,
-        },
-        yAxis: {
-          // floor: 0,
-        },
-        series: [
-          {
-            dataGrouping: {
-              enabled: false,
-            },
-          },
-        ],
-        credits: {
-          enabled: false,
-        },
-      },
       // Orders table
       ordersHeaders: [
         { text: 'Time', value: 'time' },
@@ -304,30 +228,17 @@ export default Vue.extend({
       ],
     };
   },
+
   computed: {
-    Portfolios: {
-      get() {
-        return this.$store.state.strategies.portfolios;
-      },
-    },
-    Portfolio: {
-      get() {
-        return this.$store.state.strategies.portfolio;
-      },
-    },
-    Strategy: {
-      get() {
-        return this.$store.state.strategies.strategy;
-      },
-    },
+    categories()  { return this.$store.state.scripts.categories; },
+    portfolios()  { return this.$store.state.strategies.portfolios; },
+    isPortfolio() { return this.$store.state.strategies.portfolio.id; },
+    portfolio()   { return this.$store.state.strategies.portfolio; },
+    strategy()    { return this.$store.state.strategies.strategy; },
+
     StrategyParams: {
       get() {
         return this.$store.state.strategies.strategy.params;
-      },
-    },
-    ScriptsCategories: {
-      get() {
-        return this.$store.state.scripts.categories;
       },
     },
     // Trades table
@@ -363,52 +274,40 @@ export default Vue.extend({
 
   methods: {
     CreatePortfolio() {
+      this.createMenu = false;
       this.$store.dispatch('strategies/CreatePortfolio');
     },
     CreateStrategy(scriptId) {
+      this.createMenu = false;
       this.$store.dispatch('strategies/CreateStrategy', scriptId);
     },
-    Select(selected: string[]) {
+
+    // Current strategy or portfolio
+    async SelectStrategy(selected: string[]) {
       if (selected.length > 0) {
         const id = selected[0];
-        //  we get a portfolio
-        if (
-          this.$store.state.strategies.portfolios.find(
-            (portfolio) => portfolio.id === id)) {
-          // const portfolio = this.Portfolios.find(
-          //   (portfolio) => portfolio.id === id
-          // );
-
-          const portfolio = this.$store.state.strategies.portfolios.find(
-            (portfolio) => portfolio.id === id);
-
-          this.$store.commit('strategies/SetCurrentPortfolio', portfolio);
-          this.$store.dispatch('scripts/GetScripts');
-          if (!this.$store.state.strategies.portfolio.strategy) {
-            this.$store.commit('strategies/SetCurrentStrategy', {
-              id: '',
-              name: '',
-              portfolioId: '',
-              scriptId: '',
-              params: [],
-            });
-          }
+        const portfolio = this.portfolios.find((cat) => cat.id === id);
+        if (portfolio) {
+          this.$store.commit('strategies/SetPortfolio', {...portfolio});
         } else {
-          const cportfolio = this.$store.state.strategies.portfolios.find(
-            (portfolio) => portfolio.strategies.find((strategy) => strategy.id === id));
-          this.$store.commit('strategies/SetCurrentPortfolio', cportfolio);
-          const strategy = this.$store.state.strategies.portfolio.strategies.find((strategy) => strategy.id === id);
-          this.$store.commit('strategies/SetCurrentStrategy', strategy);
+          await this.$store.dispatch('strategies/GetStrategy', id);
+          // await this.$store.dispatch('scripts/GetTestReport', id);
+          // await this.$store.dispatch('scripts/GetTestLogs', id);
         }
       }
     },
-    DeletePortfolioOrStrategy() {
-      this.$store.dispatch('strategies/DeleteStrategy');
+
+    DeleteStrategy() {
+      if (this.isPortfolio) {
+        this.$store.dispatch('strategies/DeletePortfolio');
+      } else {
+        this.$store.dispatch('strategies/DeleteStrategy');
+      }
     },
 
     // Strategy state color
     GetStateColor(state: string) {
-        let сolor = 'amber';
+        let сolor = 'grey';
         switch (state) {
           case 'run':   сolor = 'green'; break;
           case 'error': сolor = 'red'; break;
@@ -428,6 +327,16 @@ export default Vue.extend({
       // console.log("ChangeState");
       this.$store.dispatch('strategies/ChangeStatus');
     },
+  },
+
+  // Hooks
+  async created() {
+    await this.$store.dispatch('strategies/GetPortfolios');
+    await this.$store.dispatch('strategies/SubscribeStrategies');
+  },
+
+  beforeDestroy() {
+    this.$store.dispatch('strategies/UnsubscribeStrategies');
   },
 });
 </script>
