@@ -10,10 +10,10 @@
               <v-toolbar dense flat>
                 <v-toolbar-title>Strategies</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn @click="ChangeStatus" icon small>
+                <v-btn @click="StartStrategy" icon small>
                   <v-icon>play_circle_outline</v-icon>
                 </v-btn>
-                <v-btn @click="ChangeStatus" icon small>
+                <v-btn @click="StopStrategy" icon small>
                   <v-icon>pause_circle_outline</v-icon>
                 </v-btn>
                 <v-btn icon small disabled></v-btn>
@@ -130,8 +130,15 @@
             <v-card height="100%">
               <v-container fluid>
                 <v-tabs height="45">
+                  <v-tab>Logs</v-tab>
                   <v-tab>Orders</v-tab>
                   <v-tab>Trades</v-tab>
+
+                  <!-- Logs -->
+                  <v-tab-item transition="none" reverse-transition="none">
+                    <v-data-table :headers="logsHeaders" :items="logs" item-key="id" height="300" dense disable-sort fixed-header disable-pagination hide-default-footer>
+                    </v-data-table>
+                  </v-tab-item>
 
                   <!-- Orders -->
                   <v-tab-item transition="none" reverse-transition="none">
@@ -192,7 +199,7 @@ import Vue from 'vue';
 import HighchartsVue from 'highcharts-vue';
 import Highcharts from 'highcharts';
 import stockInit from 'highcharts/modules/stock';
-import { IOrder, ITrade } from '../store/types';
+import { IOrder, ITrade, ILogEntry } from '../store/types';
 
 stockInit(Highcharts);
 Vue.use(HighchartsVue);
@@ -206,6 +213,14 @@ export default Vue.extend({
         { text: 'Param', align: 'left', sortable: false, value: 'key' },
         { text: 'Value', align: 'left', sortable: false, value: 'value' },
       ],
+
+      // Logs table
+      logsHeaders: [
+        {text: 'Time', value: 'time', width: 100},
+        {text: 'Level', value: 'level', width: 50},
+        {text: 'Text', value: 'text', width: 300},
+      ],
+
       // Orders table
       ordersHeaders: [
         { text: 'Time', value: 'time' },
@@ -270,6 +285,19 @@ export default Vue.extend({
         };
       });
     },
+
+    // Test logs
+    logs() {
+      return this.$store.state.strategies.logs.map((log: ILogEntry, index: number) => {
+        return {
+          id: index,
+          time: new Date(log.time).toLocaleString(),
+          level: log.level,
+          text: log.text,
+        };
+      });
+    },
+
   },
 
   methods: {
@@ -291,8 +319,7 @@ export default Vue.extend({
           this.$store.commit('strategies/SetPortfolio', {...portfolio});
         } else {
           await this.$store.dispatch('strategies/GetStrategy', id);
-          // await this.$store.dispatch('scripts/GetTestReport', id);
-          // await this.$store.dispatch('scripts/GetTestLogs', id);
+          await this.$store.dispatch('strategies/GetStrategyLogs', id);
         }
       }
     },
@@ -302,6 +329,22 @@ export default Vue.extend({
         this.$store.dispatch('strategies/DeletePortfolio');
       } else {
         this.$store.dispatch('strategies/DeleteStrategy');
+      }
+    },
+
+    StartStrategy() {
+      if (this.isPortfolio) {
+        // this.$store.dispatch('strategies/StartPortfolio');
+      } else {
+        this.$store.dispatch('strategies/StartStrategy');
+      }
+    },
+
+    StopStrategy() {
+      if (this.isPortfolio) {
+        // this.$store.dispatch('strategies/StopPortfolio');
+      } else {
+        this.$store.dispatch('strategies/StopStrategy');
       }
     },
 
@@ -322,10 +365,6 @@ export default Vue.extend({
     },
     SaveStrategy() {
       this.$store.commit('strategies/SaveStrategy');
-    },
-    ChangeStatus() {
-      // console.log("ChangeState");
-      this.$store.dispatch('strategies/ChangeStatus');
     },
   },
 

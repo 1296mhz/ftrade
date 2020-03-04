@@ -1,15 +1,17 @@
 import Vue from 'vue';
 import uuid from 'uuid/v4';
 import { Module } from 'vuex';
-import { IMainState, IStrategyParams, IInstrument, ITrade, IOrder} from './types';
+import { IMainState, IStrategyParams, IInstrument, ITrade, ILogEntry, IOrder} from './types';
+import { LogLevels } from 'vuejs-logger/dist/vue-logger/enum/log-levels';
 
 // Strategies state interface
 export interface IStrategiesState {
   portfolios: IPortfolio[];
   portfolio: IPortfolio;
+  strategy: IStrategyLive;
+  logs: ILogEntry[];
   orders: IOrder[];
   trades: ITrade[];
-  strategy: IStrategyLive;
 }
 
 // Portfolio
@@ -56,6 +58,7 @@ const strategies: Module<IStrategiesState, IMainState> = {
 
     orders: [],
     trades: [],
+    logs: [],
   },
 
   // Getters
@@ -86,25 +89,15 @@ const strategies: Module<IStrategiesState, IMainState> = {
   // Mutations
   mutations:  {
     // Portfolios
-    SetPortfolios(state,  portfolios: IPortfolio[]) {
-      state.portfolios = portfolios;
-    },
-    CreatePortfolio(state, portfolio: IPortfolio) {
-      state.portfolios.push(portfolio);
-    },
+    SetPortfolios(state,  portfolios: IPortfolio[])   { state.portfolios = portfolios; },
+    CreatePortfolio(state, portfolio: IPortfolio)     { state.portfolios.push(portfolio); },
     DeletePortfolio(state, id: string) {
       state.portfolios = state.portfolios.filter((p) => p.id !== id);
     },
-    SetPortfolio(state, portfolio: IPortfolio) {
-      state.portfolio = portfolio;
-      state.strategy.id = '';
-    },
+    SetPortfolio(state, portfolio: IPortfolio)        { state.portfolio = portfolio; state.strategy.id = ''; },
 
     // Strategies
-    SetStrategy(state, strategy: IStrategyLive) {
-      state.strategy = strategy;
-      state.portfolio.id = '';
-    },
+    SetStrategy(state, strategy: IStrategyLive)       { state.strategy = strategy; state.portfolio.id = ''; },
     CreateStrategy(state, strategy: IStrategyLive) {
       const portfolio: IPortfolio =  state.portfolios.find((p) => p.id === strategy.portfolio);
       if (portfolio) {
@@ -112,11 +105,17 @@ const strategies: Module<IStrategiesState, IMainState> = {
       }
     },
     DeleteStrategy(state, id: string) {
-      state.portfolios.forEach((p) => {
-        p.strategies = p.strategies.filter((s) => s.id !== id);
-      });
+      state.portfolios.forEach((p) => p.strategies = p.strategies.filter((s) => s.id !== id));
+    },
+    UpdateStrategy(state, update: any) {
+      let strategy: IStrategyLive;
+      state.portfolios.some((p) => strategy = p.strategies.find((s) => s.id === update.id));
+      if (strategy) {
+        strategy.state = update.state;
+      }
     },
 
+    SetLogs(state, logs: ILogEntry[])                 { state.logs = logs; },
   },
   // Actions
   actions: {
@@ -159,23 +158,16 @@ const strategies: Module<IStrategiesState, IMainState> = {
     // Subscribe to strategies updates
     SubscribeStrategies({commit, rootState: {userId}}) {
       Vue.$cf.Subscribe(`portfolios#${userId}`, ({data}) => {
-        if (data.command === 'create') {
-          commit('CreatePortfolio', {...data.params, strategies: []});
-        } else
-        if (data.command === 'delete') {
-          commit('DeletePortfolio', data.params.id);
+        switch (data.command) {
+          case 'create': commit('CreatePortfolio', {...data.params, strategies: []}); break;
+          case 'delete': commit('DeletePortfolio', data.params.id); break;
         }
       });
-
       Vue.$cf.Subscribe(`strategies#${userId}`, ({data}) => {
-        if (data.command === 'create') {
-          commit('CreateStrategy', data.params);
-        } else
-        if (data.command === 'delete') {
-          commit('DeleteStrategy', data.params.id);
-        } else
-        if (data.command === 'update') {
-          // commit('UpdateStrategy', data.params);
+        switch (data.command) {
+          case 'create':  commit('CreateStrategy', data.params); break;
+          case 'delete':  commit('DeleteStrategy', data.params); break;
+          case 'state':   commit('UpdateStrategy', data.params); break;
         }
       });
     },
@@ -226,16 +218,42 @@ const strategies: Module<IStrategiesState, IMainState> = {
       }
     },
 
-    ChangeStatus({state, commit}) {
-        const cportfolio = state.portfolios.filter((portfolio) => portfolio.id === state.portfolio.id);
-        const strategies = cportfolio[0].strategies.filter((strategy) => strategy.id === state.strategy.id);
-        strategies[0].state = strategies[0].state === 'stop' || strategies[0].state === 'error' ? 'run' : 'stop';
-        const portfolios = state.portfolios.map(
-          (portfolio) => {
-            return portfolio.id === state.portfolio.id ? portfolio = cportfolio[0] : portfolio;
-          });
-        commit('SetPortfolios', portfolios);
+    // Start strategy
+    async StartStrategy({state, commit}) {
+      try {
+        if (state.strategy.id) {
+          await Vue.$cf.RPC({method: 'StartStrategy', params: {id: state.strategy.id}});
+        }
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
     },
+
+    // Stop strategy
+    async StopStrategy({state, commit}) {
+      try {
+        if (state.strategy.id) {
+          await Vue.$cf.RPC({method: 'StopStrategy', params: {id: state.strategy.id}});
+        }
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Request logs from strategy
+    async GetStrategyLogs({commit}, id: string) {
+      try {
+        const data = await Vue.$cf.RPC({method: 'GetStrategyLogs', params: {id: id}});
+        commit('SetLogs', data.logs);
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+
   },
 };
 
