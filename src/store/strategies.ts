@@ -116,6 +116,8 @@ const strategies: Module<IStrategiesState, IMainState> = {
     },
 
     SetLogs(state, logs: ILogEntry[])                 { state.logs = logs; },
+
+    SetStrategyInstruments(state, instruments: IInstrument[]) { state.strategy.instruments = instruments; },
   },
   // Actions
   actions: {
@@ -212,6 +214,16 @@ const strategies: Module<IStrategiesState, IMainState> = {
         if (state.strategy.id) {
           await Vue.$cf.RPC({ method: 'DeleteStrategy', params: {id: state.strategy.id}});
         }
+      } catch (error) {
+        commit('SetError', error, {root: true});
+        throw error;
+      }
+    },
+
+    // Update strategy
+    async UpdateStrategy({state, commit}) {
+      try {
+        await Vue.$cf.RPC({method: 'UpdateStrategy', params: {strategy: state.strategy}});
       } catch (error) {
         commit('SetError', error, {root: true});
         throw error;

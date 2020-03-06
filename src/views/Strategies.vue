@@ -71,10 +71,17 @@
           <!-- Params -->
           <v-col xs="12" sm="12" md="12" lg="12" xl="12" class="pt-0">
             <v-card height="370">
-              <v-toolbar dense flat>
-                <v-toolbar-title>Params</v-toolbar-title>
-                <v-spacer></v-spacer>
-              </v-toolbar>
+              <v-container>
+
+              <v-row dense>
+                <v-select :items="vaccounts" label="Select Account" dense single-line @change=""></v-select>
+              </v-row>
+
+              <v-row dense>
+                <!-- <v-combobox v-model="strategyInstruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>  -->
+                <v-autocomplete :items="instruments"  v-model="strategyInstruments" label="Instruments" multiple deletable-chips small-chips dense></v-autocomplete>
+              </v-row>
+
 <!--
               <v-data-table :headers="paramsHeader" :items="StrategyParams" height="261">
                 <template v-slot:item.value="props">
@@ -97,8 +104,10 @@
                 </template>
               </v-data-table>
 -->              
+              </v-container>
             </v-card>
           </v-col>
+
         </v-row>
       </v-col>
 
@@ -241,6 +250,14 @@ export default Vue.extend({
         { text: 'Price', value: 'price' },
         { text: 'Quantity', value: 'quantity' },
       ],
+
+      instrumentsHeaders: [
+        {text: 'Ticker', value: 'ticker'},
+        {text: 'Account', value: 'account'},
+        {text: 'Action', value: 'action'},
+      ],
+
+      instruments: ['RTS.FORTS.H2020', 'MXI.FORTS.H2020', 'Si.FORTS.H2020'],
     };
   },
 
@@ -251,11 +268,27 @@ export default Vue.extend({
     portfolio()   { return this.$store.state.strategies.portfolio; },
     strategy()    { return this.$store.state.strategies.strategy; },
 
-    StrategyParams: {
-      get() {
-        return this.$store.state.strategies.strategy.params;
+    // Virtual accounts
+    vaccounts() {
+      return this.$store.state.terminal.vaccounts.map((acc) => {
+        return {
+          value: acc.id,
+          text: acc.name };
+      });
+    },
+
+    // Instruments
+    strategyInstruments: {
+      get() { return this.$store.state.strategies.strategy.instruments.map((instrument) =>
+        instrument.ticker); },
+      set(value: string[]) {
+        this.$store.commit('strategies/SetStrategyInstruments', value.map((ticker) => {
+          return {ticker: ticker, account: 'test', position: '0'};
+        }));
+        this.$store.dispatch('strategies/UpdateStrategy');
       },
     },
+
     // Trades table
     trades() {
       return this.$store.state.strategies.trades.map((trade: ITrade) => {
