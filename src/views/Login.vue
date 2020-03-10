@@ -5,26 +5,37 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <v-card class="elevation-12">
+              
               <v-toolbar color="primary" dark flat>
                 <v-toolbar-title>Login</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
+
               <v-card-text>
                 <v-form @submit.prevent="submit">
                   <v-text-field v-model="username" label="Login" prepend-icon="person" type="text"></v-text-field>
                   <v-text-field v-model="password" label="Password" prepend-icon="lock" type="password"></v-text-field>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" :loading="loading" :disabled="loading" type="submit">Login</v-btn>
+                    <v-btn color="primary" type="submit">Login</v-btn>
                   </v-card-actions>
-                  <v-alert :value="error !== ''" type="error" transition="scale-transition">{{error}}</v-alert>
                 </v-form>
               </v-card-text>
+
+              <v-progress-linear :active="progressBar" indeterminate></v-progress-linear>
+              
             </v-card>
           </v-col>
         </v-row>
       </v-container>
     </v-content>
+
+    <!-- Snackbar -->
+    <v-snackbar v-model="errorBar" color="error">
+      {{ lastError }}
+      <v-btn @click="errorBar = false" dark text>Close</v-btn>
+    </v-snackbar>
+
   </v-app>
 </template>
 
@@ -35,26 +46,37 @@ export default Vue.extend({
   data: () => ({
     username: null,
     password: null,
-    loading: false,
+
+    errorBar: false,
+    progressBar: false,
   }),
 
   computed: {
-    error() { return this.$store.state.error; },
+    lastError()   { return this.$store.getters.lastError; },
+    errorsCount() { return this.$store.getters.errorsCount; },
+  },
+
+  watch: {
+    errorsCount() { this.errorBar = true; },
   },
 
   methods: {
     // Login
     async submit() {
+      this.progressBar = true;
       try {
         await this.$store.dispatch('Login', {
           password: this.password,
           username: this.username,
         });
         await this.$store.dispatch('Connect');
-        // await this.$store.dispatch('GetVAccounts');
 
         this.$router.push('/terminal');
-      } catch {/**/}
+      } catch {
+        // catch exception
+      } finally {
+        this.progressBar = false;
+      }
     },
   },
 });

@@ -1,7 +1,7 @@
 <template>
  <div>
-    <v-overlay :value="false">
-      <v-progress-circular indeterminate size="64" color="purple"></v-progress-circular>
+    <v-overlay :value="!connected">
+      <v-progress-circular indeterminate size="64">Connecting</v-progress-circular>
     </v-overlay>
   <v-app id="inspire">
 
@@ -71,10 +71,8 @@ export default Vue.extend({
       'errorsCount',
     ]),
 
-    // Current title
-    title() {
-      return this.$route.name;
-    },
+    connected() { return this.$store.state.connected; },
+    title() { return this.$route.name; },
 
     // Virtual accounts
     vaccounts() {
