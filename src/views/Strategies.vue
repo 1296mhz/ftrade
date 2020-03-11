@@ -72,16 +72,39 @@
           <v-col xs="12" sm="12" md="12" lg="12" xl="12" class="pt-0">
             <v-card height="370">
               <v-container>
+                <!-- Instruments -->
+<!--
+                <v-row dense>
+                  <v-col>
+                    <v-text-field v-model="newInstrument.ticker" label="Ticker" dense></v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-text-field v-model="newInstrument.account" label="Account" dense></v-text-field>
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn icon @click=""><v-icon>mdi-plus</v-icon></v-btn>
+                  </v-col>
+                </v-row>
+-->
+                <v-row dense>
+                  <v-data-table :headers="instrumentsHeaders" :items="instruments" item-key="ticker" dense height="100" fixed-header disable-pagination hide-default-footer hide-default-header>
+                    <template v-slot:item.action="{ item }">
+                      <v-icon small @click="">cancel</v-icon>
+                    </template>
+                  </v-data-table>
+                </v-row>
+  <!--              
+                <v-divider></v-divider>
+
 
               <v-row dense>
                 <v-select :items="vaccounts" label="Select Account" dense single-line @change=""></v-select>
               </v-row>
 
               <v-row dense>
-                <!-- <v-combobox v-model="strategyInstruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>  -->
-                <v-autocomplete :items="instruments"  v-model="strategyInstruments" label="Instruments" multiple deletable-chips small-chips dense></v-autocomplete>
+                <v-combobox :items="instruments"  v-model="strategyInstruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>
               </v-row>
-
+-->
 <!--
               <v-data-table :headers="paramsHeader" :items="StrategyParams" height="261">
                 <template v-slot:item.value="props">
@@ -251,13 +274,23 @@ export default Vue.extend({
         { text: 'Quantity', value: 'quantity' },
       ],
 
+      // Instruments
+      newInstrument: {
+        ticker: '',
+        account: '',
+      },
+
       instrumentsHeaders: [
         {text: 'Ticker', value: 'ticker'},
         {text: 'Account', value: 'account'},
         {text: 'Action', value: 'action'},
       ],
 
-      instruments: ['RTS.FORTS.H2020', 'MXI.FORTS.H2020', 'Si.FORTS.H2020'],
+      instruments: [
+        {ticker: 'RTS.FORTS.H2020', account: 'Acc1'},
+        {ticker: 'MXI.FORTS.H2020', account: 'Acc1'},
+        {ticker: 'Si.FORTS.H2020', account: 'Acc1'},
+      ],
     };
   },
 
@@ -278,10 +311,12 @@ export default Vue.extend({
     },
 
     // Instruments
+
     strategyInstruments: {
-      get() { return this.$store.state.strategies.strategy.instruments.map((instrument) =>
-        instrument.ticker); },
+      get() //{ return this.$store.state.strategies.strategy.instruments.map((instrument) => instrument.ticker); },
+      { return this.$store.state.strategies.strategy.instruments; },
       set(value: string[]) {
+        console.log(value);
         this.$store.commit('strategies/SetStrategyInstruments', value.map((ticker) => {
           return {ticker: ticker, account: 'test', position: '0'};
         }));
