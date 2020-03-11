@@ -32,9 +32,7 @@
     </v-app-bar>
 
     <v-content>
-      <div height="80vh">
       <router-view></router-view>
-      </div>
     </v-content>
 
     <!-- Snackbar -->
@@ -72,7 +70,7 @@ export default Vue.extend({
     ]),
 
     connected() { return this.$store.state.connected; },
-    title() { return this.$route.name; },
+    title()     { return this.$route.name; },
 
     // Virtual accounts
     vaccounts() {

@@ -2,7 +2,6 @@ import Vue from 'vue';
 import uuid from 'uuid/v4';
 import { Module } from 'vuex';
 import { IMainState, IStrategyParams, IInstrument, ITrade, ILogEntry, IOrder} from './types';
-import { LogLevels } from 'vuejs-logger/dist/vue-logger/enum/log-levels';
 
 // Strategies state interface
 export interface IStrategiesState {
@@ -117,7 +116,15 @@ const strategies: Module<IStrategiesState, IMainState> = {
 
     SetLogs(state, logs: ILogEntry[])                 { state.logs = logs; },
 
-    SetStrategyInstruments(state, instruments: IInstrument[]) { state.strategy.instruments = instruments; },
+    // Instruments
+    CreateInstrument(state, instrument: IInstrument) {
+      state.strategy.instruments.push(instrument);
+    },
+    DeleteInstrument(state, idx: number) {
+      state.strategy.instruments.splice(idx, 1);
+    },
+
+    // SetStrategyInstruments(state, instruments: IInstrument[]) { state.strategy.instruments = instruments; },
   },
   // Actions
   actions: {

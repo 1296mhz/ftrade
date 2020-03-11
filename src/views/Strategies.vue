@@ -1,12 +1,12 @@
 <template>
-  <v-container fluid class="pt-0 pb-0">
-    <v-row>
-      <v-col xs="12" sm="12" md="12" lg="4" xl="4" class="pt-0 mb-0">
-        <v-row class="pt-0 mb-0">
-          <v-col xs="12" sm="12" md="12" lg="12" xl="12">
-            
-            <!-- Strategies tree -->
-            <v-card height="100%">
+  <v-container fluid class="py-0 px-1">    
+    <v-row dense>
+      <v-col cols="12" md="4">
+
+        <v-row dense>
+          <!-- Strategies tree -->
+          <v-col cols="12">
+            <v-card>
               <v-toolbar dense flat>
                 <v-toolbar-title>Strategies</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -52,7 +52,6 @@
               </v-toolbar>
               <v-divider></v-divider>
 
-              <!-- Strategies tree -->
               <v-sheet class="overflow-y-auto" height="424">
                 <v-treeview :items="portfolios" item-children="strategies" @update:active="SelectStrategy" transition activatable dense>
                   <template v-slot:prepend="{item, open}">
@@ -69,29 +68,30 @@
           </v-col>
 
           <!-- Params -->
-          <v-col xs="12" sm="12" md="12" lg="12" xl="12" class="pt-0">
+          <v-col cols="12">
             <v-card height="370">
               <v-container>
                 <!-- Instruments -->
-<!--
                 <v-row dense>
                   <v-col>
                     <v-text-field v-model="newInstrument.ticker" label="Ticker" dense></v-text-field>
                   </v-col>
                   <v-col>
-                    <v-text-field v-model="newInstrument.account" label="Account" dense></v-text-field>
+                    <v-select :items="vaccounts" item-text="name" item-value="id" v-model="newInstrument.account" label="Account" dense single-line></v-select>
                   </v-col>
                   <v-col cols="auto">
-                    <v-btn icon @click=""><v-icon>mdi-plus</v-icon></v-btn>
+                    <v-btn icon small @click="CreateInstrument"><v-icon>mdi-plus</v-icon></v-btn>
                   </v-col>
                 </v-row>
--->
+
                 <v-row dense>
-                  <v-data-table :headers="instrumentsHeaders" :items="instruments" item-key="ticker" dense height="100" fixed-header disable-pagination hide-default-footer hide-default-header>
-                    <template v-slot:item.action="{ item }">
-                      <v-icon small @click="">cancel</v-icon>
-                    </template>
-                  </v-data-table>
+                  <v-col>
+                    <v-data-table :headers="instrumentsHeaders" :items="instruments" dense height="100" fixed-header disable-pagination hide-default-footer hide-default-header>
+                      <template v-slot:item.action="{ item }">
+                        <v-icon small @click="DeleteInstrument(item.id)">cancel</v-icon>
+                      </template>
+                    </v-data-table>
+                  </v-col>
                 </v-row>
   <!--              
                 <v-divider></v-divider>
@@ -134,9 +134,9 @@
         </v-row>
       </v-col>
 
-      <v-col xs="12" sm="12" md="12" lg="8" xl="8" class="pt-0">
-        <v-row>
-          <v-col xs="12" sm="12" md="12" lg="12" xl="12">
+      <v-col cols="12" md="8">
+        <v-row dense>
+          <v-col>
             <!-- Graphics -->
             <v-card height="470">
               <v-toolbar dense flat>
@@ -278,18 +278,13 @@ export default Vue.extend({
       newInstrument: {
         ticker: '',
         account: '',
+        position: '0',
       },
 
       instrumentsHeaders: [
         {text: 'Ticker', value: 'ticker'},
         {text: 'Account', value: 'account'},
         {text: 'Action', value: 'action'},
-      ],
-
-      instruments: [
-        {ticker: 'RTS.FORTS.H2020', account: 'Acc1'},
-        {ticker: 'MXI.FORTS.H2020', account: 'Acc1'},
-        {ticker: 'Si.FORTS.H2020', account: 'Acc1'},
       ],
     };
   },
@@ -300,19 +295,25 @@ export default Vue.extend({
     isPortfolio() { return this.$store.state.strategies.portfolio.id; },
     portfolio()   { return this.$store.state.strategies.portfolio; },
     strategy()    { return this.$store.state.strategies.strategy; },
+    vaccounts()   { return this.$store.state.terminal.vaccounts; },
 
     // Virtual accounts
-    vaccounts() {
+    /*vaccounts() {
       return this.$store.state.terminal.vaccounts.map((acc) => {
         return {
           value: acc.id,
           text: acc.name };
       });
-    },
+    },*/
 
     // Instruments
+    instruments() {
+      return this.$store.state.strategies.strategy.instruments.map((instrument, idx) => {
+        return {...instrument, id: idx};
+      });
+    },
 
-    strategyInstruments: {
+    /*strategyInstruments: {
       get() //{ return this.$store.state.strategies.strategy.instruments.map((instrument) => instrument.ticker); },
       { return this.$store.state.strategies.strategy.instruments; },
       set(value: string[]) {
@@ -322,7 +323,7 @@ export default Vue.extend({
         }));
         this.$store.dispatch('strategies/UpdateStrategy');
       },
-    },
+    },*/
 
     // Trades table
     trades() {
@@ -431,9 +432,17 @@ export default Vue.extend({
     GetSideColor(side: string) {
       return side === 'buy' ? 'green' : 'red';
     },
-    SaveStrategy() {
-      this.$store.commit('strategies/SaveStrategy');
+
+    // Instruments
+    CreateInstrument() {
+      this.$store.commit('strategies/CreateInstrument', {...this.newInstrument});
+      this.$store.dispatch('strategies/UpdateStrategy');
     },
+    DeleteInstrument(idx: number) {
+      this.$store.commit('strategies/DeleteInstrument', idx);
+      this.$store.dispatch('strategies/UpdateStrategy');
+    },
+
   },
 
   // Hooks
