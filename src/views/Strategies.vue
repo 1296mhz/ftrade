@@ -70,7 +70,7 @@
           <!-- Params -->
           <v-col cols="12">
             <v-card height="370">
-              <v-container>
+              <v-container v-if="isStrategy">
                 <!-- Instruments -->
                 <v-row dense>
                   <v-col>
@@ -80,7 +80,7 @@
                     <v-select :items="vaccounts" item-text="name" item-value="id" v-model="newInstrument.account" label="Account" dense single-line></v-select>
                   </v-col>
                   <v-col cols="auto">
-                    <v-btn icon small @click="CreateInstrument"><v-icon>mdi-plus</v-icon></v-btn>
+                    <v-btn icon small :disabled="!newInstrument.ticker || !newInstrument.account" @click="CreateInstrument"><v-icon>mdi-plus</v-icon></v-btn>
                   </v-col>
                 </v-row>
 
@@ -93,18 +93,6 @@
                     </v-data-table>
                   </v-col>
                 </v-row>
-  <!--              
-                <v-divider></v-divider>
-
-
-              <v-row dense>
-                <v-select :items="vaccounts" label="Select Account" dense single-line @change=""></v-select>
-              </v-row>
-
-              <v-row dense>
-                <v-combobox :items="instruments"  v-model="strategyInstruments" label="Instruments" multiple deletable-chips small-chips dense></v-combobox>
-              </v-row>
--->
 <!--
               <v-data-table :headers="paramsHeader" :items="StrategyParams" height="261">
                 <template v-slot:item.value="props">
@@ -294,36 +282,21 @@ export default Vue.extend({
     portfolios()  { return this.$store.state.strategies.portfolios; },
     isPortfolio() { return this.$store.state.strategies.portfolio.id; },
     portfolio()   { return this.$store.state.strategies.portfolio; },
+    isStrategy()  { return this.$store.state.strategies.strategy.id; },
     strategy()    { return this.$store.state.strategies.strategy; },
     vaccounts()   { return this.$store.state.terminal.vaccounts; },
-
-    // Virtual accounts
-    /*vaccounts() {
-      return this.$store.state.terminal.vaccounts.map((acc) => {
-        return {
-          value: acc.id,
-          text: acc.name };
-      });
-    },*/
 
     // Instruments
     instruments() {
       return this.$store.state.strategies.strategy.instruments.map((instrument, idx) => {
-        return {...instrument, id: idx};
+        const vacc = this.$store.state.terminal.vaccounts.find((acc) => acc.id === instrument.account);
+        return {
+          id: idx,
+          ticker: instrument.ticker,
+          account: vacc ? vacc.name : instrument.account,
+        };
       });
     },
-
-    /*strategyInstruments: {
-      get() //{ return this.$store.state.strategies.strategy.instruments.map((instrument) => instrument.ticker); },
-      { return this.$store.state.strategies.strategy.instruments; },
-      set(value: string[]) {
-        console.log(value);
-        this.$store.commit('strategies/SetStrategyInstruments', value.map((ticker) => {
-          return {ticker: ticker, account: 'test', position: '0'};
-        }));
-        this.$store.dispatch('strategies/UpdateStrategy');
-      },
-    },*/
 
     // Trades table
     trades() {
@@ -447,6 +420,8 @@ export default Vue.extend({
 
   // Hooks
   async created() {
+    await this.$store.dispatch('terminal/GetVAccounts');
+    await this.$store.dispatch('scripts/GetScripts');
     await this.$store.dispatch('strategies/GetPortfolios');
     await this.$store.dispatch('strategies/SubscribeStrategies');
   },
