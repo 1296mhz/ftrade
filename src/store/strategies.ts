@@ -1,13 +1,13 @@
 import Vue from 'vue';
 import uuid from 'uuid/v4';
 import { Module } from 'vuex';
-import { IMainState, IStrategyParams, IInstrument, ITrade, ILogEntry, IOrder} from './types';
+import { IMainState, IInstrument, IStrategy, ITrade, ILogEntry, IOrder} from './types';
 
 // Strategies state interface
 export interface IStrategiesState {
   portfolios: IPortfolio[];
   portfolio: IPortfolio;
-  strategy: IStrategyLive;
+  strategy: IStrategy;
   logs: ILogEntry[];
   orders: IOrder[];
   trades: ITrade[];
@@ -17,17 +17,12 @@ export interface IStrategiesState {
 export interface IPortfolio {
   id: string;
   name: string;
-  strategies: IStrategyLive[];
+  strategies: IStrategy[];
 }
 
-export interface IStrategyLive {
-  id: string;
-  name: string;
-  source: string;
-  portfolio: string;
-  instruments: IInstrument[];
-  params: IStrategyParams[];
-  state: string;
+export interface IStrategyParams {
+  key: string;
+  value: string;
 }
 
 // Strategies storage module
@@ -51,7 +46,6 @@ const strategies: Module<IStrategiesState, IMainState> = {
       portfolio: '',
       source: '',
       instruments: [],
-      params: [],
       state: '',
     },
 
@@ -96,8 +90,8 @@ const strategies: Module<IStrategiesState, IMainState> = {
     SetPortfolio(state, portfolio: IPortfolio)        { state.portfolio = portfolio; state.strategy.id = ''; },
 
     // Strategies
-    SetStrategy(state, strategy: IStrategyLive)       { state.strategy = strategy; state.portfolio.id = ''; },
-    CreateStrategy(state, strategy: IStrategyLive) {
+    SetStrategy(state, strategy: IStrategy)           { state.strategy = strategy; state.portfolio.id = ''; },
+    CreateStrategy(state, strategy: IStrategy) {
       const portfolio: IPortfolio =  state.portfolios.find((p) => p.id === strategy.portfolio);
       if (portfolio) {
         portfolio.strategies.push(strategy);
@@ -107,7 +101,7 @@ const strategies: Module<IStrategiesState, IMainState> = {
       state.portfolios.forEach((p) => p.strategies = p.strategies.filter((s) => s.id !== id));
     },
     UpdateStrategy(state, update: any) {
-      let strategy: IStrategyLive;
+      let strategy: IStrategy;
       state.portfolios.some((p) => strategy = p.strategies.find((s) => s.id === update.id));
       if (strategy) {
         strategy.state = update.state;

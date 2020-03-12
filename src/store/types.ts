@@ -76,12 +76,9 @@ export interface IStrategy {
   id: string;
   name: string;
   source: string;
+  portfolio: string;
+  state: string;
   instruments: IInstrument[];
-}
-
-export interface IStrategyParams {
-  key: string;
-  value: string;
 }
 
 // Instrument

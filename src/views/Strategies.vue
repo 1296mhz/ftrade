@@ -6,7 +6,7 @@
         <v-row dense>
           <!-- Strategies tree -->
           <v-col cols="12">
-            <v-card>
+            <v-card height="490">
               <v-toolbar dense flat>
                 <v-toolbar-title>Strategies</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -52,7 +52,7 @@
               </v-toolbar>
               <v-divider></v-divider>
 
-              <v-sheet class="overflow-y-auto" height="424">
+              <v-sheet class="overflow-y-auto" height="435">
                 <v-treeview :items="portfolios" item-children="strategies" @update:active="SelectStrategy" transition activatable dense>
                   <template v-slot:prepend="{item, open}">
                     <v-icon v-if="item.strategies">{{open ? 'mdi-folder-open' : 'mdi-folder'}}</v-icon>
@@ -68,8 +68,8 @@
           </v-col>
 
           <!-- Params -->
-          <v-col cols="12">
-            <v-card height="370">
+          <v-col cols="12" class="pt-0">
+            <v-card height="390">
               <v-container v-if="isStrategy">
                 <!-- Instruments -->
                 <v-row dense>
@@ -126,7 +126,7 @@
         <v-row dense>
           <v-col>
             <!-- Graphics -->
-            <v-card height="470">
+            <v-card height="490">
               <v-toolbar dense flat>
                 <v-toolbar-title>График</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -146,8 +146,8 @@
           </v-col>
 
           <!-- Table -->
-          <v-col xs="12" sm="12" md="12" lg="12" xl="12" class="pt-0">
-            <v-card height="100%">
+          <v-col cols="12" class="pt-0">
+            <v-card height="390">
               <v-container fluid>
                 <v-tabs height="45">
                   <v-tab>Logs</v-tab>

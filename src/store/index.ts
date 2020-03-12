@@ -68,7 +68,11 @@ const options: StoreOptions<IMainState> = {
         localStorage.setItem('authToken', token);
 
       } catch (err) {
-        commit('SetError', err.message);
+        if (err.response) {
+          commit('SetError', err.response.data);
+        } else {
+          commit('SetError', err.message);
+        }
         throw err;
       }
     },

@@ -79,6 +79,8 @@ const scripts: Module<IScriptsState, IMainState> = {
       id: '',
       name: '',
       source: '',
+      portfolio: '',
+      state: '',
       instruments: [],
     },
 

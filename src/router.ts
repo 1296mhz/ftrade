@@ -20,7 +20,7 @@ const router = new Router({
       path: '/',
       name: 'main',
       component: Root,
-      redirect: '/terminal',
+      redirect: '/strategies',
       children: [
         {
           path: '/terminal',
