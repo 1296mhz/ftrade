@@ -361,7 +361,6 @@ export default Vue.extend({
   methods: {
     // Select current script
     async SelectScript(selected: string[]) {
-      // console.log(selected);
       if (selected.length > 0) {
         const id = selected[0];
         const cat = this.categories.find((cat) => cat.id === id);
@@ -422,6 +421,7 @@ export default Vue.extend({
         strategies: [{
           id: uuid(),
           name: script.name,
+          portfolio: script.id,
           source: '',
           instruments: [],
         }],
