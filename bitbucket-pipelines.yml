@@ -28,6 +28,7 @@ pipelines:
             - kubectl config use-context kubernetes --user=$K8S_USERNAME
             - kubectl get deployments
             - kubectl set image deployment/$K8S_DEPLOYMENT_NAME $K8S_DEPLOYMENT_NAME=$DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:${BITBUCKET_COMMIT} -n $K8S_NAMESPACE --record=true
+<<<<<<< HEAD
     master:
       - step:
           services:
@@ -55,6 +56,9 @@ pipelines:
             - kubectl config use-context kubernetes --user=$K8S_USERNAME
             - kubectl get deployments
             - kubectl set image deployment/$K8S_DEPLOYMENT_NAME $K8S_DEPLOYMENT_NAME=$DOCKER_HUB_URI/$BITBUCKET_REPO_SLUG:${BITBUCKET_COMMIT} -n $K8S_NAMESPACE --record=true            
+=======
+         
+>>>>>>> Demo
 
 options:
   docker: true

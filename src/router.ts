@@ -1,30 +1,76 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home.vue';
+import Root from './views/Root.vue';
 import Terminal from './views/Terminal.vue';
-import Dashboard from './views/Dashboard.vue';
+import Scripts from './views/Scripts.vue';
+import Accounts from './views/Accounts.vue';
+import Strategies from './views/Strategies.vue';
+import Login from './views/Login.vue';
+import store from './store';
 
 Vue.use(Router);
-
-export default new Router({
+const router = new Router({
   routes: [
     {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: Dashboard,
+      path: '/login',
+      name: 'login',
+      component: Login,
     },
     {
-      path: '/terminal',
-      name: 'terminal',
-      component: Terminal,
+      path: '/',
+      name: 'main',
+      component: Root,
+      redirect: '/strategies',
+      children: [
+        {
+          path: '/terminal',
+          name: 'Terminal',
+          component: Terminal,
+        },
+        {
+          path: '/scripts',
+          name: 'Scripts',
+          component: Scripts,
+        },
+        {
+          path: '/accounts',
+          name: 'Accounts',
+          component: Accounts,
+        },
+        {
+          path: '/strategies',
+          name: 'Strategies',
+          component: Strategies,
+        },
+      ],
     },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
-    },
+
   ],
+  mode: 'history',
 });
+
+// Router handler
+router.beforeEach( async (to, from, next) => {
+  document.title = to.name;
+
+  if (store.state.connected && to.path === '/login') {
+    return next('/');
+  }
+
+  // Check connection state
+  // if (!store.state.connected && to.path !== '/login')
+  if (store.state.connected && to.path !== '/login') {
+    // Try connect
+    try {
+      await store.dispatch('Connect');
+      // await store.dispatch('GetVAccounts');
+    } catch (err) {
+      // Goto login page
+      return next('/login');
+    }
+  }
+
+  next();
+});
+
+export default router;
