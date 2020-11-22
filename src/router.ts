@@ -58,7 +58,8 @@ router.beforeEach( async (to, from, next) => {
   }
 
   // Check connection state
-  if (!store.state.connected && to.path !== '/login') {
+  // if (!store.state.connected && to.path !== '/login')
+  if (store.state.connected && to.path !== '/login') {
     // Try connect
     try {
       await store.dispatch('Connect');
